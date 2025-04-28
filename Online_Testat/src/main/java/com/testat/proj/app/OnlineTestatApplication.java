@@ -1,4 +1,4 @@
-package com.testat.proj;
+package com.testat.proj.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
