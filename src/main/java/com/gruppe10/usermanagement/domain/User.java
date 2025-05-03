@@ -41,6 +41,11 @@ public abstract class User extends AbstractEntity<Long> {
     @Size(max = MAX_LENGTH)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = MAX_LENGTH)
+    @Size(max = MAX_LENGTH)
+    private Role role;
+
     @Override
     public @Nullable Long getId() {
         return id;
@@ -77,6 +82,14 @@ public abstract class User extends AbstractEntity<Long> {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
 }
