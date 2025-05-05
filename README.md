@@ -1,38 +1,23 @@
-# Software_Projekt_Gruppe10
-Software-Projekt der Gruppe 10
-# 📘 SoftwareProjekt – Elektronisches Prüfungssystem
+# Softwareprojekt Gruppe 10 README
 
-Dieses Projekt ist ein serverbasiertes System zur Durchführung elektronischer Prüfungen mit Benutzer- und Rollenmodell. Entwickelt in Java mit Spring Boot und einer PostgreSQL-Datenbank.
+- [ ] TODO Replace or update this README with instructions relevant to your application
 
----
-
-## 🚀 Features
-
-- Rollenbasierte Anwendung: Lehrende & Prüflinge
-- Prüfungsverwaltung mit Terminen & Aufgaben
-- Import/Export von Prüflingslisten (z. B. Excel)
-- Aufgabenarten: Freitext, SC, MC, Zuordnung
-- Prüfungsteilnahme über Login
-- Ergebnisse & Bewertungen
-- PostgreSQL-basiert, lokal ausrollbar
-
----
-
-## 🧰 Voraussetzungen
-
-- Java 17+
-- Maven
-- PostgreSQL (lokal installiert)
-- Git (für Projekt-Sync)
-- Optional: pgAdmin oder DBeaver zur DB-Verwaltung
-
----
-
-## 🛠 Lokales Setup
-
-### 1. Projekt clonen
+To start the application in development mode, import it into your IDE and run the `Application` class. 
+You can also start the application from the command line by running: 
 
 ```bash
-git clone https://github.com/dein-user/Software_Projekt_Gruppe10.git
-cd Software_Projekt_Gruppe10
+./mvnw
+```
 
+To build the application in production mode, run:
+
+```bash
+./mvnw -Pproduction package
+```
+
+## Getting Started
+
+The [Getting Started](https://vaadin.com/docs/latest/getting-started) guide will quickly familiarize you with your new
+Softwareprojekt Gruppe 10 implementation. You'll learn how to set up your development environment, understand the project 
+structure, and find resources to help you add muscles to your skeleton — transforming it into a fully-featured 
+application.
