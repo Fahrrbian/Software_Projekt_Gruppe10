@@ -1,11 +1,9 @@
 //ChristianMarkow
 package com.gruppe10.usermanagement.service;
 
-import com.gruppe10.usermanagement.domain.Role;
 import com.gruppe10.usermanagement.domain.Student;
 import com.gruppe10.usermanagement.domain.StudentRepository;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +14,9 @@ import java.util.List;
 public class StudentService {
 
     private final StudentRepository studentRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    StudentService(StudentRepository studentRepository, BCryptPasswordEncoder passwordEncoder) {
+    StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public void createStudent(String email, String forename, String surname, String password, int studentNumber) {
@@ -31,9 +27,8 @@ public class StudentService {
         student.setEmail(email);
         student.setForename(forename);
         student.setSurname(surname);
-        student.setPassword(passwordEncoder.encode(password));
+        student.setPassword(password);
         student.setStudentNumber(studentNumber);
-        student.setRole(Role.STUDENT);
         studentRepository.saveAndFlush(student);
     }
 

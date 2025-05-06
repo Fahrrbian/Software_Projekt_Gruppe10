@@ -3,9 +3,7 @@ package com.gruppe10.usermanagement.service;
 
 import com.gruppe10.usermanagement.domain.Instructor;
 import com.gruppe10.usermanagement.domain.InstructorRepository;
-import com.gruppe10.usermanagement.domain.Role;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +14,9 @@ import java.util.List;
 public class InstructorService {
 
     private final InstructorRepository instructorRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    InstructorService(InstructorRepository instructorRepository, BCryptPasswordEncoder passwordEncoder) {
+    InstructorService(InstructorRepository instructorRepository) {
         this.instructorRepository = instructorRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public void createInstructor(String email, String forename, String surname, String password) {
@@ -31,8 +27,7 @@ public class InstructorService {
         instructor.setEmail(email);
         instructor.setForename(forename);
         instructor.setSurname(surname);
-        instructor.setPassword(passwordEncoder.encode(password));
-        instructor.setRole(Role.INSTRUCTOR);
+        instructor.setPassword(password);
         instructorRepository.saveAndFlush(instructor);
     }
 
