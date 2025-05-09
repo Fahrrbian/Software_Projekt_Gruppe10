@@ -47,7 +47,6 @@ public abstract class User extends AbstractEntity<Long> {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = MAX_LENGTH)
-    @Size(max = MAX_LENGTH)
     private Role role;
 
     @Override

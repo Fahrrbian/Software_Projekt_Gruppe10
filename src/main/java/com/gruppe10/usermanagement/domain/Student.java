@@ -6,16 +6,15 @@
 package com.gruppe10.usermanagement.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 @Entity
 @DiscriminatorValue("STUDENT")
 public class Student extends User {
 
-    @NotBlank
     @Column(name = "student_number", nullable = false, length = MAX_LENGTH, unique = true)
-    @Size(max = MAX_LENGTH)
+    @Min(1)
+    @Max(999999999)
     private int studentNumber;
 
     public int getStudentNumber() {
