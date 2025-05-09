@@ -1,3 +1,9 @@
+/**
+ * Author: Christian Markow
+ * Date: 29/04/2025
+ */
+
+
 package com.gruppe10.usermanagement.service;
 
 import com.gruppe10.usermanagement.domain.User;
