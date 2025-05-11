@@ -11,7 +11,6 @@ import java.time.Clock;
 
 @SpringBootApplication
 @Theme("default")
-@ComponentScan(basePackages = "com.gruppe10.base")
 public class Application implements AppShellConfigurator {
 
     @Bean

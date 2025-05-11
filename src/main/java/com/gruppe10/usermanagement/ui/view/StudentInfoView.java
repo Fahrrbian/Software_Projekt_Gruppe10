@@ -1,6 +1,7 @@
 //ChristianMarkow
-package com.gruppe10.base.ui.view;
+package com.gruppe10.usermanagement.ui.view;
 
+import com.gruppe10.base.ui.view.MainLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
