@@ -1,7 +1,10 @@
 //ChristianMarkow
 package com.gruppe10.usermanagement.service;
 
+import com.gruppe10.usermanagement.domain.Role;
 import com.gruppe10.usermanagement.domain.User;
+import com.gruppe10.usermanagement.domain.Student;
+import com.gruppe10.usermanagement.domain.Instructor;
 import com.gruppe10.usermanagement.domain.UserRepository;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
@@ -9,9 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +29,8 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired @Lazy
+    private PasswordEncoder passwordEncoder;
     /**
      * Loads a user by username, used by Spring Security for authentication.
      *
@@ -55,7 +62,30 @@ public class UserService implements UserDetailsService {
     public void save(User user) {
         userRepository.save(user);
     }
+    public User registerUser(String email,
+                             String rawPassword,
+                             String forename,
+                             String surname,
+                             Role role) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("E-Mail bereits vergeben");
+        }
 
+        User user;
+        if (role == Role.STUDENT) {
+            user = new Student();
+        } else {
+            user = new Instructor();
+        }
+
+        user.setEmail(email);
+        user.setForename(forename);
+        user.setSurname(surname);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setRole(role);
+
+        return userRepository.save(user);
+    }
     /**
      * Retrieves all User entities from the database.
      *
