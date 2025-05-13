@@ -1,6 +1,8 @@
 package com.gruppe10.base.ui.view;
 
+import com.gruppe10.usermanagement.ui.view.UserInfoView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.avatar.AvatarVariant;
@@ -68,7 +70,9 @@ public final class MainLayout extends AppLayout {
 
         var userMenuItem = userMenu.addItem(avatar);
         userMenuItem.add("John Smith");
-        userMenuItem.getSubMenu().addItem("View Profile");
+        userMenuItem.getSubMenu().addItem("View Profile", e -> {
+            UI.getCurrent().navigate(UserInfoView.class);
+        });
         userMenuItem.getSubMenu().addItem("Manage Settings");
         userMenuItem.getSubMenu().addItem("Logout");
 
