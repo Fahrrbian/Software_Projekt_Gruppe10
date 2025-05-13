@@ -1,0 +1,22 @@
+.signup-card {
+    background: var(--lumo-base-color, #fff);
+    border-radius: var(--lumo-border-radius, 4px);
+    box-shadow: var(--lumo-box-shadow-s, 0 2px 4px rgba(0,0,0,0.1));
+    padding: var(--lumo-space-l, 1rem);
+    max-width: 400px;
+}
+
+.signup-title {
+    text-align: center;
+    margin-bottom: var(--lumo-space-m);
+}
+
+.v-form-layout-form-item {
+    margin-bottom: var(--lumo-space-m);
+}
+
+/* Button zentrieren */
+.signup-card vaadin-button {
+    width: 100%;
+    margin-top: var(--lumo-space-m);
+}
