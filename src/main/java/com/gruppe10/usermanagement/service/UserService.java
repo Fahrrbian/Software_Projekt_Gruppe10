@@ -1,11 +1,7 @@
 //ChristianMarkow
 package com.gruppe10.usermanagement.service;
 
-import com.gruppe10.usermanagement.domain.Role;
-import com.gruppe10.usermanagement.domain.User;
-import com.gruppe10.usermanagement.domain.Student;
-import com.gruppe10.usermanagement.domain.Instructor;
-import com.gruppe10.usermanagement.domain.UserRepository;
+import com.gruppe10.usermanagement.domain.*;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
 import java.util.List;
@@ -19,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -29,12 +26,19 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private StudentRepository studentRepository;
+
+
     @Autowired @Lazy
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private InstructorRepository instructorRepository;
+
     /**
      * Loads a user by username, used by Spring Security for authentication.
      *
-     * @param username the username to search for.
+     * @param email the username to search for.
      * @return a UserDetails object representing the user.
      * @throws UsernameNotFoundException if the user is not found.
      */
@@ -62,6 +66,7 @@ public class UserService implements UserDetailsService {
     public void save(User user) {
         userRepository.save(user);
     }
+    /*
     public User registerUser(String email,
                              String rawPassword,
                              String forename,
@@ -83,8 +88,36 @@ public class UserService implements UserDetailsService {
         user.setSurname(surname);
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRole(role);
+        int next = userRepository.findMaxStudentNumber() + 1;
+        user.setStudentNumber(next);
 
         return userRepository.save(user);
+    }
+     */
+    @Transactional
+    public Student registerStudent(String email, String rawPassword,
+                                   String forename, String surname) {
+        // E-Mail-Check, encode, Role zu STUDENT …
+        Student s = new Student();
+        s.setEmail(email);
+        s.setForename(forename);
+        s.setSurname(surname);
+        s.setPassword(passwordEncoder.encode(rawPassword));
+        s.setRole(Role.STUDENT);
+        int next = userRepository.findMaxStudentNumber() + 1;
+        s.setStudentNumber(next);
+        return studentRepository.save(s);
+    }
+
+    public Instructor registerInstructor(String email, String rawPassword,
+                                         String forename, String surname) {
+        Instructor i = new Instructor();
+        i.setEmail(email);
+        i.setForename(forename);
+        i.setSurname(surname);
+        i.setPassword(passwordEncoder.encode(rawPassword));
+        i.setRole(Role.INSTRUCTOR);
+        return instructorRepository.save(i);
     }
     /**
      * Retrieves all User entities from the database.

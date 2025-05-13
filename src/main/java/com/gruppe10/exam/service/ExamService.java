@@ -6,6 +6,7 @@ package com.gruppe10.exam.service;
  **/
 
 
+import com.gruppe10.Excel_Export.data.ExamResultDTO;
 import com.gruppe10.exam.domain.Exam;
 import com.gruppe10.exam.domain.ExamRepository;
 import com.gruppe10.exam.ui.ExamListener;
@@ -18,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -107,6 +110,21 @@ public class ExamService {
         }catch (Exception e) {
             return null;
         }
+    }
+    public List<ExamResultDTO> getExamResults() {
+        Map<String, Double> aufgaben1 = new HashMap<>();
+        aufgaben1.put("SC1", 2.0);
+        aufgaben1.put("MC1", 3.0);
+        aufgaben1.put("Text1", 4.5);
 
+        Map<String, Double> aufgaben2 = new HashMap<>();
+        aufgaben2.put("SC1", 1.0);
+        aufgaben2.put("MC1", 2.0);
+        aufgaben2.put("Text1", 2.0);
+
+        return List.of(
+                new ExamResultDTO("Max Mustermann", "max@example.com", aufgaben1, 9.5, true),
+                new ExamResultDTO("Erika Musterfrau", "erika@example.com", aufgaben2, 5.0, false)
+        );
     }
 }
