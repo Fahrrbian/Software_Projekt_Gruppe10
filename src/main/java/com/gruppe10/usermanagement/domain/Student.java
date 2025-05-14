@@ -1,8 +1,4 @@
-/**
- * Author: Christian Markow
- * Date: 29/04/2025
- */
-
+//ChristianMarkow
 package com.gruppe10.usermanagement.domain;
 
 import jakarta.persistence.*;
@@ -12,7 +8,10 @@ import jakarta.validation.constraints.*;
 @DiscriminatorValue("STUDENT")
 public class Student extends User {
 
-    @Column(name = "student_number", nullable = false, length = MAX_LENGTH, unique = true)
+
+    @Column(name = "student_number", nullable = false, unique = true)
+    //@Size(max = MAX_LENGTH)
+    @NotNull
     @Min(1)
     @Max(999999999)
     private int studentNumber;

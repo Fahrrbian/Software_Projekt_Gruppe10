@@ -1,31 +1,52 @@
 package com.gruppe10.base.ui.view;
 
 import com.gruppe10.base.ui.component.ViewToolbar;
-
+import com.gruppe10.usermanagement.domain.User;
+import com.gruppe10.security.AuthenticatedUser;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.*;
+
+import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This view shows up when a user navigates to the root ('/') of the application.
  */
-@Route
-public final class MainView extends Main {
+@Route("/")
+@PermitAll
+@PageTitle("Start | Online Testat")
+public class MainView extends VerticalLayout implements BeforeEnterObserver {
 
-    // TODO Replace with your own main view.
+    private final AuthenticatedUser authenticatedUser;
 
-    MainView() {
-        addClassName(LumoUtility.Padding.MEDIUM);
-        add(new ViewToolbar("Main"));
-        add(new Div("Please select a view from the menu on the left."));
+
+
+    @Autowired
+    public MainView(AuthenticatedUser authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
+
+        add(new H1("Du wirst gleich weitergeleitet ..."));
     }
-
-    /**
-     * Navigates to the main view.
-     */
-    public static void showMainView() {
-        UI.getCurrent().navigate(MainView.class);
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        authenticatedUser.get().ifPresent(user -> {
+            String role = user.getRole();
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                event.forwardTo("admin");
+            } else if ("INSTRUCTOR".equalsIgnoreCase(role)) {
+                event.forwardTo("instructor");
+            } else {
+                event.forwardTo("student");
+            }
+        });
     }
+    }
+/**
+ * Navigates to the main view.
+
+public static void showMainView() {
+    UI.getCurrent().navigate(MainView.class);
 }
+*/

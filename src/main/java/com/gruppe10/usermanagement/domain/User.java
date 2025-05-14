@@ -1,14 +1,11 @@
-/**
- * Author: Christian Markow
- * Date: 29/04/2025
- */
-
+//ChristianMarkow
 package com.gruppe10.usermanagement.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gruppe10.base.domain.AbstractEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.Nullable;
 
@@ -45,8 +42,11 @@ public abstract class User extends AbstractEntity<Long> {
     @Size(max = MAX_LENGTH)
     private String password;
 
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = MAX_LENGTH)
+    //@Size(max = MAX_LENGTH)
+    @NotNull
     private Role role;
 
     @Override
@@ -87,12 +87,15 @@ public abstract class User extends AbstractEntity<Long> {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
+    public String getRole() {
+        return String.valueOf(role);
+    }
+
+    public String getRoleAsString() {
+        return role.name(); // oder role.toString()
     }
 
     public void setRole(Role role) {
         this.role = role;
     }
-
 }

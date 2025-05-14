@@ -63,7 +63,7 @@ public class UserInfoView extends VerticalLayout {
         add(formLayout);
 
         // Rollenspezifische Inhalte
-        if (user.getRole() == Role.INSTRUCTOR) {
+        if ("INSTRUCTOR".equals(user.getRoleAsString())) {
             add(new H3("Verwaltung"));
             add(new Button("Aufgaben", e -> {
                         //WeiterleitungZuAufgabenVerwaltungsView
@@ -71,7 +71,7 @@ public class UserInfoView extends VerticalLayout {
             add(new Button("Prüfungen", e -> {
                 //WeiterleitungZuPrüfungsVerwaltungsView
             }));
-        } else if (user.getRole() == Role.STUDENT) {
+        } else if ("STUDENT".equals(user.getRoleAsString())) {
             add(new H3("Schüler-Details"));
             //Test
             add(new Paragraph("Aktueller Kurs: Systementwicklung"));
