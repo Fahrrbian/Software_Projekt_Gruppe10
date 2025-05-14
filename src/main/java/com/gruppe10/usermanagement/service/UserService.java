@@ -44,7 +44,7 @@ public class UserService implements UserDetailsService {
     /**
      * Loads a user by username, used by Spring Security for authentication.
      *
-     * @param username the username to search for.
+     * @paramusername the username to search for.
      * @return a UserDetails object representing the user.
      * @throws UsernameNotFoundException if the user is not found.
      */
