@@ -4,7 +4,7 @@ import com.gruppe10.submission.domain.Submission;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.gruppe10.exam.domain.Exam;
-import com.gruppe10.usermanagement.domain.Student+
+import com.gruppe10.usermanagement.domain.Student;
 import com.gruppe10.submission.repo.SubmissionRepo;
 /**
  * SubmissionService.java

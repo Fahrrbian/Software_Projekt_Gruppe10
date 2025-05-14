@@ -1,22 +1,17 @@
-package com.gruppe10.base.ui.view;
+package com.gruppe10.base.ui.Layout;
 
 import com.gruppe10.security.AuthenticatedUser;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
 import com.gruppe10.usermanagement.ui.view.InstructorInfoView;
 import com.gruppe10.usermanagement.ui.view.StudentInfoView;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.menubar.MenuBar;
-import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -37,7 +32,7 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
  */
 
 @SuppressWarnings("unused")
-public final class MainLayout extends AppLayout {
+public class MainLayout extends AppLayout {
 
 
     private final UserService userService;

@@ -27,7 +27,7 @@ import java.util.List;
  * TODO: Beschreibung einfügen.
  */
 
-
+/*
 @Route("auswertung")
 @RolesAllowed("INSTRUCTOR")
 public class InstructorExamResultsView extends VerticalLayout{
@@ -84,3 +84,4 @@ public class InstructorExamResultsView extends VerticalLayout{
         add(exportButton);
     }
 }
+*/
