@@ -35,7 +35,6 @@ public class SecurityConfig extends VaadinWebSecurity {
     protected void configure(HttpSecurity http) throws Exception {
         // Call the superclass method to configure the security settings
         super.configure(http);
-
         // Set the login view to the LoginView class
         setLoginView(http, LoginView.class);
     }
