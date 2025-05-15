@@ -6,13 +6,9 @@ import com.gruppe10.exercisemanagement.domain.Tag;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.gruppe10.exercisemanagement.service.TagService;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -21,6 +17,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +32,6 @@ public class ExerciseListView extends Main {
 
     private final Grid<Exercise> exerciseGrid;
     private final VerticalLayout filterLayout;
-    private final Map<Tag, Checkbox> tagFilters = new HashMap<>();
 
     public ExerciseListView(ExerciseService exerciseService, TagService tagService) {
         this.exerciseService = exerciseService;
@@ -52,7 +48,7 @@ public class ExerciseListView extends Main {
         Button createButton = new Button("+Neue Aufgabe", event -> createExercise());
 
         add(filterLayout, createButton, exerciseGrid);
-        updateGrid();
+        updateGrid(null);
     }
 
     private VerticalLayout createFilterBar() {
@@ -60,17 +56,16 @@ public class ExerciseListView extends Main {
         filterBar.setPadding(false);
         filterBar.setSpacing(true);
 
-        HorizontalLayout tagCheckboxes = new HorizontalLayout();
-        tagCheckboxes.setSpacing(true);
+        MultiSelectComboBox<Tag> tagFilterComboBox = new MultiSelectComboBox<>("Tags filtern");
+        tagFilterComboBox.setItemLabelGenerator(Tag::getName);
+        tagFilterComboBox.setItems(tagService.getAll());
+        tagFilterComboBox.setClearButtonVisible(true);
+        tagFilterComboBox.setPlaceholder("Tags auswählen...");
+        tagFilterComboBox.setWidth("300px");
 
-        for (Tag tag : tagService.getAll()) {
-            Checkbox tagCheckbox = new Checkbox(tag.getName());
-            tagCheckbox.addValueChangeListener(e -> updateGrid());
-            tagFilters.put(tag, tagCheckbox);
-            tagCheckboxes.add(tagCheckbox);
-        }
+        tagFilterComboBox.addValueChangeListener(event -> updateGrid(event.getValue()));
 
-        filterBar.add(new Span("Filter:"), tagCheckboxes);
+        filterBar.add(tagFilterComboBox);
         return filterBar;
     }
 
@@ -92,17 +87,12 @@ public class ExerciseListView extends Main {
         );
     }
 
-    private void updateGrid() {
-        List<Tag> selectedTags = tagFilters.entrySet().stream()
-                .filter(entry -> entry.getValue().getValue())
-                .map(Map.Entry::getKey)
-                .toList();
+    private void updateGrid(Set<Tag> selectedTags) {
+        Pageable pageable = PageRequest.of(0, 100);
 
-        Pageable pageable = PageRequest.of(0, 100); // z. B. max. 100 Elemente laden
-
-        var slice = selectedTags.isEmpty()
+        var slice = (selectedTags == null || selectedTags.isEmpty())
                 ? exerciseService.getAll(pageable)
-                : exerciseService.getByTags(selectedTags, pageable);
+                : exerciseService.getByTags(new ArrayList<>(selectedTags), pageable);
 
         exerciseGrid.setItems(slice.getContent());
     }

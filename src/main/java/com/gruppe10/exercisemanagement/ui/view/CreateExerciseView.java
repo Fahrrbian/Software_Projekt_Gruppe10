@@ -39,6 +39,7 @@ public class CreateExerciseView extends Div {
     private final Button examButton = new Button("Zu einer Prüfung hinzufügen...");
     private final Button saveButton = new Button("Speichern");
     private final MultiSelectComboBox<Tag> tagSelector = new MultiSelectComboBox<>("Tags");
+    private final Set<Tag> selectedTags = new HashSet<>();
 
     private final VerticalLayout choiceOptionsLayout = new VerticalLayout();
     private final List<ChoiceOptionEditor> choiceOptionEditors = new ArrayList<>();
@@ -70,11 +71,28 @@ public class CreateExerciseView extends Div {
         scoreField.setPlaceholder("z.B. 10");
         scoreField.setWidth("200px");
 
-        tagSelector.setItemLabelGenerator(Tag::getName);
-        tagSelector.setWidthFull();
-        tagSelector.setClearButtonVisible(true);
-        tagSelector.setPlaceholder("Tags auswählen...");
         tagSelector.setItems(tagService.getAll());
+        tagSelector.setItemLabelGenerator(Tag::getName);
+        tagSelector.setClearButtonVisible(true);
+        tagSelector.setAllowCustomValue(true);
+        tagSelector.setPlaceholder("Tags auswählen oder neu eingeben...");
+        tagSelector.setWidthFull();
+
+        tagSelector.addCustomValueSetListener(event -> {
+            String newTagName = event.getDetail().trim();
+            if (!newTagName.isEmpty()) {
+                Tag newTag = tagService.findOrCreateByName(newTagName);
+                List<Tag> currentItems = new ArrayList<>(tagSelector.getSelectedItems());
+                currentItems.add(newTag);
+                tagSelector.setItems(currentItems);
+                selectedTags.add(newTag);
+                tagSelector.select(selectedTags);
+            }
+        });
+
+        tagSelector.addValueChangeListener(event -> {
+            selectedTags.addAll(event.getValue());
+        });
 
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(event -> save());
@@ -107,7 +125,7 @@ public class CreateExerciseView extends Div {
         String exerciseType = typDropdown.getValue();
         String exerciseText = exerciseTextField.getValue();
         String scoreStr = scoreField.getValue();
-        Set<Tag> selectedTags = new HashSet<>(tagSelector.getSelectedItems());
+        //Set<Tag> selectedTags = new HashSet<>(tagSelector.getSelectedItems());
 
         if (exerciseText == null || exerciseText.isEmpty()) {
             Notification.show("Bitte eine Aufgabenstellung eingeben.");
@@ -170,6 +188,7 @@ public class CreateExerciseView extends Div {
         scoreField.clear();
         updateSpecificContent(typDropdown.getValue());
         tagSelector.clear();
+        selectedTags.clear();
         typDropdown.setValue("Freitextaufgabe");
     }
 }
