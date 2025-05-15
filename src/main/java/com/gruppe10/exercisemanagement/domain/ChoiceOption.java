@@ -4,26 +4,59 @@ import com.gruppe10.base.domain.AbstractEntity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "choice_option")
 public class ChoiceOption extends AbstractEntity<Long> {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "choice_option_id")
     private Long id;
 
-    @Column(name = "option_text", nullable = false)
+    @Column(name = "text", nullable = false)
     private String text;
 
-    @Column(name = "is_correct", nullable = false)
+    @Column(name = "correct", nullable = false)
     private boolean isCorrect;
 
-    // Kein Bezug zurück zu SingleChoice oder MultipleChoice!
+    @ManyToOne
+    @JoinColumn(name = "exercise_id")
+    private Exercise exercise;
 
-    public Long getId() { return id; }
+    public ChoiceOption() {
+    }
 
-    public String getText() { return text; }
+    public ChoiceOption(String text, boolean isCorrect, Exercise exercise) {
+        this.text = text;
+        this.isCorrect = isCorrect;
+        this.exercise = exercise;
+    }
 
-    public void setText(String text) { this.text = text; }
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-    public boolean isCorrect() { return isCorrect; }
+    public String getText() {
+        return text;
+    }
 
-    public void setCorrect(boolean correct) { isCorrect = correct; }
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public boolean isCorrect() {
+        return isCorrect;
+    }
+
+    public void setCorrect(boolean correct) {
+        isCorrect = correct;
+    }
+
+    public Exercise getExercise() {
+        return exercise;
+    }
+
+    public void setExercise(Exercise exercise) {
+        this.exercise = exercise;
+    }
 }
