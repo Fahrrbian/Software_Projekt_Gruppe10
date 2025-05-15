@@ -13,10 +13,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.html.Span;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 
 @Route(value = "exercise/:exerciseId", layout = com.gruppe10.base.ui.view.MainLayout.class)
+@RolesAllowed("INSTRUCTOR")
 public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObserver {
 
     private final ExerciseService exerciseService;

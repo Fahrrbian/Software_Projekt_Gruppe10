@@ -1,5 +1,6 @@
 package com.gruppe10.exercisemanagement.ui.view;
 
+import com.gruppe10.base.ui.view.MainLayout;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.Tag;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
@@ -17,14 +18,16 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Route("exercises")
+@Route(value="exercises", layout = MainLayout.class)
 @PageTitle("Aufgaben verwalten")
+@RolesAllowed("INSTRUCTOR")
 public class ExerciseListView extends Main {
 
     private final ExerciseService exerciseService;
