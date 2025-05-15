@@ -6,6 +6,7 @@ import com.gruppe10.exercisemanagement.service.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
@@ -18,7 +19,9 @@ import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Route(value="create-exercise", layout = MainLayout.class)
 @RolesAllowed("INSTRUCTOR")
@@ -27,6 +30,7 @@ public class CreateExerciseView extends Div {
     private final FreetextExerciseService freetextExerciseService;
     private final SingleChoiceService singlechoiceService;
     private final MultipleChoiceService multipleChoiceService;
+    private final TagService tagService;
 
     private final TextArea exerciseTextField = new TextArea("Aufgabenstellung eingeben");
     private final TextField scoreField = new TextField("Mögliche Punkte");
@@ -34,15 +38,17 @@ public class CreateExerciseView extends Div {
     private final Div specificContent = new Div();
     private final Button examButton = new Button("Zu einer Prüfung hinzufügen...");
     private final Button saveButton = new Button("Speichern");
+    private final MultiSelectComboBox<Tag> tagSelector = new MultiSelectComboBox<>("Tags");
 
     private final VerticalLayout choiceOptionsLayout = new VerticalLayout();
     private final List<ChoiceOptionEditor> choiceOptionEditors = new ArrayList<>();
 
     @Autowired
-    public CreateExerciseView(FreetextExerciseService freetextExerciseService, SingleChoiceService singlechoiceService, MultipleChoiceService multipleChoiceService) {
+    public CreateExerciseView(FreetextExerciseService freetextExerciseService, SingleChoiceService singlechoiceService, MultipleChoiceService multipleChoiceService, TagService tagService) {
         this.freetextExerciseService = freetextExerciseService;
         this.singlechoiceService = singlechoiceService;
         this.multipleChoiceService = multipleChoiceService;
+        this.tagService = tagService;
 
         setSizeFull();
         addClassNames(
@@ -64,10 +70,16 @@ public class CreateExerciseView extends Div {
         scoreField.setPlaceholder("z.B. 10");
         scoreField.setWidth("200px");
 
+        tagSelector.setItemLabelGenerator(Tag::getName);
+        tagSelector.setWidthFull();
+        tagSelector.setClearButtonVisible(true);
+        tagSelector.setPlaceholder("Tags auswählen...");
+        tagSelector.setItems(tagService.getAll());
+
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(event -> save());
 
-        add(typDropdown, exerciseTextField, scoreField, specificContent, examButton, saveButton);
+        add(typDropdown, exerciseTextField, scoreField, tagSelector, specificContent, examButton, saveButton);
 
         updateSpecificContent(typDropdown.getValue());
     }
@@ -95,6 +107,7 @@ public class CreateExerciseView extends Div {
         String exerciseType = typDropdown.getValue();
         String exerciseText = exerciseTextField.getValue();
         String scoreStr = scoreField.getValue();
+        Set<Tag> selectedTags = new HashSet<>(tagSelector.getSelectedItems());
 
         if (exerciseText == null || exerciseText.isEmpty()) {
             Notification.show("Bitte eine Aufgabenstellung eingeben.");
@@ -109,6 +122,7 @@ public class CreateExerciseView extends Div {
                     FreetextExercise freetextExercise = new FreetextExercise();
                     freetextExercise.setExerciseText(exerciseText);
                     freetextExercise.setScore(score);
+                    freetextExercise.setTags(selectedTags);
                     freetextExerciseService.createFreetextExercise(freetextExercise);
                     Notification.show("Freitextaufgabe erfolgreich gespeichert!");
                     break;
@@ -124,6 +138,7 @@ public class CreateExerciseView extends Div {
                         ChoiceOption backendOption = new ChoiceOption(editor.getAnswerText(), editor.isCorrect(), singlechoice);
                         singlechoice.getChoiceOptions().add(backendOption);
                     });
+                    singlechoice.setTags(selectedTags);
                     singlechoiceService.create(singlechoice);
                     Notification.show("Single Choice Aufgabe erfolgreich gespeichert!");
                     break;
@@ -139,6 +154,7 @@ public class CreateExerciseView extends Div {
                         ChoiceOption backendOption = new ChoiceOption(editor.getAnswerText(), editor.isCorrect(), multipleChoice);
                         multipleChoice.getChoiceOptions().add(backendOption);
                     });
+                    multipleChoice.setTags(selectedTags);
                     multipleChoiceService.create(multipleChoice);
                     Notification.show("Multiple Choice Aufgabe erfolgreich gespeichert!");
                     break;
@@ -149,16 +165,11 @@ public class CreateExerciseView extends Div {
         }
     }
 
-//    private List<ChoiceOption> getChoiceOptions() {
-//        return choiceOptionEditors.stream()
-//                .map(editor -> new ChoiceOption(editor.getAnswerText(), editor.isCorrect()))
-//                .toList();
-//    }
-
     private void clearInputFields() {
         exerciseTextField.clear();
         scoreField.clear();
         updateSpecificContent(typDropdown.getValue());
+        tagSelector.clear();
         typDropdown.setValue("Freitextaufgabe");
     }
 }
