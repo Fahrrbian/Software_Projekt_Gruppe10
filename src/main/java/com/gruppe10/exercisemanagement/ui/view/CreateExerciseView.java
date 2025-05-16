@@ -31,6 +31,7 @@ public class CreateExerciseView extends Div {
     private final SingleChoiceService singlechoiceService;
     private final MultipleChoiceService multipleChoiceService;
     private final TagService tagService;
+    private final AssignmentExerciseService assignmentExerciseService;
 
     private final TextArea exerciseTextField = new TextArea("Aufgabenstellung eingeben");
     private final TextField scoreField = new TextField("Mögliche Punkte");
@@ -44,12 +45,16 @@ public class CreateExerciseView extends Div {
     private final VerticalLayout choiceOptionsLayout = new VerticalLayout();
     private final List<ChoiceOptionEditor> choiceOptionEditors = new ArrayList<>();
 
+    private final VerticalLayout assignmentPairsLayout = new VerticalLayout();
+    private final List<AssignmentPairEditor> assignmentPairEditors = new ArrayList<>();
+
     @Autowired
-    public CreateExerciseView(FreetextExerciseService freetextExerciseService, SingleChoiceService singlechoiceService, MultipleChoiceService multipleChoiceService, TagService tagService) {
+    public CreateExerciseView(FreetextExerciseService freetextExerciseService, SingleChoiceService singlechoiceService, MultipleChoiceService multipleChoiceService, TagService tagService, AssignmentExerciseService assignmentExerciseService) {
         this.freetextExerciseService = freetextExerciseService;
         this.singlechoiceService = singlechoiceService;
         this.multipleChoiceService = multipleChoiceService;
         this.tagService = tagService;
+        this.assignmentExerciseService = assignmentExerciseService;
 
         setSizeFull();
         addClassNames(
@@ -61,7 +66,7 @@ public class CreateExerciseView extends Div {
 
         add(new H2("Aufgabe erstellen"));
 
-        typDropdown.setItems("Freitextaufgabe", "Single Choice", "Multiple Choice");
+        typDropdown.setItems("Freitextaufgabe", "Single Choice", "Multiple Choice", "Zuordnungsaufgabe");
         typDropdown.addValueChangeListener(event -> updateSpecificContent(event.getValue()));
         typDropdown.setValue("Freitextaufgabe");
 
@@ -113,6 +118,12 @@ public class CreateExerciseView extends Div {
             Button addOptionButton = new Button("+ Antwortmöglichkeit hinzufügen", event -> addChoiceOptionEditor());
             specificContent.add(addOptionButton);
         }
+        else if ("Zuordnungsaufgabe".equals(exerciseType)) {
+            specificContent.add(assignmentPairsLayout);
+            addAssignmentPairEditor();
+            Button addPairButton = new Button("+ Zuordnungspaar hinzufügen", event -> addAssignmentPairEditor());
+            specificContent.add(addPairButton);
+        }
     }
 
     private void addChoiceOptionEditor() {
@@ -121,11 +132,16 @@ public class CreateExerciseView extends Div {
         choiceOptionsLayout.add(editor);
     }
 
+    private void addAssignmentPairEditor() {
+        AssignmentPairEditor editor = new AssignmentPairEditor();
+        assignmentPairEditors.add(editor);
+        assignmentPairsLayout.add(editor);
+    }
+
     private void save() {
         String exerciseType = typDropdown.getValue();
         String exerciseText = exerciseTextField.getValue();
         String scoreStr = scoreField.getValue();
-        //Set<Tag> selectedTags = new HashSet<>(tagSelector.getSelectedItems());
 
         if (exerciseText == null || exerciseText.isEmpty()) {
             Notification.show("Bitte eine Aufgabenstellung eingeben.");
@@ -175,6 +191,24 @@ public class CreateExerciseView extends Div {
                     multipleChoice.setTags(selectedTags);
                     multipleChoiceService.create(multipleChoice);
                     Notification.show("Multiple Choice Aufgabe erfolgreich gespeichert!");
+                    break;
+                case "Zuordnungsaufgabe":
+                    AssignmentExercise assignmentExercise = new AssignmentExercise();
+                    assignmentExercise.setExerciseText(exerciseText);
+                    assignmentExercise.setScore(score);
+                    assignmentExercise.setTags(selectedTags);
+                    for (AssignmentPairEditor editor : assignmentPairEditors) {
+                        String partOne = editor.getPartOne().trim();
+                        String partTwo = editor.getPartTwo().trim();
+                        if (!partOne.isEmpty() && !partTwo.isEmpty()) {
+                            AssignmentPair pair = new AssignmentPair();
+                            pair.setPartOne(partOne);
+                            pair.setPartTwo(partTwo);
+                            assignmentExercise.addAssignmentPair(pair);
+                        }
+                    }
+                    assignmentExerciseService.create(assignmentExercise);
+                    Notification.show("Zuordnungsaufgabe erfolgreich gespeichert!");
                     break;
             }
             clearInputFields();

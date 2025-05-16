@@ -67,7 +67,7 @@ public class ExerciseListView extends Main {
         tagFilterComboBox.setPlaceholder("Tags auswählen...");
         tagFilterComboBox.setWidth("300px");
 
-        typeFilterComboBox.setItems("Freitextaufgabe", "Single Choice", "Multiple Choice");
+        typeFilterComboBox.setItems("Freitextaufgabe", "Single Choice", "Multiple Choice", "Zuordnungsaufgabe");
         typeFilterComboBox.setPlaceholder("Typ auswählen...");
         typeFilterComboBox.setClearButtonVisible(true);
         typeFilterComboBox.setWidth("200px");
@@ -100,6 +100,8 @@ public class ExerciseListView extends Main {
             return "Single Choice";
         } else if (exercise.getClass().getSimpleName().equals("MultipleChoice")) {
             return "Multiple Choice";
+        } else if (exercise.getClass().getSimpleName().equals("AssignmentExercise")) {
+            return "Zuordnungsaufgabe";
         }
         return "Unbekannt";
     }

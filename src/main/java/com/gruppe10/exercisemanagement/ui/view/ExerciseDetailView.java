@@ -71,6 +71,15 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         } else if (exercise instanceof MultipleChoice multipleChoice) {
             add(new H3("Aufgabentyp: Multiple Choice"));
             showChoiceOptions(multipleChoice.getChoiceOptions().stream().toList());
+        }
+        else if (exercise instanceof AssignmentExercise assignment) {
+            add(new H3("Aufgabentyp: Zuordnungsaufgabe"));
+            VerticalLayout pairsLayout = new VerticalLayout();
+            assignment.getAssignmentPairs().forEach(pair -> {
+                Span pairSpan = new Span(pair.getPartOne() + " ➝ " + pair.getPartTwo());
+                pairsLayout.add(pairSpan);
+            });
+            add(pairsLayout);
         } else {
             add(new H3("Aufgabentyp: " + exercise.getClass().getSimpleName()));
         }

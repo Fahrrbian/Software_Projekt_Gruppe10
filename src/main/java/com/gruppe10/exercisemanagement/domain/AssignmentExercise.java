@@ -10,7 +10,7 @@ import java.util.*;
 @Entity
 @DiscriminatorValue("AssignentExercise")
 public class AssignmentExercise extends Exercise{
-    @OneToMany(mappedBy = "assignmentExercise", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "assignmentExercise", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<AssignmentPair> assignmentPairs = new HashSet<>();
 
     public Set<AssignmentPair> getAssignmentPairs() {
