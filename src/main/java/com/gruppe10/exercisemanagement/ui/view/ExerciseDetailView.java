@@ -1,20 +1,17 @@
 package com.gruppe10.exercisemanagement.ui.view;
 
-import com.gruppe10.exercisemanagement.domain.Exercise;
+import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.html.Span;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 import java.util.Optional;
 
 @Route(value = "exercise/:exerciseId", layout = com.gruppe10.base.ui.view.MainLayout.class)
@@ -22,14 +19,15 @@ import java.util.Optional;
 public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObserver {
 
     private final ExerciseService exerciseService;
+
     private final H2 title = new H2();
-    private final Paragraph description = new Paragraph();
-    private final Div detailsContainer = new Div(title, description);
 
     @Autowired
     public ExerciseDetailView(ExerciseService exerciseService) {
         this.exerciseService = exerciseService;
-        add(detailsContainer);
+        setPadding(true);
+        setSpacing(true);
+        setWidthFull();
     }
 
     @Override
@@ -42,26 +40,67 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         if (exercise.isPresent()) {
             displayExerciseDetails(exercise.get());
         } else {
-            // Fehlerbehandlung: Aufgabe nicht gefunden
-            title.setText("Aufgabe nicht gefunden");
-            description.setText("Die angeforderte Aufgabe konnte nicht gefunden werden.");
-            detailsContainer.add(title, description);
+            add(new H2("Aufgabe nicht gefunden"));
+            add(new Paragraph("Die angeforderte Aufgabe konnte nicht gefunden werden."));
         }
     }
 
     private void displayExerciseDetails(Exercise exercise) {
+        // Titel und Punkte
         title.setText("Aufgabe: " + exercise.getExerciseText());
-        description.setText("Punkte: " + exercise.getScore());
+        add(title);
 
-        Div tagsDiv = new Div();
-        tagsDiv.setText("Tags: ");
-        HorizontalLayout tagLayout = new HorizontalLayout();
-        tagLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
+        Paragraph score = new Paragraph("Punkte: " + exercise.getScore());
+        add(score);
+
+        // Tags
+        add(new H3("Tags"));
+        FlowLayout tagLayout = new FlowLayout();
         exercise.getTags().forEach(tag -> {
-            Span tagSpan = new Span(tag.getName());
-            tagLayout.add(tagSpan);
+            Span tagChip = new Span(tag.getName());
+            tagChip.getStyle()
+                    .set("background-color", "#e0e0e0")
+                    .set("padding", "4px 8px")
+                    .set("border-radius", "8px")
+                    .set("font-size", "small");
+            tagLayout.add(tagChip);
         });
-        tagsDiv.add(tagLayout);
-        detailsContainer.add(tagsDiv);
+        add(tagLayout);
+
+        // Aufgabentyp + Optionen anzeigen, wenn Choice-Aufgabe
+        if (exercise instanceof SingleChoice singleChoice) {
+            add(new H3("Aufgabentyp: Single Choice"));
+            showChoiceOptions(singleChoice.getChoiceOptions().stream().toList());
+        } else if (exercise instanceof MultipleChoice multipleChoice) {
+            add(new H3("Aufgabentyp: Multiple Choice"));
+            showChoiceOptions(multipleChoice.getChoiceOptions().stream().toList());
+        } else {
+            add(new H3("Aufgabentyp: " + exercise.getClass().getSimpleName()));
+        }
+    }
+
+    private void showChoiceOptions(List<ChoiceOption> options) {
+        VerticalLayout optionsLayout = new VerticalLayout();
+        optionsLayout.setPadding(false);
+        optionsLayout.setSpacing(false);
+
+        for (ChoiceOption option : options) {
+            Span optionSpan = new Span((option.isCorrect() ? "✔ " : "❌ ") + option.getText());
+            optionSpan.getStyle()
+                    .set("color", option.isCorrect() ? "green" : "gray")
+                    .set("font-size", "small");
+            optionsLayout.add(optionSpan);
+        }
+
+        add(optionsLayout);
+    }
+
+    // Hilfsklasse für umfließende Tag-Darstellung
+    private static class FlowLayout extends Div {
+        public FlowLayout() {
+            getStyle().set("display", "flex");
+            getStyle().set("flex-wrap", "wrap");
+            getStyle().set("gap", "0.5em");
+        }
     }
 }
