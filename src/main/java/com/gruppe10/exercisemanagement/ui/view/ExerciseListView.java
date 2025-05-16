@@ -61,7 +61,6 @@ public class ExerciseListView extends Main {
         filterBar.setPadding(false);
         filterBar.setSpacing(true);
 
-        //MultiSelectComboBox<Tag> tagFilterComboBox = new MultiSelectComboBox<>("Tags filtern");
         tagFilterComboBox.setItemLabelGenerator(Tag::getName);
         tagFilterComboBox.setItems(tagService.getAll());
         tagFilterComboBox.setClearButtonVisible(true);
@@ -116,11 +115,7 @@ public class ExerciseListView extends Main {
 
         var allExercises = exerciseService.getAll(pageable).getContent();
 
-//        var slice = (selectedTags == null || selectedTags.isEmpty())
-//                ? exerciseService.getAll(pageable)
-//                : exerciseService.getByTags(new ArrayList<>(selectedTags), pageable);
-//
-//        exerciseGrid.setItems(slice.getContent());
+
         var filtered = allExercises.stream()
                 .filter(e -> selectedTags == null || selectedTags.isEmpty() ||
                         e.getTags().stream().anyMatch(selectedTags::contains))

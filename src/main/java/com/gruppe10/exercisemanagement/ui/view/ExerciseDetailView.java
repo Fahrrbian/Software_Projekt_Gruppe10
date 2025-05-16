@@ -46,14 +46,12 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
     }
 
     private void displayExerciseDetails(Exercise exercise) {
-        // Titel und Punkte
         title.setText("Aufgabe: " + exercise.getExerciseText());
         add(title);
 
         Paragraph score = new Paragraph("Punkte: " + exercise.getScore());
         add(score);
 
-        // Tags
         add(new H3("Tags"));
         FlowLayout tagLayout = new FlowLayout();
         exercise.getTags().forEach(tag -> {
@@ -67,7 +65,6 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         });
         add(tagLayout);
 
-        // Aufgabentyp + Optionen anzeigen, wenn Choice-Aufgabe
         if (exercise instanceof SingleChoice singleChoice) {
             add(new H3("Aufgabentyp: Single Choice"));
             showChoiceOptions(singleChoice.getChoiceOptions().stream().toList());
@@ -95,7 +92,6 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         add(optionsLayout);
     }
 
-    // Hilfsklasse für umfließende Tag-Darstellung
     private static class FlowLayout extends Div {
         public FlowLayout() {
             getStyle().set("display", "flex");
