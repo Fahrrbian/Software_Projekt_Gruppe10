@@ -2,10 +2,12 @@ package com.gruppe10.exercisemanagement.service;
 
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.ExerciseRepository;
+import com.gruppe10.exercisemanagement.domain.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,5 +44,12 @@ public class ExerciseService {
 
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+
+    public Slice<Exercise> getByTags(List<Tag> tags, Pageable pageable) {
+        if (tags == null || tags.isEmpty()) {
+            return getAll(pageable); // Falls keine Tags gewählt -> alles
+        }
+        return repository.findDistinctByTagsIn(tags, pageable);
     }
 }

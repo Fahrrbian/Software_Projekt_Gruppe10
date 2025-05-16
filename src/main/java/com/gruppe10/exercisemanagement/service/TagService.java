@@ -24,8 +24,17 @@ public class TagService {
         return repository.findById(id);
     }
 
+    // vielleicht später löschen
     public Tag create(Tag tag) {
         return repository.save(tag);
+    }
+
+    public Tag findOrCreateByName(String name) {
+        return repository.findByName(name).orElseGet(() -> {
+            Tag newTag = new Tag();
+            newTag.setName(name);
+            return repository.save(newTag);
+        });
     }
 
     public Tag update(Long id, Tag updated) {
