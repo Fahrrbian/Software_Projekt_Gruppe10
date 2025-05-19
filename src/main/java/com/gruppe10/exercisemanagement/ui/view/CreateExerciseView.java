@@ -73,7 +73,7 @@ public class CreateExerciseView extends Div {
         exerciseTextField.setWidthFull();
         exerciseTextField.setPlaceholder("Aufgabenstellung eingeben");
 
-        scoreField.setPlaceholder("z.B. 10");
+        scoreField.setPlaceholder("Punkte");
         scoreField.setWidth("200px");
 
         tagSelector.setItems(tagService.getAll());
@@ -127,13 +127,27 @@ public class CreateExerciseView extends Div {
     }
 
     private void addChoiceOptionEditor() {
+//        ChoiceOptionEditor editor = new ChoiceOptionEditor();
+//        choiceOptionEditors.add(editor);
+//        choiceOptionsLayout.add(editor);
         ChoiceOptionEditor editor = new ChoiceOptionEditor();
+        editor.setOnDelete(() -> {
+            choiceOptionsLayout.remove(editor);
+            choiceOptionEditors.remove(editor);
+        });
         choiceOptionEditors.add(editor);
         choiceOptionsLayout.add(editor);
     }
 
     private void addAssignmentPairEditor() {
+//        AssignmentPairEditor editor = new AssignmentPairEditor();
+//        assignmentPairEditors.add(editor);
+//        assignmentPairsLayout.add(editor);
         AssignmentPairEditor editor = new AssignmentPairEditor();
+        editor.setOnDelete(() -> {
+            assignmentPairsLayout.remove(editor);
+            assignmentPairEditors.remove(editor);
+        });
         assignmentPairEditors.add(editor);
         assignmentPairsLayout.add(editor);
     }
@@ -150,6 +164,10 @@ public class CreateExerciseView extends Div {
 
         try {
             int score = Integer.parseInt(scoreStr);
+            if (score < 0) {
+                Notification.show("Punktzahl darf nicht negativ sein.");
+                return;
+            }
 
             switch (exerciseType) {
                 case "Freitextaufgabe":
@@ -165,6 +183,11 @@ public class CreateExerciseView extends Div {
                         Notification.show("Bitte genau eine richtige Antwortmöglichkeit für Single Choice auswählen.");
                         return;
                     }
+                    if (choiceOptionEditors.stream().anyMatch(e -> e.getAnswerText().trim().isEmpty())) {
+                        Notification.show("Bitte Text für alle Antwortmöglichkeiten eingeben.");
+                        return;
+                    }
+
                     SingleChoice singlechoice = new SingleChoice();
                     singlechoice.setExerciseText(exerciseText);
                     singlechoice.setScore(score);
@@ -181,6 +204,11 @@ public class CreateExerciseView extends Div {
                         Notification.show("Bitte mindestens eine richtige Antwortmöglichkeit für Multiple Choice auswählen.");
                         return;
                     }
+                    if (choiceOptionEditors.stream().anyMatch(e -> e.getAnswerText().trim().isEmpty())) {
+                        Notification.show("Bitte Text für alle Antwortmöglichkeiten eingeben.");
+                        return;
+                    }
+
                     MultipleChoice multipleChoice = new MultipleChoice();
                     multipleChoice.setExerciseText(exerciseText);
                     multipleChoice.setScore(score);
@@ -200,12 +228,15 @@ public class CreateExerciseView extends Div {
                     for (AssignmentPairEditor editor : assignmentPairEditors) {
                         String partOne = editor.getPartOne().trim();
                         String partTwo = editor.getPartTwo().trim();
-                        if (!partOne.isEmpty() && !partTwo.isEmpty()) {
-                            AssignmentPair pair = new AssignmentPair();
-                            pair.setPartOne(partOne);
-                            pair.setPartTwo(partTwo);
-                            assignmentExercise.addAssignmentPair(pair);
+                        if (partOne.isEmpty() || partTwo.isEmpty()) {
+                            Notification.show("Bitte alle Felder bei den Zuordnungspaaren ausfüllen.");
+                            return;
                         }
+
+                        AssignmentPair pair = new AssignmentPair();
+                        pair.setPartOne(partOne);
+                        pair.setPartTwo(partTwo);
+                        assignmentExercise.addAssignmentPair(pair);
                     }
                     assignmentExerciseService.create(assignmentExercise);
                     Notification.show("Zuordnungsaufgabe erfolgreich gespeichert!");
