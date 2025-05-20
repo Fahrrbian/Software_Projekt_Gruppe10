@@ -5,11 +5,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @DiscriminatorValue("STUDENT")
-public class Student extends User {
+public class Student extends User implements UserDetails {
 
+    public Student() {
+        super();
+    }
 
     @Column(name = "student_number", nullable = false, unique = true)
     //@Size(max = MAX_LENGTH)
@@ -24,4 +28,8 @@ public class Student extends User {
         this.studentNumber = studentNumber;
     }
 
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
 }

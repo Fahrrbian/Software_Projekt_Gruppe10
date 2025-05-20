@@ -5,6 +5,7 @@ import com.gruppe10.usermanagement.service.UserService;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,6 +52,9 @@ public class SignUpView extends VerticalLayout {
     private final UserService userService;
 
     private final EmailField    emailField    = new EmailField("E-Mail");
+    private final TextField     forenameField  = new TextField("Vorname");
+    private final TextField     surnameField   = new TextField("Nachname");
+    private final ComboBox<Role> roleCombo     = new ComboBox<>("Rolle");
     private final PasswordField passwordField = new PasswordField("Passwort");
     private final PasswordField confirmField  = new PasswordField("Passwort bestätigen");
     private final Checkbox     termsCheckbox = new Checkbox("AGB akzeptieren");
@@ -68,6 +72,12 @@ public class SignUpView extends VerticalLayout {
         setJustifyContentMode(JustifyContentMode.CENTER);
         setAlignItems(Alignment.CENTER);
 
+        roleCombo.setItems(Role.values());
+        roleCombo.setItemLabelGenerator(r ->
+                r.name().substring(0,1) + r.name().substring(1).toLowerCase()
+        );
+
+
         // Card
         Div card = new Div();
         card.addClassName("signup-card");
@@ -84,8 +94,11 @@ public class SignUpView extends VerticalLayout {
                 new FormLayout.ResponsiveStep("600px", 1)
         );
         form.addFormItem(emailField,    "E-Mail");
+        form.addFormItem(forenameField,"Vorname");
+        form.addFormItem(surnameField, "Nachname");
         form.addFormItem(passwordField, "Passwort");
         form.addFormItem(confirmField,  "Passwort bestätigen");
+        form.addFormItem(roleCombo,     "Rolle");
         form.add(termsCheckbox);
         form.addFormItem(pwStrength,    "Passwort-Stärke");
         pwStrength.setWidthFull();
@@ -108,6 +121,18 @@ public class SignUpView extends VerticalLayout {
                 .withValidator(new EmailValidator("Ungültige E-Mail"))
                 .bind(RegistrationModel::getEmail, RegistrationModel::setEmail);
 
+        binder.forField(forenameField)
+                .asRequired("Vorname darf nicht leer sein")
+                .bind(RegistrationModel::getForename, RegistrationModel::setForename);
+        binder.forField(surnameField)
+                .asRequired("Nachname darf nicht leer sein")
+                .bind(RegistrationModel::getSurname, RegistrationModel::setSurname);
+
+        binder.forField(emailField)
+                .asRequired("E-Mail nötig")
+                .withValidator(new EmailValidator("Ungültige E-Mail"))
+                .bind(RegistrationModel::getEmail, RegistrationModel::setEmail);
+
         binder.forField(passwordField)
                 .asRequired("Passwort nötig")
                 .bind(RegistrationModel::getPassword, RegistrationModel::setPassword);
@@ -117,6 +142,11 @@ public class SignUpView extends VerticalLayout {
                 .withValidator(pw -> pw.equals(passwordField.getValue()),
                         "Passwörter stimmen nicht überein")
                 .bind(RegistrationModel::getConfirm, RegistrationModel::setConfirm);
+        binder.forField(roleCombo)
+                .asRequired("Rolle wählen")
+                .bind(RegistrationModel::getRole, RegistrationModel::setRole);
+
+
 
         binder.forField(termsCheckbox)
                 .asRequired("AGB muss akzeptiert werden")
@@ -148,14 +178,21 @@ public class SignUpView extends VerticalLayout {
         RegistrationModel data = new RegistrationModel();
         try {
             binder.writeBean(data);
-            // echten Service-Call
-            userService.registerUser(
-                    data.getEmail(),
-                    data.getPassword(),
-                    null,           // kein Vorname-Feld im Binding
-                    null,           // kein Nachname
-                    Role.STUDENT    // z.B. fest vorgeben
-            );
+            if (data.getRole() == Role.STUDENT) {
+                userService.registerStudent(
+                        data.getEmail(),
+                        data.getPassword(),
+                        data.getForename(),
+                        data.getSurname()
+                );
+            } else {
+                userService.registerInstructor(
+                        data.getEmail(),
+                        data.getPassword(),
+                        data.getForename(),
+                        data.getSurname()
+                );
+            }
             Notification.show("Erfolgreich registriert!").addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate("login");
         } catch (ValidationException ex) {
@@ -168,18 +205,26 @@ public class SignUpView extends VerticalLayout {
     }
 
     public static class RegistrationModel {
-        private String email, password, confirm;
+        private String email, password, confirm, forename, surname;
         private boolean terms;
+        private Role role;
+
         // Getter/Setter …
         public String getEmail() { return email; }
         public void setEmail(String e) { email = e; }
+        public String getForename()       { return forename; }
+        public void setForename(String f) { forename = f; }
+        public String getSurname()       { return surname; }
+        public void setSurname(String s) { surname = s; }
         public String getPassword() { return password; }
         public void setPassword(String p) { password = p; }
         public String getConfirm() { return confirm; }
         public void setConfirm(String c) { confirm = c; }
         public boolean isTerms() { return terms; }
         public void setTerms(boolean t) { terms = t; }
-    }
+        public Role getRole() { return role; }
+        public void setRole(Role role) { this.role = role; }
+           }
 
     private double calculateStrength(String pw) {
         if (pw == null) return 0;

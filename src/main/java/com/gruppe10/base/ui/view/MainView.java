@@ -33,12 +33,10 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         authenticatedUser.get().ifPresent(user -> {
             String role = user.getRole();
-            if ("ADMIN".equalsIgnoreCase(role)) {
-                event.forwardTo("admin");
-            } else if ("INSTRUCTOR".equalsIgnoreCase(role)) {
-                event.forwardTo("instructor");
+           if ("INSTRUCTOR".equalsIgnoreCase(role)) {
+                event.forwardTo("auswertung");
             } else {
-                event.forwardTo("student");
+                event.forwardTo("pruefungsergebnisse");
             }
         });
     }

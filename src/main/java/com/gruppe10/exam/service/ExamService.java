@@ -6,9 +6,13 @@ package com.gruppe10.exam.service;
  **/
 
 
+
 import com.gruppe10.exam.domain.Exam;
 import com.gruppe10.exam.domain.ExamRepository;
 import com.gruppe10.exam.ui.ExamListener;
+import com.gruppe10.submission.domain.Submission;
+import com.gruppe10.submission.service.SubmissionService;
+import com.gruppe10.usermanagement.domain.User;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener;
@@ -17,8 +21,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -28,8 +32,10 @@ public class ExamService {
     private final Clock clock;
     private final RepositoryMethodInvocationListener repositoryMethodInvocationListener;
     private List<ExamListener> listener;
+    private SubmissionService submissionService;
 
-    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener) {
+    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener, SubmissionService submissionService) {
+        this.submissionService = submissionService;
         this.examRepository = examRepository;
         this.clock = clock;
         this.repositoryMethodInvocationListener = repositoryMethodInvocationListener;
@@ -107,6 +113,10 @@ public class ExamService {
         }catch (Exception e) {
             return null;
         }
+    }
 
+
+    public List<Exam> getExamsByCurrentInstructor(User instructor) {
+        return examRepository.findByCreator(instructor);
     }
 }
