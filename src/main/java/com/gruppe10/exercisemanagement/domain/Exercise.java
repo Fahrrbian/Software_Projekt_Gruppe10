@@ -28,7 +28,7 @@ public abstract class Exercise extends AbstractEntity<Long> {
     @Size(max = TEXT_MAX_LENGTH)
     private String exerciseText;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "exercise_tag",
             joinColumns = @JoinColumn(name = "exercise_id"),
