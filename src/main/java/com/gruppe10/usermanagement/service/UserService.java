@@ -1,9 +1,19 @@
-//ChristianMarkow
+/**
+ * Author: Christian Markow
+ * Date: 29/04/2025
+ */
+
 package com.gruppe10.usermanagement.service;
 
 import com.gruppe10.usermanagement.domain.*;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +25,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -23,18 +32,20 @@ public class UserService implements UserDetailsService {
     /**
      * Autowired UserRepository instance.
      */
-    @Autowired
+
     private UserRepository userRepository;
 
     @Autowired
     private StudentRepository studentRepository;
-
-
     @Autowired @Lazy
     private PasswordEncoder passwordEncoder;
     @Autowired
     private InstructorRepository instructorRepository;
 
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
     /**
      * Loads a user by username, used by Spring Security for authentication.
      *
@@ -45,7 +56,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             var userObj = user.get();
             System.out.println(userObj);
             return org.springframework.security.core.userdetails.User.builder()
@@ -128,6 +139,30 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public void changePassword(User user, String oldPassword, String newPassword, String confirmPassword) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Altes Passwort ist falsch.");
+        }
+
+        if (newPassword == null || newPassword.trim().isEmpty() || newPassword.length() < 5) {
+            throw new IllegalArgumentException("Das neue Passwort muss mindestens 5 Zeichen lang sein.");
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Neues Passwort stimmt nicht überein.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+}
+
     /**
      * Logs out the current user and redirects to the login page.
 
@@ -136,4 +171,3 @@ public class UserService implements UserDetailsService {
         var logoutHandler = new SecurityContextLogoutHandler();
         logoutHandler.logout(VaadinServletRequest.getCurrent(), null, null);
     }*/
-}
