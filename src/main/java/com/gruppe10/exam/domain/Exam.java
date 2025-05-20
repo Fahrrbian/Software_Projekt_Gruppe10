@@ -7,6 +7,7 @@ package com.gruppe10.exam.domain;
 
 
 import com.gruppe10.base.domain.AbstractEntity;
+import com.gruppe10.examAppointment.domain.ExamAppointment;
 import com.gruppe10.usermanagement.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -66,11 +67,14 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     @OrderBy("position ASC")
     private List<ExamExercise> examExercises = new ArrayList<>();
 
+    //Beziehung zu den Terminen
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
+    private List<ExamAppointment> examAppointments = new ArrayList<>();
 
 
-//Getter & Setter folgen
-@Override
-public @Nullable Long getId() {
+    //Getter & Setter folgen
+    @Override
+    public @Nullable Long getId() {
         return id;
     }
 
@@ -134,6 +138,29 @@ public @Nullable Long getId() {
     public void setBestehensgrenze(double bestehensgrenze) {
         this.bestehensgrenze = bestehensgrenze;
     }
+
+
+    // Getter und Setter für die Liste mit Terminen
+    public List<ExamAppointment> getExamAppointments() {
+        return examAppointments;
+    }
+
+    public void setExamAppointments(List<ExamAppointment> examAppointments) {
+        this.examAppointments = examAppointments;
+    }
+
+    // Methode zum Hinzufügen eines Termins
+    public void addExamAppointment(ExamAppointment appointment) {
+        examAppointments.add(appointment);
+        appointment.setExam(this);
+    }
+
+    // Methode zum Entfernen eines Termins
+    public void removeExamAppointment(ExamAppointment appointment) {
+        examAppointments.remove(appointment);
+        appointment.setExam(null);
+    }
+
 
 }
 
