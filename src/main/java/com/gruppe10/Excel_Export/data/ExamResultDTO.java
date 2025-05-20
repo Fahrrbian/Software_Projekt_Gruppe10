@@ -11,7 +11,7 @@ import java.util.Map;
  * Description:
  * TODO: Beschreibung einfügen.
  */
-
+/*
 public class ExamResultDTO {
     private String teilnehmer;
     private String email;
@@ -19,7 +19,7 @@ public class ExamResultDTO {
     private double gesamtpunkte;
     private boolean bestanden;
 
-    public ExamResultDTO(String maxMustermann, String mail, Map<String, Double> aufgaben1, double v, boolean b) {
+    public ExamResultDTO(String teilnehmer, String email, Map<String, Double> aufgabenErgebnisse, double gesamtpunkte, boolean bestanden) {
         this.teilnehmer = teilnehmer;
         this.email = email;
         this.aufgabenErgebnisse = aufgabenErgebnisse;
@@ -60,8 +60,9 @@ public class ExamResultDTO {
     }
     public Map<String, Double> getAufgabenErgebnisse() {
         if (aufgabenErgebnisse == null) {
-            return new HashMap<>(); // leeres Map statt null!
+            return new HashMap<>(); // leere Map statt null als Fallback
         }
         return aufgabenErgebnisse;
     }
 }
+*/

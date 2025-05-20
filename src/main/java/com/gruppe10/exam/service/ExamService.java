@@ -6,10 +6,13 @@ package com.gruppe10.exam.service;
  **/
 
 
-import com.gruppe10.Excel_Export.data.ExamResultDTO;
+
 import com.gruppe10.exam.domain.Exam;
 import com.gruppe10.exam.domain.ExamRepository;
 import com.gruppe10.exam.ui.ExamListener;
+import com.gruppe10.submission.domain.Submission;
+import com.gruppe10.submission.service.SubmissionService;
+import com.gruppe10.usermanagement.domain.User;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener;
@@ -18,10 +21,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -31,8 +32,10 @@ public class ExamService {
     private final Clock clock;
     private final RepositoryMethodInvocationListener repositoryMethodInvocationListener;
     private List<ExamListener> listener;
+    private SubmissionService submissionService;
 
-    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener) {
+    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener, SubmissionService submissionService) {
+        this.submissionService = submissionService;
         this.examRepository = examRepository;
         this.clock = clock;
         this.repositoryMethodInvocationListener = repositoryMethodInvocationListener;
@@ -111,20 +114,9 @@ public class ExamService {
             return null;
         }
     }
-    public List<ExamResultDTO> getExamResults() {
-        Map<String, Double> aufgaben1 = new HashMap<>();
-        aufgaben1.put("SC1", 2.0);
-        aufgaben1.put("MC1", 3.0);
-        aufgaben1.put("Text1", 4.5);
 
-        Map<String, Double> aufgaben2 = new HashMap<>();
-        aufgaben2.put("SC1", 1.0);
-        aufgaben2.put("MC1", 2.0);
-        aufgaben2.put("Text1", 2.0);
 
-        return List.of(
-                new ExamResultDTO("Max Mustermann", "max@example.com", aufgaben1, 9.5, true),
-                new ExamResultDTO("Erika Musterfrau", "erika@example.com", aufgaben2, 5.0, false)
-        );
+    public List<Exam> getExamsByCurrentInstructor(User instructor) {
+        return examRepository.findByCreator(instructor);
     }
 }
