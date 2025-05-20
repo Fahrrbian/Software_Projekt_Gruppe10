@@ -39,6 +39,7 @@ public class MainLayout extends AppLayout {
 
     private final AuthenticatedUser authenticatedUser;
 
+    protected HorizontalLayout header;
 
     public MainLayout(UserService userService, AuthenticatedUser authenticatedUser) {
         this.userService = userService;
@@ -83,13 +84,13 @@ public class MainLayout extends AppLayout {
         Header header = new Header(user);
         addToDrawer(header, new Scroller(drawerContent));
     }
-    private void createHeader() {
+    protected void createHeader() {
         H1 logo = new H1("Online-Testat");
         logo.addClassNames(
                 LumoUtility.FontSize.LARGE,
                 LumoUtility.Margin.MEDIUM);
 
-        var header = new HorizontalLayout(new DrawerToggle(), logo);
+        header = new HorizontalLayout(new DrawerToggle(), logo);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         header.expand(logo); // Expands the logo to fill the space
         header.setWidthFull();

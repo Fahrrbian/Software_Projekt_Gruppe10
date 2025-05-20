@@ -1,6 +1,7 @@
 package com.gruppe10.exercisemanagement.ui.view;
 
-import com.gruppe10.base.ui.view.MainLayout;
+import com.gruppe10.base.ui.Layout.TimedMainLayout;
+
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.Tag;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
@@ -24,7 +25,7 @@ import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Route(value="exercises", layout = MainLayout.class)
+@Route(value="exercises", layout = TimedMainLayout.class)
 @PageTitle("Aufgaben verwalten")
 @RolesAllowed("INSTRUCTOR")
 public class ExerciseListView extends Main {

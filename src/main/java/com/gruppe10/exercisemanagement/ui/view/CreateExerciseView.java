@@ -1,6 +1,6 @@
 package com.gruppe10.exercisemanagement.ui.view;
 
-import com.gruppe10.base.ui.view.MainLayout;
+import com.gruppe10.base.ui.Layout.TimedMainLayout;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.*;
 import com.vaadin.flow.component.button.Button;
@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Route(value="create-exercise", layout = MainLayout.class)
+@Route(value="create-exercise", layout = TimedMainLayout.class)
 @RolesAllowed("INSTRUCTOR")
 public class CreateExerciseView extends Div {
 
