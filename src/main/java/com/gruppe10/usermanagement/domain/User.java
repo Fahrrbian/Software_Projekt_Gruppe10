@@ -99,6 +99,10 @@ public abstract class User extends AbstractEntity<Long> implements UserDetails {
         return String.valueOf(role);
     }
 
+    public String getRoleAsString() {
+        return role.name(); // oder role.toString()
+    }
+
     public void setRole(Role role) {
         this.role = role;
     }

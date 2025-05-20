@@ -1,4 +1,8 @@
-//ChristianMarkow
+/**
+ * Author: Christian Markow
+ * Date: 29/04/2025
+ */
+
 package com.gruppe10.usermanagement.ui.view;
 
 import com.gruppe10.base.ui.Layout.MainLayout;

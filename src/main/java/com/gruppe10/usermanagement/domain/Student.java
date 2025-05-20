@@ -2,9 +2,7 @@
 package com.gruppe10.usermanagement.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -18,6 +16,8 @@ public class Student extends User implements UserDetails {
     @Column(name = "student_number", nullable = false, unique = true)
     //@Size(max = MAX_LENGTH)
     @NotNull
+    @Min(1)
+    @Max(999999999)
     private int studentNumber;
 
     public int getStudentNumber() {
