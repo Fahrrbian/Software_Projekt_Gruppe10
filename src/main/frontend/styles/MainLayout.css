@@ -53,7 +53,7 @@
 }
 #idle-indicator:hover {
     background-color: var(--lumo-primary-color-20pct);
-}
+
 /* 4) Drawer (Seitenleiste) */
 .vaadin-app-layout vaadin-drawer {
     background-color: var(--lumo-base-color);
