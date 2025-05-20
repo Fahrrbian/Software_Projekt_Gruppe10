@@ -6,6 +6,8 @@
 package com.gruppe10.usermanagement.ui.view;
 
 import com.gruppe10.base.ui.component.ViewToolbar;
+import com.gruppe10.exam.domain.Exam;
+import com.gruppe10.exam.domain.ExamRepository;
 import com.gruppe10.usermanagement.domain.Role;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
@@ -13,6 +15,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -20,11 +23,13 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Route("user-info")
@@ -34,13 +39,18 @@ public class UserInfoView extends VerticalLayout {
 
     private final UserService userService;
 
-    UserInfoView(UserService userService) {
+    @Autowired
+    private ExamRepository examRepository;
+
+    UserInfoView(UserService userService, ExamRepository examRepository) {
         this.userService = userService;
+        this.examRepository = examRepository;
         setPadding(true);
         setSpacing(true);
         setWidthFull();
         add(new ViewToolbar("Benutzerprofil"));
 
+        //Hier evtl. anpassen an AuthenticatedUser
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UserDetails userDetails) {
             Optional<User> optionalUser = userService.findByEmail(userDetails.getUsername());
@@ -73,11 +83,19 @@ public class UserInfoView extends VerticalLayout {
                 //WeiterleitungZuPrüfungsVerwaltungsView
             }));
         } else if ("STUDENT".equals(user.getRoleAsString())) {
-            add(new H3("Schüler-Details"));
-            //Test
-            add(new Paragraph("Aktueller Kurs: Systementwicklung"));
-            //Test
-            add(new Paragraph("Nächste Prüfung: " + LocalDate.now().plusWeeks(2)));
+            add(new H3("Prüfungshistorie"));
+
+            Grid<Exam> examGrid = new Grid<>(Exam.class, false);
+            examGrid.addColumn(exam -> exam.getTitle()).setHeader("Modul");
+            examGrid.addColumn(exam -> exam.getCreationDate()).setHeader("Prüfungstermin");
+            examGrid.addColumn(exam -> exam.getGesamtpunkte()).setHeader("Note"); //Hier benötigen wir eine Punktzahl, aus der sich die Note errechnen lässt. Berechnung in einer separaten Methode.
+
+            List<Exam> examHistory = examRepository.findByCreator(user); //Hier benötigen wir die Prüfungen eines Studenten (vllt. mit Prüfungstermin-Entität)
+            examGrid.setItems(examHistory);
+
+            examGrid.setWidth("90%");
+            examGrid.setAllRowsVisible(true);
+            add(examGrid);
         }
     }
 
