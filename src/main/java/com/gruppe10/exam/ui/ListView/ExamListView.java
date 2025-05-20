@@ -6,7 +6,7 @@ package com.gruppe10.exam.ui.ListView;
  **/
 
 import com.gruppe10.base.ui.component.ViewToolbar;
-import com.gruppe10.base.ui.view.MainLayout;
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.exam.domain.Exam;
 import com.gruppe10.exam.service.ExamService;
 import com.gruppe10.exam.ui.ExamListener;
