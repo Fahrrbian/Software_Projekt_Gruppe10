@@ -21,6 +21,8 @@ public class ExamExercise {
     @Column(name = "position")
     private int position;
 
+
+
     // Konstruktoren
     public ExamExercise() {}
 
@@ -32,5 +34,5 @@ public class ExamExercise {
     }
 
     // Getter und Setter
-    // ... 
+    // ...
 }
