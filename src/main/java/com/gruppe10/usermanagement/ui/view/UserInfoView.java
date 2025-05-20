@@ -9,6 +9,7 @@ import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.usermanagement.domain.Role;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -18,7 +19,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.springframework.security.access.annotation.Secured;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +29,7 @@ import java.util.Optional;
 
 @Route("user-info")
 @PageTitle("User Info")
-@Secured({"ROLE_INSTRUCTOR", "ROLE_STUDENT"})
+@RolesAllowed({"INSTRUCTOR", "STUDENT"})
 public class UserInfoView extends VerticalLayout {
 
     private final UserService userService;
@@ -66,7 +67,7 @@ public class UserInfoView extends VerticalLayout {
         if ("INSTRUCTOR".equals(user.getRoleAsString())) {
             add(new H3("Verwaltung"));
             add(new Button("Aufgaben", e -> {
-                        //WeiterleitungZuAufgabenVerwaltungsView
+                UI.getCurrent().navigate("exercises");
             }));
             add(new Button("Prüfungen", e -> {
                 //WeiterleitungZuPrüfungsVerwaltungsView

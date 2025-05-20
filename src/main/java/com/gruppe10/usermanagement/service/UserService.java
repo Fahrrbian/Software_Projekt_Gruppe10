@@ -6,13 +6,8 @@
 package com.gruppe10.usermanagement.service;
 
 import com.gruppe10.usermanagement.domain.*;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.server.VaadinServletRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +17,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -32,20 +24,15 @@ public class UserService implements UserDetailsService {
     /**
      * Autowired UserRepository instance.
      */
-
+    @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private StudentRepository studentRepository;
-    @Autowired @Lazy
-    private PasswordEncoder passwordEncoder;
     @Autowired
     private InstructorRepository instructorRepository;
+    @Autowired @Lazy
+    private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
     /**
      * Loads a user by username, used by Spring Security for authentication.
      *
@@ -53,6 +40,7 @@ public class UserService implements UserDetailsService {
      * @return a UserDetails object representing the user.
      * @throws UsernameNotFoundException if the user is not found.
      */
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(email);
@@ -77,6 +65,7 @@ public class UserService implements UserDetailsService {
     public void save(User user) {
         userRepository.save(user);
     }
+
     /*
     public User registerUser(String email,
                              String rawPassword,
@@ -130,6 +119,7 @@ public class UserService implements UserDetailsService {
         i.setRole(Role.INSTRUCTOR);
         return instructorRepository.save(i);
     }
+
     /**
      * Retrieves all User entities from the database.
      *
@@ -138,7 +128,6 @@ public class UserService implements UserDetailsService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
-
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);

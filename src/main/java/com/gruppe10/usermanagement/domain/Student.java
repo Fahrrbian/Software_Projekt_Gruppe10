@@ -3,6 +3,7 @@ package com.gruppe10.usermanagement.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @DiscriminatorValue("STUDENT")
