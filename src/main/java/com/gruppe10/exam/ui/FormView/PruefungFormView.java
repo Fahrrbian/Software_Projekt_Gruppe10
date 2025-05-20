@@ -9,6 +9,7 @@ package com.gruppe10.exam.ui.FormView;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.exam.domain.Exam;
 import com.gruppe10.exam.service.ExamService;
+import com.gruppe10.examAppointment.ui.ExamAppointmentView;
 import com.gruppe10.taskmanagement.service.TaskService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -74,12 +75,18 @@ public class PruefungFormView extends Main implements HasUrlParameter<Long> {
         saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveBtn.setIcon(new Icon(VaadinIcon.CHECK));
 
+        Button terminButton = new Button("Zu den Prüfungsterminen");
+        terminButton.addClickListener(e -> {
+            terminButton.getUI().ifPresent(ui ->
+                    ui.navigate("exam-appointments/" + IExamInterface.getId())
+            );
+        });
 
         form = new PruefungForm(examService, IExamInterface);
 
         removeAll(); // Entfernt alle vorherigen Komponenten
         add(new ViewToolbar("Prüfung bearbeiten",
-                ViewToolbar.group(backBtn, title, createBtn, saveBtn)));
+                ViewToolbar.group(backBtn, title, createBtn, saveBtn, terminButton)));
         add(form);
         add(taskGrid);
 
