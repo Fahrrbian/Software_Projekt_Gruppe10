@@ -40,6 +40,7 @@ public class TaskService {
         return taskRepository.findAllBy(pageable).toList();
     }
 
+
     public List<Task> getTasksForPruefung(Long pruefungId){
        return taskRepository.findAll();
     }
