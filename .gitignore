@@ -8,6 +8,9 @@
 *.iml
 .DS_Store
 
+#Konfig nicht versioniert
+.application.properties
+
 # The following files are generated/updated by vaadin-maven-plugin
 node_modules/
 src/main/frontend/generated/
