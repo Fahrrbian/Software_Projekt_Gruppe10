@@ -80,7 +80,7 @@ public class UserInfoView extends VerticalLayout {
                 UI.getCurrent().navigate("exercises");
             }));
             add(new Button("Prüfungen", e -> {
-                //WeiterleitungZuPrüfungsVerwaltungsView
+                UI.getCurrent().navigate("pruefung-list");
             }));
         } else if ("STUDENT".equals(user.getRoleAsString())) {
             add(new H3("Prüfungshistorie"));
