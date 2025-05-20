@@ -111,6 +111,8 @@ public class CreateExerciseView extends Div {
         specificContent.removeAll();
         choiceOptionsLayout.removeAll();
         choiceOptionEditors.clear();
+        assignmentPairsLayout.removeAll();
+        assignmentPairEditors.clear();
 
         if ("Single Choice".equals(exerciseType) || "Multiple Choice".equals(exerciseType)) {
             specificContent.add(choiceOptionsLayout);

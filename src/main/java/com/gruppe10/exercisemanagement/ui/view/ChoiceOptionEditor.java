@@ -34,8 +34,9 @@ class ChoiceOptionEditor extends Div {
         answerTextField.getStyle().set("min-width", "300px");
 
         correctCheckbox.getStyle().set("margin-bottom", "8px");
-        deleteButton.getStyle().set("margin-bottom", "8px");
+        correctCheckbox.getStyle().set("min-width", "200px");
 
+        deleteButton.getStyle().set("margin-bottom", "8px");
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
         deleteButton.setTooltipText("Diese Antwortmöglichkeit löschen");
 
