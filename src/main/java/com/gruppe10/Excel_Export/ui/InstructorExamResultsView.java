@@ -1,9 +1,11 @@
 package com.gruppe10.Excel_Export.ui;
 
+import com.gruppe10.base.ui.security.SecurityUtils;
 import com.gruppe10.exam.service.ExamService;
 import com.gruppe10.exam.domain.Exam;
 import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.submission.service.SubmissionService;
+import com.gruppe10.usermanagement.domain.User;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -48,13 +50,25 @@ public class InstructorExamResultsView extends VerticalLayout{
 
         add(new H2("Auswertung: Alle Prüfungsergebnisse"));
 
+        User currentUser = (User) SecurityUtils.getCurrentUser().orElse(null);
+
+
         examSelector = new ComboBox<>("Wähle eine Prüfung");
-        examSelector.setItemLabelGenerator(Exam::getTitle);
-        examSelector.setItems(examService.getExamsByCurrentInstructor());
+        //examSelector.setItemLabelGenerator(Exam::getTitle);
+//        examSelector.setItems(examService.getExamsByCurrentInstructor(creatorId));
+        System.out.println("-----------------CurrentUser: " + currentUser);
+
+        if (currentUser != null) { //So ist besser, es wird noch geprüft ob der User einE ID HAT
+            //User creatorId = currentUser.getId(); Obsolet, weil creatorId keine long id mehr hat
+            List<Exam> exams = examService.getExamsByCurrentInstructor(currentUser);
+            examSelector.setItems(exams);
+            examSelector.setItemLabelGenerator(Exam::getTitle);
+            System.out.println(currentUser.getId() + "-------------TEST-------------");
+        }
         add(examSelector);
 
         resultGrid = new Grid<>(Submission.class, false);
-        resultGrid.addColumn(sub -> sub.getStudent().getFirstname() + " " + sub.getStudent().getLastname())
+        resultGrid.addColumn(sub -> sub.getStudent().getForename() + " " + sub.getStudent().getSurname())
                 .setHeader("Teilnehmer");
         resultGrid.addColumn(sub -> sub.getStudent().getEmail()).setHeader("E-Mail");
         resultGrid.addColumn(Submission::getTotalPoints).setHeader("Gesamtpunkte");
@@ -76,7 +90,7 @@ public class InstructorExamResultsView extends VerticalLayout{
         Button exportButton = new Button("Excel Export dieser Prüfung", e -> {
             Exam selected = examSelector.getValue();
             if (selected != null) {
-                getUI().ifPresent(ui -> ui.getPage().open("/api/exams/export/" + selected.getId(), "_blank"));
+                getUI().ifPresent(ui -> ui.getPage().open("/api/instructor/exams/export/" + selected.getId(), "_blank"));
             } else {
                 Notification.show("Bitte zuerst eine Prüfung auswählen.");
             }

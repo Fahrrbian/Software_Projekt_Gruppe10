@@ -7,6 +7,7 @@ package com.gruppe10.exam.domain;
 
 
 import com.gruppe10.base.domain.AbstractEntity;
+import com.gruppe10.usermanagement.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.Nullable;
@@ -18,7 +19,6 @@ import java.util.List;
 @Entity
 @Table(name = "exam")
 public class Exam extends AbstractEntity<Long> implements IExamInterface {
-
 
     public static final int DESCRIPTION_MAX_LENGTH = 255;
 
@@ -37,9 +37,10 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     private Instant creationDate;
 
     //Das hier soll ein Verweis auf den zugehörigen Lehrer sein
-    @Column(name = "creatorId")
-    @Nullable
-    private Long creatorId;
+    @ManyToOne
+    @JoinColumn(name = "creator_id", referencedColumnName = "user_id")
+    private User creator;
+
 
     //Hier kann das Modul zu späteren Filterzwecken spezifiziert werden
     @Column(name = "module")
@@ -93,13 +94,21 @@ public @Nullable Long getId() {
         this.creationDate = creationDate;
     }
 
-    @Override
-    public @Nullable Long getCreatorId() {
-        return creatorId;
+
+    public @Nullable User getCreator() {
+        return creator;
     }
+
+    public void setCreatorId(@Nullable User creator) {
+        this.creator = creator;
+    }
+    public @Nullable Long getCreatorId() {
+        return creator != null ? creator.getId() : null;
+    }
+
     @Override
     public void setCreatorId(Long creatorId) {
-        this.creatorId = creatorId;
+
     }
 
     public void setModule(@Nullable Long module) {

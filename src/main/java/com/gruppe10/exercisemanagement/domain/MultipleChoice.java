@@ -9,7 +9,7 @@ import java.util.*;
 @Entity
 @DiscriminatorValue("MultipleChoice")
 public class MultipleChoice extends Exercise{
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "multiple_choice_id")
     private Set<ChoiceOption> choiceOptions = new HashSet<>();
 
