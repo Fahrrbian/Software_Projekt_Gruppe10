@@ -5,6 +5,7 @@ import com.gruppe10.usermanagement.service.UserService;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLayout;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @UIScope
+@CssImport("./styles/MainLayout.css")
 public class TimedMainLayout extends MainLayout implements RouterLayout {
 
     private final Div idleIndicator = new Div("30min");;
@@ -30,6 +32,8 @@ public class TimedMainLayout extends MainLayout implements RouterLayout {
         super(userService, authenticatedUser);
         //HorizontalLayout header = new HorizontalLayout();
         idleIndicator.setId("idle-indicator");
+        //header.addComponentAtIndex(1, idleIndicator);
+
         header.add(idleIndicator);
     }
 

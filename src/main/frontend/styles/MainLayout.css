@@ -1,0 +1,113 @@
+:host {
+    --app-layout-width-drawer: 250px;
+    --app-layout-background: var(--lumo-base-color);
+}
+
+/* 2) Header */
+.app-header {
+    background-color: var(--lumo-shade-5pct);
+    box-shadow: var(--lumo-box-shadow-s);
+    padding: var(--lumo-space-m) var(--lumo-space-l);
+    align-items: center;
+    display: flex;
+    gap: var(--lumo-space-m);
+}
+
+/* Logo-Titel */
+.app-header h1 {
+    font-size: var(--lumo-font-size-xl);
+    font-weight: 700;
+    margin: 0;
+}
+
+/* DrawerToggle-Icon */
+.app-header vaadin-drawer-toggle {
+    margin-right: var(--lumo-space-m);
+}
+
+/* 3) Idle-Indikator (falls vorhanden) */
+#idle-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    padding: var(--lumo-space-xs) var(--lumo-space-s);
+    font-size: var(--lumo-font-size-m);
+    font-weight: 600;
+    color: var(--lumo-primary-text-color);
+    background-color: var(--lumo-primary-color-10pct);
+    border-radius: var(--lumo-border-radius-md);
+    transition: background-color 150ms ease;
+}
+
+/* Stoppuhr-Icon */
+#idle-indicator::before {
+    content: "\23F1";
+    margin-right: var(--lumo-space-xs);
+}
+
+/* Warn-Farbe bei weniger als 5 Min */
+#idle-indicator.warning {
+    background-color: var(--lumo-error-color-10pct);
+    color: var(--lumo-error-text-color);
+}
+#idle-indicator:hover {
+    background-color: var(--lumo-primary-color-20pct);
+}
+/* 4) Drawer (Seitenleiste) */
+.vaadin-app-layout vaadin-drawer {
+    background-color: var(--lumo-base-color);
+    border-right: 1px solid var(--lumo-shade-10pct);
+}
+
+/* Inhalt im Drawer */
+.drawer-content {
+    padding: var(--lumo-space-m);
+}
+
+/* 5) User-Bereich im Drawer */
+.User-Name {
+    display: flex;
+    align-items: center;
+    gap: var(--lumo-space-xs);
+    font-weight: 500;
+}
+
+/* Logout-Button */
+.logout-Button {
+    background-color: var(--lumo-contrast-10pct);
+    color: var(--lumo-error-text-color);
+    border: none;
+    border-radius: var(--lumo-border-radius);
+    padding: var(--lumo-space-xs) var(--lumo-space-s);
+    cursor: pointer;
+    transition: background-color 150ms;
+}
+
+.logout-Button:hover {
+    background-color: var(--lumo-error-color-10pct);
+    color: var(--lumo-base-color);
+}
+
+/* 6) Navigationslinks */
+.router-link {
+    display: block;
+    padding: var(--lumo-space-s) 0;
+    color: var(--lumo-primary-text-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.router-link:hover {
+    color: var(--lumo-primary-color);
+}
+
+/* 7) Responsive Anpassungen */
+@media (max-width: 600px) {
+    .app-header {
+        padding: var(--lumo-space-s);
+    }
+    #idle-indicator {
+        display: none;  /* auf sehr kleinen Geräten ausblenden, falls nötig */
+    }
+}
