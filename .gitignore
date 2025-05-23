@@ -15,3 +15,5 @@
 node_modules/
 src/main/frontend/generated/
 vite.generated.ts
+
+vite.config.ts
