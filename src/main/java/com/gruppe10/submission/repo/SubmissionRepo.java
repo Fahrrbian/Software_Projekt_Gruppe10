@@ -1,6 +1,6 @@
 package com.gruppe10.submission.repo;
 
-import com.gruppe10.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.usermanagement.domain.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
