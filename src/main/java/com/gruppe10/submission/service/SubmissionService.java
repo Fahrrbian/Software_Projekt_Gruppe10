@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-import com.gruppe10.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.usermanagement.domain.Student;
 import com.gruppe10.submission.repo.SubmissionRepo;
 import org.springframework.transaction.annotation.Transactional;

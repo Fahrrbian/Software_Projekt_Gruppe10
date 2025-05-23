@@ -6,9 +6,8 @@
 package com.gruppe10.usermanagement.ui.view;
 
 import com.gruppe10.base.ui.component.ViewToolbar;
-import com.gruppe10.exam.domain.Exam;
-import com.gruppe10.exam.domain.ExamRepository;
-import com.gruppe10.usermanagement.domain.Role;
+import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
 import com.vaadin.flow.component.UI;
@@ -28,7 +27,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
