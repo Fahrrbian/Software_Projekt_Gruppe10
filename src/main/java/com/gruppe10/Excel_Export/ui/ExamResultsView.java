@@ -1,5 +1,6 @@
 package com.gruppe10.Excel_Export.ui;
 
+import com.gruppe10.base.ui.Layout.TimedMainLayout;
 import com.gruppe10.base.ui.security.SecurityUtils;
 import com.gruppe10.exam.domain.Exam;
 import com.gruppe10.submission.domain.Submission;
@@ -11,6 +12,7 @@ import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Configuration;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.router.Route;
@@ -40,7 +42,7 @@ import java.util.List;
 
 
 
-@Route("pruefungsergebnisse")
+@Route(value = "pruefungsergebnisse", layout = TimedMainLayout.class)
 @RolesAllowed("STUDENT")
 //@Theme(variant = Lumo.LIGHT)
 public class ExamResultsView extends VerticalLayout{
@@ -49,8 +51,15 @@ public class ExamResultsView extends VerticalLayout{
 
     @Autowired
     public ExamResultsView(SubmissionService submissionService) {
+
+        setSizeFull();
+        setPadding(false);
+        setSpacing(false);
+
         this.submissionService = submissionService;
 
+        H2 title = new H2("Meine Prüfungsergebnisse");
+        title.getStyle().set("margin-bottom", "var(--lumo-space-m)");
         User currentUser = (User) SecurityUtils.getCurrentUser().orElse(null);
 //        System.out.println("-------------------->currentUser = " + currentUser);
         if (currentUser instanceof Student student) {
@@ -62,12 +71,22 @@ public class ExamResultsView extends VerticalLayout{
             grid.addColumn(Submission::getTotalPoints).setHeader("Gesamtpunkte");
             grid.addColumn(sub -> sub.getPassed() ? "✔" : "✖").setHeader("Bestanden");
 
-            add(new H2("Meine Prüfungsergebnisse"), grid);
-            grid.setItems(submissions);
+            grid.setItems(submissionService.getSubmissionsByStudent(
+                    (Student) SecurityUtils.getCurrentUser().get()));
+            grid.setSizeFull();                                      // füllt die Höhe des Eltern-Layouts
+            grid.addThemeVariants(                                  // optische Verbesserungen
+                    GridVariant.LUMO_ROW_STRIPES,
+                    GridVariant.LUMO_COLUMN_BORDERS
+            );
+
+
             Button export = new Button("Export als Excel", e ->
                     getUI().ifPresent(ui -> ui.getPage().open("/api/student/export", "_blank"))
             );
-            add(export);
+            export.getStyle().set("margin-top", "var(--lumo-space-m)");
+
+            add(title, grid, export);
+            setFlexGrow(1, grid);
         }
     }
 }
