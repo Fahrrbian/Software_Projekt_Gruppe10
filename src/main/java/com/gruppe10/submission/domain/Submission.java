@@ -1,6 +1,6 @@
 package com.gruppe10.submission.domain;
 
-import com.gruppe10.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.usermanagement.domain.Student;
 import jakarta.persistence.*;
 
