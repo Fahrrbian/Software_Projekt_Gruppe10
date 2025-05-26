@@ -42,7 +42,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     @JoinColumn(name = "creator_id", referencedColumnName = "user_id")
     private User creator;
 
-
     //Hier kann das Modul zu späteren Filterzwecken spezifiziert werden
     @Column(name = "module")
     @Nullable

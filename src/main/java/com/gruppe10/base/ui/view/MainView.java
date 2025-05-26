@@ -1,11 +1,13 @@
 package com.gruppe10.base.ui.view;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.security.AuthenticatedUser;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 
@@ -16,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * This view shows up when a user navigates to the root ('/') of the application.
  */
-@Route("/")
+@Route(value = "/", layout = MainLayout.class)
 @PageTitle("Startseite")
 @RolesAllowed({"INSTRUCTOR", "STUDENT"})
 public class MainView extends VerticalLayout implements BeforeEnterObserver {
@@ -27,8 +29,8 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
     public MainView(AuthenticatedUser authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
         setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
+        setAlignItems(FlexComponent.Alignment.CENTER);
+        setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
     @Override
@@ -45,7 +47,7 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
         layout.setWidth("50%");
         layout.setPadding(true);
         layout.setSpacing(true);
-        layout.setAlignItems(Alignment.STRETCH);
+        layout.setAlignItems(FlexComponent.Alignment.STRETCH);
 
         if ("INSTRUCTOR".equalsIgnoreCase(user.getRole())) {
             layout.add(createCard("Aufgabenverwaltung", "Verwaltung von Aufgaben", "exercises"));
