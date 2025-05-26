@@ -1,10 +1,7 @@
 package com.gruppe10.base.ui.Layout;
 
-import com.gruppe10.base.ui.view.MainView;
 import com.gruppe10.security.AuthenticatedUser;
-import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
-import com.gruppe10.usermanagement.ui.view.UserInfoView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -15,16 +12,13 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.menu.MenuConfiguration;
 import com.vaadin.flow.server.menu.MenuEntry;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -48,10 +42,8 @@ public class MainLayout extends AppLayout {
     private final AuthenticatedUser authenticatedUser;
     protected HorizontalLayout header;
 
-    // wird in Unterklassen (z.B. TimedMainLayout) via super(...) aufgerufen
-    public MainLayout(UserService userService,
-                      AuthenticatedUser authenticatedUser) {
-        this.userService       = userService;
+    public MainLayout(UserService userService, AuthenticatedUser authenticatedUser) {
+        this.userService = userService;
         this.authenticatedUser = authenticatedUser;
         setPrimarySection(AppLayout.Section.DRAWER);
         createHeader();
@@ -138,7 +130,7 @@ public class MainLayout extends AppLayout {
         });
         */
 
-        addToDrawer(drawerContent);
+        return userMenu;
     }
 
     private SideNavItem createSideNavItem(MenuEntry menuEntry) {
