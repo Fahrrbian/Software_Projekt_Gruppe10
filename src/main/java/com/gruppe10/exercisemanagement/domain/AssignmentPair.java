@@ -22,6 +22,14 @@ public class AssignmentPair extends AbstractEntity<Long>{
     @JoinColumn(name = "assignment_exercise_id", nullable = false)
     private AssignmentExercise assignmentExercise;
 
+    public AssignmentPair(String partOne, String partTwo) {
+        this.partOne = partOne;
+        this.partTwo = partTwo;
+    }
+
+    public AssignmentPair() {
+    }
+
     public Long getId() {
         return id;
     }
