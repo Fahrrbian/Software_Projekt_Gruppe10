@@ -5,6 +5,7 @@ package com.gruppe10.examManagement.exam.ui.ListView;
  * Date: 30/04/2025
  **/
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.service.ExamService;
@@ -32,7 +33,7 @@ import java.util.Set;
 import static com.vaadin.flow.spring.data.VaadinSpringDataHelpers.toSpringPageRequest;
 
 
-@Route(value="pruefung-list")
+@Route(value="pruefung-list", layout = MainLayout.class)
 @PageTitle("Prüfung List")
 //@Menu(order = 0, icon = "vaadin:clipboard-check", title = "Prüfungsliste")
 @RolesAllowed("INSTRUCTOR")

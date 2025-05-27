@@ -1,7 +1,6 @@
 package com.gruppe10.base.ui.view;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
-import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.security.AuthenticatedUser;
 import com.vaadin.flow.component.Component;
@@ -10,8 +9,6 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,8 +38,6 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     public void initMainView(User user) {
-        add(new H2("Willkommen, " + user.getForename() + " " + user.getSurname()));
-
         VerticalLayout layout = new VerticalLayout();
         layout.setWidth("50%");
         layout.setPadding(true);

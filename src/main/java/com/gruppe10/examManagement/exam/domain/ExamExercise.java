@@ -1,6 +1,7 @@
 package com.gruppe10.examManagement.exam.domain;
 
 
+import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.taskmanagement.domain.Task;
 import jakarta.persistence.*;
 
@@ -15,8 +16,8 @@ public class ExamExercise {
     private Exam exam;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("taskId")
-    private Task task;
+    @MapsId("exerciseId")
+    private Exercise exercise;
 
     @Column(name = "position")
     private int position;
@@ -26,11 +27,11 @@ public class ExamExercise {
     // Konstruktoren
     public ExamExercise() {}
 
-    public ExamExercise(Exam IExamInterface, Task task, int position) {
+    public ExamExercise(Exam IExamInterface, Exercise exercise, int position) {
         this.exam = IExamInterface;
-        this.task = task;
+        this.exercise = exercise;
         this.position = position;
-        this.id = new ExamExerciseId(IExamInterface.getId(), task.getId());
+        this.id = new ExamExerciseId(IExamInterface.getId(), exercise.getId());
     }
 
     // Getter und Setter

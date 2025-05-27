@@ -1,5 +1,7 @@
 package com.gruppe10.examManagement.exam.ui.FormView;
 
+import com.gruppe10.exercisemanagement.domain.Exercise;
+import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.gruppe10.taskmanagement.domain.Task;
 import com.gruppe10.taskmanagement.service.TaskService;
 import com.vaadin.flow.component.button.Button;
@@ -16,31 +18,38 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  * ToDo "Task" durch "Exercise" von Louis tauschen wenn er es hochgeladen hat
  **/
 
-public class TaskGrid extends VerticalLayout {
-    private final Grid<Task> grid;
-    private final Button addTaskBtn;
-    private final TaskService taskService;
+public class ExerciseGrid extends VerticalLayout {
+    private final Grid<Exercise> grid;
+    private final Button addExerciseBtn;
+    private final ExerciseService exerciseService;
     private Long currentPruefungId;
 
-    public TaskGrid(TaskService taskService) {
-        this.taskService = taskService;
+    public ExerciseGrid(ExerciseService exerciseService) {
+        this.exerciseService = exerciseService;
 
         //Grid erstellen
         //Die Columns mit Exercise Daten füllen
         grid = new Grid<>();
-        grid.addColumn(Task::getDescription).setHeader("Aufgabe");
-        grid.addColumn(Task::getDueDate).setHeader("Punkte");
+        grid.addColumn(Exercise::getExerciseText).setHeader("Aufgabe");
+        grid.addColumn(Exercise::getScore).setHeader("Punkte");
         grid.setHeight("200px");
+        grid.addItemDoubleClickListener(event -> {
+            Exercise exercise = event.getItem();
+            if (currentPruefungId != null && exercise != null) {
+                exerciseService.assignExerciseToPruefung(exercise.getId(), currentPruefungId);
+                refreshData(); // zur Aktualisierung der Anzeige
+            }
+        });
 
         // Button erstellen
-        addTaskBtn = new Button("Neue Aufgabe", event -> addNewTask());
-        addTaskBtn.setIcon(new Icon(VaadinIcon.PLUS));
-        addTaskBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        addExerciseBtn = new Button("Neue Aufgabe", event -> addNewTask());
+        addExerciseBtn.setIcon(new Icon(VaadinIcon.PLUS));
+        addExerciseBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         // Layout aufbauen
         add(
                 new H3("Aufgaben"),
-                new HorizontalLayout(addTaskBtn),
+                new HorizontalLayout(addExerciseBtn),
                 grid
         );
 
@@ -55,7 +64,7 @@ public class TaskGrid extends VerticalLayout {
 
     public void refreshData() {
         if (currentPruefungId != null) {
-            grid.setItems(taskService.getTasksForPruefung(currentPruefungId));
+            grid.setItems(exerciseService.getExerciseForPruefung(currentPruefungId));
         }
     }
 
@@ -64,7 +73,7 @@ public class TaskGrid extends VerticalLayout {
             Dialog dialog = new Dialog();
             dialog.setHeaderTitle("Neue Aufgabe");
 
-            ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(taskService, currentPruefungId);
+            ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService, currentPruefungId);
 
             Button saveButton = new Button("Speichern", e -> {
 

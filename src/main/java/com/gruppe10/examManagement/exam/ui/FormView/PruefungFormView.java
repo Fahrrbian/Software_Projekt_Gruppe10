@@ -6,9 +6,11 @@ package com.gruppe10.examManagement.exam.ui.FormView;
  **/
 
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.service.ExamService;
+import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.gruppe10.taskmanagement.service.TaskService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -24,7 +26,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.ServletConfig;
 
-@Route(value = "pruefung-form/:id")
+@Route(value = "pruefung-form/:id", layout = MainLayout.class)
 @RouteAlias(value = "pruefung-form")
 @PageTitle("Prüfung")
 @Menu(order = 0, icon = "vaadin:clipboard-check", title = "Prüfungseditor")
@@ -33,20 +35,20 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
 
     private final ExamService examService;
     private final ServletConfig servletConfig;
+    private final ExerciseService exerciseService;
     private Exam IExamInterface;
     private TextField title;
     private PruefungForm form;
-    private TaskGrid taskGrid;
+    private ExerciseGrid exerciseGrid;
     private Button createBtn;
     private Button backBtn;
     private Button saveBtn;
 
 
-    public PruefungFormView(ExamService examService, TaskService taskService, ServletConfig servletConfig) {
+    public PruefungFormView(ExamService examService, ExerciseService exerciseService, ServletConfig servletConfig) {
         this.examService = examService;
-        this.taskGrid = new TaskGrid(taskService);
+        this.exerciseGrid = new ExerciseGrid(exerciseService);
         this.servletConfig = servletConfig;
-
 
         setSizeFull();
         addClassNames(LumoUtility.BoxSizing.BORDER,
@@ -54,7 +56,7 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
                 LumoUtility.FlexDirection.COLUMN,
                 LumoUtility.Padding.MEDIUM,
                 LumoUtility.Gap.SMALL);
-
+        this.exerciseService = exerciseService;
     }
 
     private void initializeComponents() {
@@ -87,10 +89,10 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
         add(new ViewToolbar("Prüfung bearbeiten",
                 ViewToolbar.group(backBtn, title, createBtn, saveBtn, terminButton)));
         add(form);
-        add(taskGrid);
+        add(exerciseGrid);
 
         if (IExamInterface != null && IExamInterface.getId() != null) {
-            taskGrid.setPruefungId(IExamInterface.getId());
+            exerciseGrid.setPruefungId(IExamInterface.getId());
         }
 
     }
@@ -106,7 +108,6 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
         }
         initializeComponents();
     }
-
 
     private void createPruefung() {
         Exam IExamInterface = new Exam();
@@ -136,7 +137,3 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
         }
     }
 }
-
-
-
-

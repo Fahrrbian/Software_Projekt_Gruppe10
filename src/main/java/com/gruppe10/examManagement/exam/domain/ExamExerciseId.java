@@ -7,13 +7,13 @@ import java.io.Serializable;
 @Embeddable
 public class ExamExerciseId implements Serializable {
     private Long examId;
-    private Long taskId;
+    private Long exerciseId;
 
     public ExamExerciseId() {}
 
-    public ExamExerciseId(Long examId, Long taskId) {
+    public ExamExerciseId(Long examId, Long exerciseId) {
         this.examId = examId;
-        this.taskId = taskId;
+        this.exerciseId = exerciseId;
     }
 
     // equals und hashCode Implementierung

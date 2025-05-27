@@ -1,8 +1,11 @@
 package com.gruppe10.exercisemanagement.service;
 
+import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.ExerciseRepository;
 import com.gruppe10.exercisemanagement.domain.Tag;
+import com.gruppe10.taskmanagement.domain.Task;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -14,13 +17,19 @@ import java.util.Optional;
 public class ExerciseService {
 
     private final ExerciseRepository repository;
+    private final ExamRepository examRepository;
 
-    public ExerciseService(ExerciseRepository repository) {
+    public ExerciseService(ExerciseRepository repository, ExamRepository examRepository) {
         this.repository = repository;
+        this.examRepository = examRepository;
     }
 
     public Slice<Exercise> getAll(Pageable pageable) {
         return repository.findAllBy(pageable);
+    }
+
+    public List<Exercise> getExerciseForPruefung(Long examId){
+        return repository.findAll();
     }
 
     public Optional<Exercise> getById(Long id) {
@@ -52,4 +61,19 @@ public class ExerciseService {
         }
         return repository.findDistinctByTagsIn(tags, pageable);
     }
+
+    public List<Exercise> getAllByExamId(Long examId) {
+        return repository.findByExam_Id(examId);
+    }
+
+    public void assignExerciseToPruefung(Long exerciseId, Long examId) {
+        Exercise exercise = repository.findById(exerciseId)
+                .orElseThrow(() -> new RuntimeException("Aufgabe nicht gefunden"));
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Prüfung nicht gefunden"));
+
+        exercise.setExam(exam);
+        repository.save(exercise);
+    }
+
 }

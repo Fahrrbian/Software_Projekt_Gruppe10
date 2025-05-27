@@ -12,7 +12,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-
 public class PruefungListEditorView extends FormLayout {
     //Hier können Kompoenten des Fomulars erstellt werden und dem Array
     //zur Erstellung hinzugefügt werden
