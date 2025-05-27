@@ -10,15 +10,38 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.data.binder.Binder;
 
 
 class AssignmentPairEditor extends FormLayout {
+    private final Binder<AssignmentPair> binder = new Binder<>(AssignmentPair.class);
     private final TextField partOneField = new TextField("Teil A");
     private final TextField partTwoField = new TextField("Teil B");
     private final Button deleteButton = new Button(new Icon(VaadinIcon.CLOSE));
 
     public AssignmentPairEditor() {
         setupUI();
+        setupBinder();
+    }
+
+    private void setupBinder() {
+        binder.forField(partOneField)
+                .asRequired("Teil A erforderlich")
+                .bind(AssignmentPair::getPartOne, AssignmentPair::setPartOne);
+
+        binder.forField(partTwoField)
+                .asRequired("Teil B erforderlich")
+                .bind(AssignmentPair::getPartTwo, AssignmentPair::setPartTwo);
+    }
+
+    public boolean isValid() {
+        return binder.validate().isOk();
+    }
+
+    public AssignmentPair getAssignmentPair() {
+        AssignmentPair pair = new AssignmentPair();
+        binder.writeBeanIfValid(pair);
+        return pair;
     }
 
     public void setOnDelete(Runnable onDelete) {
@@ -26,66 +49,6 @@ class AssignmentPairEditor extends FormLayout {
     }
 
     private void setupUI() {
-//        HorizontalLayout layout = new HorizontalLayout(partOneField, partTwoField, deleteButton);
-//        layout.setDefaultVerticalComponentAlignment(Alignment.END);
-//        layout.setFlexGrow(1, partOneField);
-//        layout.setFlexGrow(1, partTwoField);
-//
-//        partOneField.setWidthFull();
-//        partOneField.getStyle().set("min-width", "300px");
-//
-//        partTwoField.setWidthFull();
-//        partTwoField.getStyle().set("min-width", "300px");
-//
-//        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
-//        deleteButton.setTooltipText("Dieses Zuordnungspaar löschen");
-//        deleteButton.getStyle().set("margin-bottom", "6px");
-//
-//        add(layout);
-//        setPadding(false);
-//        setSpacing(false);
-//        getStyle().set("margin", "0");
-//        getStyle().set("padding", "0");
-//
-//        HorizontalLayout layout = new HorizontalLayout(partOneField, partTwoField, deleteButton);
-//        layout.setDefaultVerticalComponentAlignment(Alignment.END);
-//        layout.setPadding(false);
-//        layout.setSpacing(false);
-//        layout.getStyle().set("margin", "0");
-//        layout.getStyle().set("padding", "0");
-//        layout.setWidthFull();
-//
-//        partOneField.setWidth("45%");
-//        partTwoField.setWidth("45%");
-//
-//        partOneField.getStyle().set("flex-shrink", "1");
-//        partTwoField.getStyle().set("flex-shrink", "1");
-//
-//        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
-//        deleteButton.setTooltipText("Dieses Zuordnungspaar löschen");
-//
-//        deleteButton.getStyle().set("margin", "0");
-//        deleteButton.getStyle().set("padding", "0");
-//
-//        layout.setFlexGrow(1, partOneField, partTwoField); // optional
-//
-//        add(layout);
-//        setResponsiveSteps(
-//                new ResponsiveStep("0", 1),
-//                new ResponsiveStep("600px", 2)
-//        );
-//
-//        partOneField.setWidthFull();
-//        partTwoField.setWidthFull();
-//
-//        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
-//        deleteButton.setTooltipText("Dieses Zuordnungspaar löschen");
-//
-//        addFormItem(partOneField, "Teil A");
-//        addFormItem(partTwoField, "Teil B");
-//        add(deleteButton);  // Ohne Label, unten/rechts positioniert
-//
-//        setWidthFull();
         setResponsiveSteps(new ResponsiveStep("0", 3));
 
         partOneField.setPlaceholder("Teil A");
@@ -114,7 +77,4 @@ class AssignmentPairEditor extends FormLayout {
         return partTwoField.getValue();
     }
 
-    public AssignmentPair getAssignmentPair() {
-        return new AssignmentPair(partOneField.getValue(), partTwoField.getValue());
-    }
 }

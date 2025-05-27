@@ -99,8 +99,6 @@ public class CreateExerciseView extends VerticalLayout {
             String newTagName = event.getDetail().trim();
             if (!newTagName.isEmpty()) {
                 Tag newTag = tagService.findOrCreateByName(newTagName);
-                //List<Tag> currentItems = new ArrayList<>(tagSelector.getSelectedItems());
-                //currentItems.add(newTag);
                 tagSelector.setItems(tagService.getAll());
                 selectedTags.add(newTag);
                 tagSelector.select(selectedTags);
@@ -108,7 +106,6 @@ public class CreateExerciseView extends VerticalLayout {
         });
 
         tagSelector.addValueChangeListener(event -> {
-            //selectedTags.clear();
             selectedTags.addAll(event.getValue());
         });
 
@@ -187,99 +184,6 @@ public class CreateExerciseView extends VerticalLayout {
     }
 
     private void save() {
-//        String exerciseType = typDropdown.getValue();
-//        String exerciseText = exerciseTextField.getValue();
-//        String scoreStr = scoreField.getValue();
-//
-//        if (exerciseText == null || exerciseText.isEmpty()) {
-//            Notification.show("Bitte eine Aufgabenstellung eingeben.");
-//            return;
-//        }
-//
-//        try {
-//            int score = Integer.parseInt(scoreStr);
-//            if (score < 0) {
-//                Notification.show("Punktzahl darf nicht negativ sein.");
-//                return;
-//            }
-//
-//            switch (exerciseType) {
-//                case "Freitextaufgabe":
-//                    FreetextExercise freetextExercise = new FreetextExercise();
-//                    freetextExercise.setExerciseText(exerciseText);
-//                    freetextExercise.setScore(score);
-//                    freetextExercise.setTags(selectedTags);
-//                    freetextExerciseService.createFreetextExercise(freetextExercise);
-//                    Notification.show("Freitextaufgabe erfolgreich gespeichert!");
-//                    break;
-//                case "Single Choice":
-//                    if (choiceOptionEditors.stream().filter(ChoiceOptionEditor::isCorrect).count() != 1) {
-//                        Notification.show("Bitte genau eine richtige Antwortmöglichkeit für Single Choice auswählen.");
-//                        return;
-//                    }
-//                    if (choiceOptionEditors.stream().anyMatch(e -> e.getAnswerText().trim().isEmpty())) {
-//                        Notification.show("Bitte Text für alle Antwortmöglichkeiten eingeben.");
-//                        return;
-//                    }
-//
-//                    SingleChoice singlechoice = new SingleChoice();
-//                    singlechoice.setExerciseText(exerciseText);
-//                    singlechoice.setScore(score);
-//                    choiceOptionEditors.forEach(editor -> {
-//                        ChoiceOption backendOption = new ChoiceOption(editor.getAnswerText(), editor.isCorrect(), singlechoice);
-//                        singlechoice.getChoiceOptions().add(backendOption);
-//                    });
-//                    singlechoice.setTags(selectedTags);
-//                    singlechoiceService.create(singlechoice);
-//                    Notification.show("Single Choice Aufgabe erfolgreich gespeichert!");
-//                    break;
-//                case "Multiple Choice":
-//                    if (choiceOptionEditors.stream().noneMatch(ChoiceOptionEditor::isCorrect)) {
-//                        Notification.show("Bitte mindestens eine richtige Antwortmöglichkeit für Multiple Choice auswählen.");
-//                        return;
-//                    }
-//                    if (choiceOptionEditors.stream().anyMatch(e -> e.getAnswerText().trim().isEmpty())) {
-//                        Notification.show("Bitte Text für alle Antwortmöglichkeiten eingeben.");
-//                        return;
-//                    }
-//
-//                    MultipleChoice multipleChoice = new MultipleChoice();
-//                    multipleChoice.setExerciseText(exerciseText);
-//                    multipleChoice.setScore(score);
-//                    choiceOptionEditors.forEach(editor -> {
-//                        ChoiceOption backendOption = new ChoiceOption(editor.getAnswerText(), editor.isCorrect(), multipleChoice);
-//                        multipleChoice.getChoiceOptions().add(backendOption);
-//                    });
-//                    multipleChoice.setTags(selectedTags);
-//                    multipleChoiceService.create(multipleChoice);
-//                    Notification.show("Multiple Choice Aufgabe erfolgreich gespeichert!");
-//                    break;
-//                case "Zuordnungsaufgabe":
-//                    AssignmentExercise assignmentExercise = new AssignmentExercise();
-//                    assignmentExercise.setExerciseText(exerciseText);
-//                    assignmentExercise.setScore(score);
-//                    assignmentExercise.setTags(selectedTags);
-//                    for (AssignmentPairEditor editor : assignmentPairEditors) {
-//                        String partOne = editor.getPartOne().trim();
-//                        String partTwo = editor.getPartTwo().trim();
-//                        if (partOne.isEmpty() || partTwo.isEmpty()) {
-//                            Notification.show("Bitte alle Felder bei den Zuordnungspaaren ausfüllen.");
-//                            return;
-//                        }
-//
-//                        AssignmentPair pair = new AssignmentPair();
-//                        pair.setPartOne(partOne);
-//                        pair.setPartTwo(partTwo);
-//                        assignmentExercise.addAssignmentPair(pair);
-//                    }
-//                    assignmentExerciseService.create(assignmentExercise);
-//                    Notification.show("Zuordnungsaufgabe erfolgreich gespeichert!");
-//                    break;
-//            }
-//            clearInputFields();
-//        } catch (NumberFormatException e) {
-//            Notification.show("Bitte gültige Punktzahl eingeben.");
-//        }
         String selectedType = typDropdown.getValue();
         Exercise baseExercise;
 
@@ -294,53 +198,73 @@ public class CreateExerciseView extends VerticalLayout {
             }
         }
 
-        if (!binder.writeBeanIfValid(baseExercise)) {
-            //Notification.show("Bitte gültige Werte eingeben.");
+        boolean mainExerciseValid = binder.writeBeanIfValid(baseExercise);
+
+        boolean specificOptionsValid = true;
+
+        if (baseExercise instanceof SingleChoice single) {
+            for (ChoiceOptionEditor editor : choiceOptionEditors) {
+                if (!editor.isValid()) {
+                    specificOptionsValid = false;
+                }
+            }
+            if (specificOptionsValid) {
+                long correctCount = choiceOptionEditors.stream().filter(ChoiceOptionEditor::isCorrect).count();
+                if (correctCount != 1) {
+                    Notification.show("Für Single Choice muss genau eine Antwort richtig sein.");
+                    specificOptionsValid = false;
+                }
+            }
+        }
+        else if (baseExercise instanceof MultipleChoice multiple) {
+            for (ChoiceOptionEditor editor : choiceOptionEditors) {
+                if (!editor.isValid()) {
+                    specificOptionsValid = false;
+                }
+            }
+            if (specificOptionsValid) {
+                if (choiceOptionEditors.stream().noneMatch(ChoiceOptionEditor::isCorrect)) {
+                    Notification.show("Für Multiple Choice muss mindestens eine Antwort richtig sein.");
+                    specificOptionsValid = false;
+                }
+            }
+        }
+        else if (baseExercise instanceof AssignmentExercise assign) {
+            for (AssignmentPairEditor editor : assignmentPairEditors) {
+                if (!editor.isValid()) {
+                    specificOptionsValid = false;
+                }
+            }
+        }
+
+        if (!mainExerciseValid || !specificOptionsValid) {
             return;
         }
 
         baseExercise.setTags(selectedTags);
 
         if (baseExercise instanceof SingleChoice single) {
-            if (choiceOptionEditors.stream().filter(ChoiceOptionEditor::isCorrect).count() != 1) {
-                Notification.show("Genau eine richtige Antwort für Single Choice nötig.");
-                return;
-            }
-            for (ChoiceOptionEditor editor : choiceOptionEditors) {
-                if (editor.getAnswerText().isBlank()) {
-                    Notification.show("Antwort darf nicht leer sein.");
-                    return;
-                }
-                single.getChoiceOptions().add(new ChoiceOption(editor.getAnswerText(), editor.isCorrect(), single));
-            }
+            choiceOptionEditors.stream()
+                    .map(ChoiceOptionEditor::getChoiceOption)
+                    .forEach(single::addChoiceOption);
             singlechoiceService.create(single);
-        } else if (baseExercise instanceof MultipleChoice multiple) {
-            if (choiceOptionEditors.stream().noneMatch(ChoiceOptionEditor::isCorrect)) {
-                Notification.show("Mindestens eine richtige Antwort nötig.");
-                return;
-            }
-            for (ChoiceOptionEditor editor : choiceOptionEditors) {
-                if (editor.getAnswerText().isBlank()) {
-                    Notification.show("Antwort darf nicht leer sein.");
-                    return;
-                }
-                multiple.getChoiceOptions().add(new ChoiceOption(editor.getAnswerText(), editor.isCorrect(), multiple));
-            }
+        }
+        else if (baseExercise instanceof MultipleChoice multiple) {
+            choiceOptionEditors.stream()
+                    .map(ChoiceOptionEditor::getChoiceOption)
+                    .forEach(multiple::addChoiceOption);
             multipleChoiceService.create(multiple);
-        } else if (baseExercise instanceof AssignmentExercise assign) {
-            for (AssignmentPairEditor editor : assignmentPairEditors) {
-                if (editor.getPartOne().isBlank() || editor.getPartTwo().isBlank()) {
-                    Notification.show("Beide Teile des Zuordnungspaares müssen ausgefüllt sein.");
-                    return;
-                }
-                assign.addAssignmentPair(new AssignmentPair(editor.getPartOne(), editor.getPartTwo()));
-            }
+        }
+        else if (baseExercise instanceof AssignmentExercise assign) {
+            assignmentPairEditors.stream()
+                    .map(AssignmentPairEditor::getAssignmentPair)
+                    .forEach(assign::addAssignmentPair);
             assignmentExerciseService.create(assign);
         } else if (baseExercise instanceof FreetextExercise freetext) {
             freetextExerciseService.createFreetextExercise(freetext);
         }
 
-        Notification.show("Aufgabe erfolgreich gespeichert!");
+        Notification.show("Aufgabe gespeichert!");
         clearInputFields();
     }
 
