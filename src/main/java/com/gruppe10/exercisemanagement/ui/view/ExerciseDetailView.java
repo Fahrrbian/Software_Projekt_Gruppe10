@@ -1,5 +1,6 @@
 package com.gruppe10.exercisemanagement.ui.view;
 
+import com.gruppe10.base.ui.Layout.TimedMainLayout;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.vaadin.flow.component.html.*;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Optional;
 
-@Route(value = "exercise/:exerciseId", layout = com.gruppe10.base.ui.view.MainLayout.class)
+@Route(value = "exercise/:exerciseId", layout = TimedMainLayout.class)
 @RolesAllowed("INSTRUCTOR")
 public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObserver {
 
