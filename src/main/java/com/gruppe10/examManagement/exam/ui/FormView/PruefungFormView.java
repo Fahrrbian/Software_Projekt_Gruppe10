@@ -25,6 +25,10 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.ServletConfig;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Route(value = "pruefung-form/:id", layout = MainLayout.class)
 @RouteAlias(value = "pruefung-form")
@@ -99,15 +103,32 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
 
     @Override
     public void setParameter(BeforeEvent event, Long parameter) {
-        try {
+        if (parameter == null) {
+            // Neuer Modus: Es wurde keine ID übergeben → neue Exam anlegen
+            this.IExamInterface = new Exam();
+        } else {
+            // Bearbeiten-Modus: lade die Exam oder wirf 404
+            Optional<Exam> opt = examService.getById(parameter);
+            if (opt.isEmpty()) {
+                // Wenn die ID nicht existiert, lehne mit 404 ab.
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            this.IExamInterface = opt.get();
+        }
+
+        initializeComponents();
+    }
+
+        /*try {
             this.IExamInterface = parameter != null ?
-                    examService.getById(parameter) :
+                    examService.getById(parameter) : getById hatte bei mir zu einem Typ-Exception geführt: java: Inkompatible Typen: Ungültiger Typ in Bedingungsausdruck
+                                                         java.util.Optional<com.gruppe10.examManagement.exam.domain.Exam> kann nicht in com.gruppe10.examManagement.exam.domain.Exam konvertiert werden
                     new Exam();
         } catch (Exception e) {
             this.IExamInterface = new Exam();
         }
         initializeComponents();
-    }
+    }*/
 
     private void createPruefung() {
         Exam IExamInterface = new Exam();

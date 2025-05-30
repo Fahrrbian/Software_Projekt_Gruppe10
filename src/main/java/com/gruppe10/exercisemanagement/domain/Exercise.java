@@ -2,6 +2,7 @@ package com.gruppe10.exercisemanagement.domain;
 
 import com.gruppe10.base.domain.AbstractEntity;
 import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.submission.domain.Answer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.Nullable;
@@ -40,7 +41,8 @@ public abstract class Exercise extends AbstractEntity<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exam_id")
     private Exam exam;
-
+    
+    public abstract double evaluate(Answer answer);
 
     @Override
     public @Nullable Long getId() {
@@ -82,4 +84,5 @@ public abstract class Exercise extends AbstractEntity<Long> {
     public void setExam(Exam exam) {
         this.exam = exam;
     }
+    
 }

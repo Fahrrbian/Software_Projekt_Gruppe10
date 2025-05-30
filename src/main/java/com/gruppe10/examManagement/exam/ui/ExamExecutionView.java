@@ -6,10 +6,16 @@
 package com.gruppe10.examManagement.exam.ui;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
+import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.ExamSession;
 import com.gruppe10.examManagement.exam.service.ExamService;
+import com.gruppe10.examManagement.exam.service.ExamSessionService;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
+import com.gruppe10.security.AuthenticatedUser;
 import com.gruppe10.timer.Timer;
+import com.gruppe10.usermanagement.domain.User;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -28,15 +34,18 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
+import java.time.Instant;
 import java.util.*;
 
-@Route(value = "exam/:examId", layout = MainLayout.class)
+@Route(value = "exam-appointment/:pruefung_id", layout = MainLayout.class)
 @PageTitle("Prüfung")
 @RolesAllowed({"INSTRUCTOR", "STUDENT"})
 public class ExamExecutionView extends VerticalLayout implements BeforeEnterObserver {
 
+    private final AuthenticatedUser authenticatedUser;
     private final ExerciseService exerciseService;
     private final ExamService examService;
+    private final ExamSessionService examSessionService;
 
     private List<Exercise> exercises;
     private final Map<Long, Answer> userAnswers = new HashMap<>();
@@ -44,29 +53,49 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
     private Timer timer;
 
-    public ExamExecutionView(ExerciseService exerciseService, ExamService examService) {
+    public ExamExecutionView(AuthenticatedUser authenticatedUser, ExerciseService exerciseService, ExamService examService, ExamSessionService examSessionService) {
+        this.authenticatedUser = authenticatedUser;
         this.exerciseService = exerciseService;
         this.examService = examService;
+        this.examSessionService = examSessionService;
         setSizeFull();
         setPadding(true);
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        String examId = event.getRouteParameters().get("examId").orElse(null);
-        if (examId != null) {
-            loadExam(Long.parseLong(examId));
+        String examAppointmentId = event.getRouteParameters().get("pruefung_id").orElse(null);
+        if (examAppointmentId != null) {
+            loadExam(Long.parseLong(examAppointmentId));
         } else {
-            add(new Paragraph("Fehler: Keine Prüfungs-ID angegeben."));
+            add(new Paragraph("Fehler: Keine Prüfungs-Termin-ID angegeben."));
         }
     }
 
-    private void loadExam(Long examId) {
-        exercises = exerciseService.getAllByExamId(examId);
-        System.out.println("Geladene Aufgaben: " + exercises.size());
+    private void loadExam(Long appointmentId) {
+        Optional<User> loggedInUser = authenticatedUser.get();
+        if (loggedInUser.isEmpty()) {
+            Notification.show("Benutzer nicht eingeloggt");
+            return;
+        }
+        User currentUser = loggedInUser.get();
 
-        // Starte Timer – z.B. 30 Minuten
-        timer = new Timer(30 * 60 * 1000L, this::onTimeUp);
+        ExamSession session = examSessionService.getSessionByAppointmentIdAndUser(appointmentId, currentUser.getId());
+        if (session == null) {
+            Notification.show("Keine aktive Prüfungssession gefunden.");
+            return;
+        }
+
+        Exam exam = session.getExam(); // Hole die zugehörige Prüfung
+        exercises = exerciseService.getAllByExamId(exam.getId());
+
+        Instant pruefungsStart = session.getStartTime();
+        long pruefungsDauer = session.getDuration() * 60 * 1000L;
+
+        Timer timer = new Timer(pruefungsStart, pruefungsDauer, () -> {
+            Notification.show("Zeit ist abgelaufen! Prüfung wird beendet.");
+            UI.getCurrent().navigate("exam-summary");
+        });
         add(timer);
 
         showExercise(currentIndex);
@@ -177,6 +206,18 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     private void onTimeUp() {
         Notification.show("Zeit abgelaufen. Prüfung wird abgegeben.");
         submitExam();
+        blockExamAppointment();
+    }
+
+    private void blockExamAppointment() {
+        authenticatedUser.get().ifPresent(user -> {
+            ExamSession session = examSessionService.getActiveSessionByUserId(user.getId());
+            if (session != null) {
+                ExamAppointment appointment = session.getAppointment();
+                appointment.setGesperrt(true);
+                examService.saveExamAppointment(appointment);
+            }
+        });
     }
 
 }

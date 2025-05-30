@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Optional;
 
 /**
  *Diese Klasse ist die List-View um sich mehrere Prüfungstermine anzeigen zu lassen
@@ -148,15 +149,26 @@ public class ExamAppointmentView extends Main implements HasUrlParameter<Long> {
     }
 
     //Parameter beim Seitenaufruf verarbeiten
+    /* Hier auch wieder eine Exception wegen Optional<Exam>  --> java: Inkompatible Typen: java.util.Optional<com.gruppe10.examManagement.exam.domain.Exam> kann nicht in com.gruppe10.examManagement.exam.domain.Exam konvertiert werden*/
     @Override
     public void setParameter(BeforeEvent event,
                              @OptionalParameter Long examId) {
         if (examId != null) {
-            currentExamId = examId;
+            currentExamId = examId;/*
             Exam exam = examService.getById(examId);
             if (exam != null) {
                 examSelect.setValue(exam);
                 refreshGrid();
+            }
+        }*/
+            Optional<Exam> optExam = examService.getById(examId);
+            if (optExam.isPresent()) {
+                Exam exam = optExam.get();       // hier ist es jz wirklich ein Exam, kein Optional
+                examSelect.setValue(exam);
+                refreshGrid();
+            } else {
+                Notification.show("Prüfung mit ID " + examId + " wurde nicht gefunden.",
+                        3000, Notification.Position.MIDDLE);
             }
         }
     }
