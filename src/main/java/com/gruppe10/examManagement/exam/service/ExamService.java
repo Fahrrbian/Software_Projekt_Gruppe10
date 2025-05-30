@@ -8,6 +8,8 @@ package com.gruppe10.examManagement.exam.service;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointmentRepository;
 import com.gruppe10.exercisemanagement.domain.Answer;
 import com.gruppe10.exercisemanagement.domain.AnswerRepository;
 import com.gruppe10.exercisemanagement.domain.Exercise;
@@ -36,14 +38,16 @@ public class ExamService {
     private final RepositoryMethodInvocationListener repositoryMethodInvocationListener;
     private List<ExamListener> listener;
     private SubmissionService submissionService;
+    private final ExamAppointmentRepository examAppointmentRepository;
     private final ExerciseRepository exerciseRepository;
     private final AnswerService answerService;
 
-    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener, SubmissionService submissionService, ExerciseRepository exerciseRepository, AnswerService answerService) {
+    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener, SubmissionService submissionService, ExamAppointmentRepository examAppointmentRepository, ExerciseRepository exerciseRepository, AnswerService answerService) {
         this.submissionService = submissionService;
         this.examRepository = examRepository;
         this.clock = clock;
         this.repositoryMethodInvocationListener = repositoryMethodInvocationListener;
+        this.examAppointmentRepository = examAppointmentRepository;
         this.exerciseRepository = exerciseRepository;
         this.answerService = answerService;
     }
@@ -140,6 +144,10 @@ public class ExamService {
 
     public void submitAnswers(Collection<Answer> answers) {
         answerService.saveAnswers(answers);
+    }
+
+    public void saveExamAppointment(ExamAppointment appointment) {
+        examAppointmentRepository.save(appointment);
     }
 
 }

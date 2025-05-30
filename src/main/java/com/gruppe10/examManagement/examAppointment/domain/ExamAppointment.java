@@ -50,7 +50,6 @@ public class ExamAppointment extends AbstractEntity<Long> {
     @OneToMany(mappedBy = "examAppointment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentExamAppointment> studentExamAppointments = new ArrayList<>();
 
-
     // Getter und Setter folgen
     @Override
     public @Nullable Long getId() {
@@ -79,6 +78,14 @@ public class ExamAppointment extends AbstractEntity<Long> {
 
     public void setAppointmentDate(Instant appointmentDate) {
         this.appointmentDate = appointmentDate;
+    }
+
+    public boolean isGesperrt() {
+        return gesperrt;
+    }
+
+    public void setGesperrt(boolean gesperrt) {
+        this.gesperrt = gesperrt;
     }
 
     public List<StudentExamAppointment> getStudentExamAppointments() {
