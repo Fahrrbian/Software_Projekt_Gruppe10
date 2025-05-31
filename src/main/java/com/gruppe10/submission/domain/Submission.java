@@ -4,6 +4,9 @@ import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.usermanagement.domain.Student;
 import jakarta.persistence.*;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,8 +35,38 @@ public class Submission {
     private Double totalPoints;
     private Boolean passed;
 
+    private Instant submittedAt;
+
     @ElementCollection
+    @CollectionTable(name = "submission_points",
+            joinColumns = @JoinColumn(name = "submission_id"))
+    @MapKeyColumn(name = "question_id")
+    @Column(name = "points")
     private Map<String, Double> aufgabenErgebnisse;
+
+    @Enumerated(EnumType.STRING)
+    private SubmissionStatus status;
+
+    @OneToMany(mappedBy = "submission",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<SubmissionAnswer> answers = new ArrayList<>();
+
+    public SubmissionStatus getStatus() {
+        return status;
+    }
+
+    public List<SubmissionAnswer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<SubmissionAnswer> answers) {
+        this.answers = answers;
+    }
+
+    public void setStatus(SubmissionStatus status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;
@@ -81,5 +114,19 @@ public class Submission {
 
     public void setAufgabenErgebnisse(Map<String, Double> aufgabenErgebnisse) {
         this.aufgabenErgebnisse = aufgabenErgebnisse;
+    }
+
+    public Instant getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(Instant submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+    public double calculateTotal() {
+        return aufgabenErgebnisse.values()
+                .stream()
+                .mapToDouble(Double::doubleValue)
+                .sum();
     }
 }
