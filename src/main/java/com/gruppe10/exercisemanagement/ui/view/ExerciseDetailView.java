@@ -1,5 +1,6 @@
 package com.gruppe10.exercisemanagement.ui.view;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.Layout.TimedMainLayout;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
@@ -15,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Optional;
 
-@Route(value = "exercise/:exerciseId", layout = TimedMainLayout.class)
+@Route(value = "exercise/:exerciseId", layout = MainLayout.class)
 @RolesAllowed("INSTRUCTOR")
 public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObserver {
 
@@ -72,6 +73,15 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         } else if (exercise instanceof MultipleChoice multipleChoice) {
             add(new H3("Aufgabentyp: Multiple Choice"));
             showChoiceOptions(multipleChoice.getChoiceOptions().stream().toList());
+        }
+        else if (exercise instanceof AssignmentExercise assignment) {
+            add(new H3("Aufgabentyp: Zuordnungsaufgabe"));
+            VerticalLayout pairsLayout = new VerticalLayout();
+            assignment.getAssignmentPairs().forEach(pair -> {
+                Span pairSpan = new Span(pair.getPartOne() + " ➝ " + pair.getPartTwo());
+                pairsLayout.add(pairSpan);
+            });
+            add(pairsLayout);
         } else {
             add(new H3("Aufgabentyp: " + exercise.getClass().getSimpleName()));
         }
@@ -85,8 +95,8 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         for (ChoiceOption option : options) {
             Span optionSpan = new Span((option.isCorrect() ? "✔ " : "❌ ") + option.getText());
             optionSpan.getStyle()
-                    .set("color", option.isCorrect() ? "green" : "gray")
-                    .set("font-size", "small");
+                   .set("color", option.isCorrect() ? "green" : "gray")
+                   .set("font-size", "small");
             optionsLayout.add(optionSpan);
         }
 
