@@ -1,10 +1,14 @@
 package com.gruppe10.submission.service;
 
 import com.gruppe10.submission.domain.Submission;
+import com.gruppe10.submission.domain.SubmissionAnswer;
+import com.gruppe10.submission.domain.SubmissionStatus;
 import com.gruppe10.usermanagement.domain.User;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.usermanagement.domain.Student;
@@ -22,12 +26,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SubmissionService {
     private final SubmissionRepo submissionRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public SubmissionService(SubmissionRepo submissionRepository) {
+
+    public SubmissionService(SubmissionRepo submissionRepository, ApplicationEventPublisher eventPublisher) {
         this.submissionRepository = submissionRepository;
+        this.eventPublisher = eventPublisher;
     }
 
-    public Submission bewerten(Exam exam, User user, Map<String, Double> punkteMap) {
+    @Transactional
+    public Submission bewerten(Exam exam, User user, Map<String, Double> punkteMap, Map<String, String> rawAnswers) {
         double summe = punkteMap.values().stream().mapToDouble(Double::doubleValue).sum();
         boolean bestanden = summe >= exam.getBestehensgrenze();
 
@@ -44,7 +52,23 @@ public class SubmissionService {
         sub.setTotalPoints(summe);
         sub.setPassed(bestanden);
 
-        return submissionRepository.save(sub);
+        if (exam.isHasFreeTextQuestions()) {
+            sub.setStatus(SubmissionStatus.PENDING_REVIEW);
+        } else {
+            sub.setStatus(SubmissionStatus.AUTO_GRADED);
+        }
+
+        rawAnswers.forEach((questionId, answerData) -> {
+            SubmissionAnswer sa = new SubmissionAnswer();
+            sa.setQuestionId(questionId);
+            sa.setAnswerData(answerData);
+            sa.setSubmission(sub);
+            sub.getAnswers().add(sa);
+        });
+
+        Submission saved = submissionRepository.save(sub);
+        eventPublisher.publishEvent(new SubmissionSubmittedEvent(this, saved));
+        return saved;
     }
     public List<Submission> getSubmissionsByExam(Exam exam) {
 
@@ -66,5 +90,15 @@ public class SubmissionService {
     public int countPassed(Exam exam) {
 
         return submissionRepository.countByExamAndPassedTrue(exam);
+    }
+    @Transactional(readOnly = true)
+    public Optional<Submission> getSubmissionByStudentAndExam(Student student, Exam exam) {
+        return submissionRepository.findByStudentAndExam(student, exam);
+    }
+    public Submission save(Submission submission) {
+        return submissionRepository.save(submission);
+    }
+    public Optional<Submission> findById(Long id) {
+        return submissionRepository.findById(id);
     }
 }

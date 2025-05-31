@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -86,6 +87,7 @@ public class ExamService {
     public List<Exam> list(Pageable pageable) {
         return examRepository.findAllBy(pageable).toList();
     }
+
     public void startListening(ExamListener examListener) {
         if (listener == null) {
             listener = new ArrayList<>();
@@ -97,6 +99,9 @@ public class ExamService {
             examListener.getUpdate();
         }
     }
+    public Exam save(Exam exam) {
+        return examRepository.save(exam);
+    }
 
     public Exam getFirst() {
         return examRepository.findAll().get(0);
@@ -106,9 +111,9 @@ public class ExamService {
         return examRepository.findAll().get(examRepository.findAll().size()-1);
     }
 
-    public Exam getById(Long id) {
+    public Optional<Exam> getById(Long id) {
         try{
-            return  examRepository.findById(id).get();
+            return  examRepository.findById(id);
         }catch (Exception e) {
             return null;
         }

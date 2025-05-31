@@ -1,5 +1,6 @@
 package com.gruppe10.exercisemanagement.domain;
 
+import com.gruppe10.submission.domain.Answer;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -27,5 +28,10 @@ public class MultipleChoice extends Exercise{
 
     public void removeChoiceOption(ChoiceOption option) {
         choiceOptions.remove(option);
+    }
+
+    @Override
+    public double evaluate(Answer answer) {
+        return 0;
     }
 }
