@@ -37,6 +37,10 @@ public class TagService {
         });
     }
 
+    public Optional<Tag> findByName(String name) {
+        return repository.findByName(name);
+    }
+
     public Tag update(Long id, Tag updated) {
         return repository.findById(id)
                 .map(existing -> {
