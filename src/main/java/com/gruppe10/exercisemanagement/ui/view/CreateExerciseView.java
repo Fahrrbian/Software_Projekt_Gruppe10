@@ -166,8 +166,12 @@ public class CreateExerciseView extends VerticalLayout {
     private void addChoiceOptionEditor() {
         ChoiceOptionEditor editor = new ChoiceOptionEditor();
         editor.setOnDelete(() -> {
-            choiceOptionsLayout.remove(editor);
-            choiceOptionEditors.remove(editor);
+            if (choiceOptionEditors.size() > 1) { // Nur löschen, wenn mehr als eines vorhanden ist
+                choiceOptionsLayout.remove(editor);
+                choiceOptionEditors.remove(editor);
+            } else {
+                Notification.show("Es muss mindestens eine Antwortmöglichkeit vorhanden sein.", 3000, Notification.Position.MIDDLE);
+            }
         });
         choiceOptionEditors.add(editor);
         choiceOptionsLayout.add(editor);
@@ -176,8 +180,12 @@ public class CreateExerciseView extends VerticalLayout {
     private void addAssignmentPairEditor() {
         AssignmentPairEditor editor = new AssignmentPairEditor();
         editor.setOnDelete(() -> {
-            assignmentPairsLayout.remove(editor);
-            assignmentPairEditors.remove(editor);
+            if (assignmentPairEditors.size() > 1) {
+                assignmentPairsLayout.remove(editor);
+                assignmentPairEditors.remove(editor);
+            } else {
+                Notification.show("Es muss mindestens ein Zuordnungspaar vorhanden sein.", 3000, Notification.Position.MIDDLE);
+            }
         });
         assignmentPairEditors.add(editor);
         assignmentPairsLayout.add(editor);
@@ -211,7 +219,8 @@ public class CreateExerciseView extends VerticalLayout {
             if (specificOptionsValid) {
                 long correctCount = choiceOptionEditors.stream().filter(ChoiceOptionEditor::isCorrect).count();
                 if (correctCount != 1) {
-                    Notification.show("Für Single Choice muss genau eine Antwort richtig sein.");
+                    Notification.show("Für Single Choice muss genau eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE);
+
                     specificOptionsValid = false;
                 }
             }
@@ -224,7 +233,7 @@ public class CreateExerciseView extends VerticalLayout {
             }
             if (specificOptionsValid) {
                 if (choiceOptionEditors.stream().noneMatch(ChoiceOptionEditor::isCorrect)) {
-                    Notification.show("Für Multiple Choice muss mindestens eine Antwort richtig sein.");
+                    Notification.show("Für Multiple Choice muss mindestens eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE);
                     specificOptionsValid = false;
                 }
             }
@@ -264,7 +273,7 @@ public class CreateExerciseView extends VerticalLayout {
             freetextExerciseService.createFreetextExercise(freetext);
         }
 
-        Notification.show("Aufgabe gespeichert!");
+        Notification.show("Aufgabe gespeichert!", 3000, Notification.Position.MIDDLE);
         clearInputFields();
     }
 

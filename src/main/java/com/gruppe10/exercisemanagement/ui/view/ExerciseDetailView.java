@@ -95,8 +95,8 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         for (ChoiceOption option : options) {
             Span optionSpan = new Span((option.isCorrect() ? "✔ " : "❌ ") + option.getText());
             optionSpan.getStyle()
-                    .set("color", option.isCorrect() ? "green" : "gray")
-                    .set("font-size", "small");
+                   .set("color", option.isCorrect() ? "green" : "gray")
+                   .set("font-size", "small");
             optionsLayout.add(optionSpan);
         }
 
