@@ -96,6 +96,18 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<ExamExercise> getExamExercises() {
+        return examExercises;
+    }
+
+    public void setExamExercises(List<ExamExercise> examExercises) {
+        this.examExercises = examExercises;
+    }
+
     @Override
     public String getTitle() {
         return title;

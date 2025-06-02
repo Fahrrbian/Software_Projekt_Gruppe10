@@ -27,7 +27,7 @@ public class EvaluationService {
             double pts = q.evaluate(a);
             perQuestionPoints.put(q.getId(), pts); Wie soll das funktionieren, wenn in der perQuestionPoints ein String Wert in der map erwartet wird? */
             String questionId = q.getId().toString();
-            Answer a = answers.get(q.getId());
+            Answer a = answers.get(questionId);
             double pts = q.evaluate(a);
             perQuestionPoints.put(questionId, pts);
 
