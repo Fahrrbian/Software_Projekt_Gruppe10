@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * SubmissionRepo.java
@@ -21,9 +22,10 @@ import java.util.List;
 public interface SubmissionRepo extends JpaRepository<Submission, Long> {
     List<Submission> findByExam(Exam exam);
     List<Submission> findByStudent(Student student);
+    Optional<Submission> findById(Long id);
     int countByExam(Exam exam);
     int countByExamAndPassedTrue(Exam exam);
     @Query("SELECT s FROM Submission s LEFT JOIN FETCH s.aufgabenErgebnisse WHERE s.student = :student")
     List<Submission> findByStudentWithAufgabenErgebnisseEager(@Param("student") Student student);
-
+    Optional<Submission> findByStudentAndExam(Student student, Exam exam);
 }

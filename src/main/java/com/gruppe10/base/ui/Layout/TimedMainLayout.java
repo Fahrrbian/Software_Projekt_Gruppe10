@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @UIScope
-@CssImport("./styles/MainLayout.css")
+@CssImport(value = "./styles/MainLayout.css", themeFor = "vaadin-app-layout")
 public class TimedMainLayout extends MainLayout implements RouterLayout {
 
     private final Div idleIndicator = new Div("30min");;
@@ -31,21 +31,15 @@ public class TimedMainLayout extends MainLayout implements RouterLayout {
     public TimedMainLayout(UserService userService, AuthenticatedUser authenticatedUser) {
         super(userService, authenticatedUser);
         //HorizontalLayout header = new HorizontalLayout();
-        idleIndicator.setId("idle-indicator");
-        //header.addComponentAtIndex(1, idleIndicator);
+          idleIndicator.setId("idle-indicator");
+        // header.addComponentAtIndex(1, idleIndicator);
 
         header.add(idleIndicator);
     }
 
         // addToNavbar(header);
-/*
-    @Override
-            protected void createHeader() {
-        super.createHeader();
-        idleIndicator.setId("idle-indicator");
-        header.add(idleIndicator);
-        //addToNavbar(idleIndicator);
-    }*/
+
+
         @Override
         protected void onAttach(AttachEvent attachEvent) {
             super.onAttach(attachEvent);

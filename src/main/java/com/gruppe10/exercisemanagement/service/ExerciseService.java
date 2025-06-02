@@ -48,7 +48,7 @@ public class ExerciseService {
 
     public Slice<Exercise> getByTags(List<Tag> tags, Pageable pageable) {
         if (tags == null || tags.isEmpty()) {
-            return getAll(pageable); // Falls keine Tags gewählt -> alles
+            return getAll(pageable);
         }
         return repository.findDistinctByTagsIn(tags, pageable);
     }

@@ -1,5 +1,6 @@
 package com.gruppe10.Excel_Export.ui;
 
+import com.gruppe10.base.ui.Layout.TimedMainLayout;
 import com.gruppe10.base.ui.security.SecurityUtils;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.exam.domain.Exam;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 
 
-@Route("auswertung")
+@Route(value = "auswertung", layout = TimedMainLayout.class)
 @RolesAllowed("INSTRUCTOR")
 public class InstructorExamResultsView extends VerticalLayout{
 

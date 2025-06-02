@@ -5,9 +5,10 @@
 
 package com.gruppe10.usermanagement.ui.view;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
-import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.exam.domain.ExamRepository;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointmentRepository;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
 import com.vaadin.flow.component.UI;
@@ -19,6 +20,7 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
@@ -30,19 +32,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.List;
 import java.util.Optional;
 
-@Route("user-info")
+@Route(value = "user-info", layout = MainLayout.class)
 @PageTitle("User Info")
+@Menu(order = 2, icon = "vaadin:cogs", title = "Profil")
 @RolesAllowed({"INSTRUCTOR", "STUDENT"})
 public class UserInfoView extends VerticalLayout {
 
     private final UserService userService;
 
     @Autowired
-    private ExamRepository examRepository;
+    private ExamAppointmentRepository examDateRepository;
 
-    UserInfoView(UserService userService, ExamRepository examRepository) {
+    UserInfoView(UserService userService, ExamAppointmentRepository examDateRepository) {
         this.userService = userService;
-        this.examRepository = examRepository;
+        this.examDateRepository = examDateRepository;
         setPadding(true);
         setSpacing(true);
         setWidthFull();
@@ -83,12 +86,12 @@ public class UserInfoView extends VerticalLayout {
         } else if ("STUDENT".equals(user.getRoleAsString())) {
             add(new H3("Prüfungshistorie"));
 
-            Grid<Exam> examGrid = new Grid<>(Exam.class, false);
+            Grid<ExamAppointment> examGrid = new Grid<>(ExamAppointment.class, false);
             examGrid.addColumn(exam -> exam.getTitle()).setHeader("Modul");
-            examGrid.addColumn(exam -> exam.getCreationDate()).setHeader("Prüfungstermin");
-            examGrid.addColumn(exam -> exam.getGesamtpunkte()).setHeader("Note"); //Hier benötigen wir eine Punktzahl, aus der sich die Note errechnen lässt. Berechnung in einer separaten Methode.
+            examGrid.addColumn(exam -> exam.getAppointmentDate()).setHeader("Prüfungstermin");
+            examGrid.addColumn(exam -> exam.getId()).setHeader("Note"); //Hier benötigen wir eine Punktzahl, aus der sich die Note errechnen lässt. Berechnung in einer separaten Methode.
 
-            List<Exam> examHistory = examRepository.findByCreator(user); //Hier benötigen wir die Prüfungen eines Studenten (vllt. mit Prüfungstermin-Entität)
+            List<ExamAppointment> examHistory = examDateRepository.findAll(); //Hier benötigen wir die Prüfungen eines Studenten (vllt. mit Prüfungstermin-Entität)
             examGrid.setItems(examHistory);
 
             examGrid.setWidth("90%");
