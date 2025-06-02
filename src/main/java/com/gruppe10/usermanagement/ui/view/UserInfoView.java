@@ -55,13 +55,13 @@ public class UserInfoView extends VerticalLayout {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UserDetails userDetails) {
             Optional<User> optionalUser = userService.findByEmail(userDetails.getUsername());
-            optionalUser.ifPresent(user -> { initUserInfoView(user); });
+            optionalUser.ifPresent(user -> { initUI(user); });
         } else {
             add(new Div("Fehler beim Laden des Benutzers"));
         }
     }
 
-    private void initUserInfoView(User user) {
+    private void initUI(User user) {
         add(new H2("Profil von " + user.getForename() + " " + user.getSurname()));
 
         // Gemeinsame Informationen

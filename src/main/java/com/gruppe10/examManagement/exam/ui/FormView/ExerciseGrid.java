@@ -1,7 +1,11 @@
 package com.gruppe10.examManagement.exam.ui.FormView;
 
 import com.gruppe10.exercisemanagement.domain.Exercise;
+import com.gruppe10.exercisemanagement.domain.MultipleChoice;
+import com.gruppe10.exercisemanagement.domain.SingleChoice;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
+import com.gruppe10.exercisemanagement.service.MultipleChoiceService;
+import com.gruppe10.exercisemanagement.service.SingleChoiceService;
 import com.gruppe10.taskmanagement.domain.Task;
 import com.gruppe10.taskmanagement.service.TaskService;
 import com.vaadin.flow.component.button.Button;
@@ -11,6 +15,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -22,10 +27,14 @@ public class ExerciseGrid extends VerticalLayout {
     private final Grid<Exercise> grid;
     private final Button addExerciseBtn;
     private final ExerciseService exerciseService;
+    //private final SingleChoiceService singleChoiceService;
+    //private final MultipleChoiceService multipleChoiceService;
     private Long currentPruefungId;
 
     public ExerciseGrid(ExerciseService exerciseService) {
         this.exerciseService = exerciseService;
+        //this.singleChoiceService = singleChoiceService;
+        //this.multipleChoiceService = multipleChoiceService;
 
         //Grid erstellen
         //Die Columns mit Exercise Daten füllen
@@ -42,7 +51,7 @@ public class ExerciseGrid extends VerticalLayout {
         });
 
         // Button erstellen
-        addExerciseBtn = new Button("Neue Aufgabe", event -> addNewTask());
+        addExerciseBtn = new Button("Neue Aufgabe", event -> addNewExercise());
         addExerciseBtn.setIcon(new Icon(VaadinIcon.PLUS));
         addExerciseBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -64,11 +73,11 @@ public class ExerciseGrid extends VerticalLayout {
 
     public void refreshData() {
         if (currentPruefungId != null) {
-            grid.setItems(exerciseService.getExerciseForPruefung(currentPruefungId));
+            grid.setItems(exerciseService.getAllByExamId(currentPruefungId));
         }
     }
 
-    private void addNewTask() {
+    private void addNewExercise() {
         if (currentPruefungId != null) {
             Dialog dialog = new Dialog();
             dialog.setHeaderTitle("Neue Aufgabe");
@@ -76,9 +85,33 @@ public class ExerciseGrid extends VerticalLayout {
             ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService, currentPruefungId);
 
             Button saveButton = new Button("Speichern", e -> {
+                /*
+                Exercise exercise;
 
-                /** ToDo: Hier die erstellungslogik für Exercise-Entity hinterlegen
-                 **/
+                String aufgabenText = exercise.getExerciseText();
+                int punkte = exercise.getScore();
+
+                switch (typ) {
+                    case "SingleChoice":
+                        SingleChoice single = new SingleChoice();
+                        single.setExerciseText(aufgabenText);
+                        single.setScore(punkte);
+                        exercise = singleChoiceService.create(single);
+                        break;
+                    case "MultipleChoice":
+                        MultipleChoice multi = new MultipleChoice();
+                        multi.setExerciseText(aufgabenText);
+                        multi.setScore(punkte);
+                        exercise = multipleChoiceService.create(multi);
+                        break;
+                    default:
+                        Notification.show("Unbekannter Aufgabentyp");
+                        return;
+                }
+                exerciseService.assignExerciseToPruefung(exercise.getId(), currentPruefungId);
+                refreshData();
+                dialog.close();
+                 */
 
             });
 
