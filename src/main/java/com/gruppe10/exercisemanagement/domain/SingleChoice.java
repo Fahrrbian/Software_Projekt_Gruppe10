@@ -6,17 +6,25 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.*;
+import org.jspecify.annotations.Nullable;
+
 import java.util.*;
 
 @Entity
 @DiscriminatorValue("SingleChoice")
-public class SingleChoice extends Exercise{
+public class SingleChoice extends Exercise {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
     @OneToMany(
-            mappedBy = "exercise",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.EAGER
     )
+    @JoinColumn(name = "single_choice_id")
     private Set<ChoiceOption> choiceOptions = new HashSet<>();
 
 
@@ -28,7 +36,7 @@ public class SingleChoice extends Exercise{
             );
     }
         return choiceOptions.stream()
-                .filter(opt -> opt.getId().equals(scAnswer.getSelectedOptionId()))
+                .filter(opt -> opt.getId().toString().equals(scAnswer.getSelectedOptionId()))
                 .findFirst()
                 .map(ChoiceOption::isCorrect)
                 .map(correct -> correct ? getScore() : 0.0)  // statt getMaxPoints()
@@ -51,5 +59,15 @@ public class SingleChoice extends Exercise{
 
     public void removeChoiceOption(ChoiceOption option) {
         choiceOptions.remove(option);
+    }
+
+    @Override
+    public @Nullable Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 }

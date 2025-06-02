@@ -4,6 +4,7 @@ import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.submission.domain.SubmissionAnswer;
 import com.gruppe10.submission.domain.SubmissionStatus;
 import com.gruppe10.usermanagement.domain.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -28,11 +29,21 @@ public class SubmissionService {
     private final SubmissionRepo submissionRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-
+    @Autowired
     public SubmissionService(SubmissionRepo submissionRepository, ApplicationEventPublisher eventPublisher) {
         this.submissionRepository = submissionRepository;
         this.eventPublisher = eventPublisher;
     }
+    public SubmissionService(SubmissionRepo submissionRepository) {
+        this.submissionRepository = submissionRepository;
+        this.eventPublisher = new ApplicationEventPublisher() {
+            @Override
+            public void publishEvent(Object event) {
+
+            }
+        };
+    }
+
 
     @Transactional
     public Submission bewerten(Exam exam, User user, Map<String, Double> punkteMap, Map<String, String> rawAnswers) {
