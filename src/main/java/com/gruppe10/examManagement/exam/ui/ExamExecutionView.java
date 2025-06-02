@@ -10,6 +10,8 @@ import com.gruppe10.base.ui.view.MainView;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.service.ExamService;
+import com.gruppe10.examManagement.exam.service.ExamSessionService;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.gruppe10.submission.domain.FreeTextAnswer;
@@ -35,10 +37,11 @@ import com.vaadin.flow.router.*;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 
-@Route(value = "exam/:examId", layout = MainLayout.class)
+@Route(value = "exam-appointment/:pruefung_id", layout = MainLayout.class)
 @PageTitle("Prüfung")
 @RolesAllowed({"INSTRUCTOR", "STUDENT"})
 public class ExamExecutionView extends VerticalLayout implements BeforeEnterObserver {
@@ -344,6 +347,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     private void onTimeUp() {
         Notification.show("Zeit abgelaufen. Prüfung wird abgegeben.");
         submitExam();
+        blockExamAppointment();
     }
 }
 
