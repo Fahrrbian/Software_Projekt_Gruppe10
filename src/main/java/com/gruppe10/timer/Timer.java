@@ -14,18 +14,18 @@ import java.time.Instant;
 public class Timer extends HorizontalLayout {
 
     private final Span timeLabel = new Span();
-    private final Instant startTime;
-    private final long duration;
+    private final long duration; // in Millisekunden
     private final Runnable onTimeUp;
 
     private final java.util.Timer timer = new java.util.Timer(true);
     private final UI ui;
+    private final Instant startTime;
 
-    public Timer(Instant startTime, long duration, Runnable onTimeUp) {
-        this.startTime = startTime;
+    public Timer(long duration, Runnable onTimeUp) {
         this.duration = duration;
         this.onTimeUp = onTimeUp;
         this.ui = UI.getCurrent();
+        this.startTime = Instant.now();
 
         add(new Span("Verbleibende Zeit: "), timeLabel);
 
