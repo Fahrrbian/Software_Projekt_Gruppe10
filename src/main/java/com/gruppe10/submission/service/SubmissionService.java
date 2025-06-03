@@ -67,4 +67,8 @@ public class SubmissionService {
 
         return submissionRepository.countByExamAndPassedTrue(exam);
     }
+
+    public boolean existsByExam(Exam exam) {
+        return submissionRepository.existsByExam(exam);
+    }
 }

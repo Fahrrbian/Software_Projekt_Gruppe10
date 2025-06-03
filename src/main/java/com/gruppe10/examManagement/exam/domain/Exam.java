@@ -61,7 +61,8 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     @OneToMany(
             mappedBy = "exam",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
     )
     @OrderBy("position ASC")
     private List<ExamExercise> examExercises = new ArrayList<>();
@@ -158,6 +159,26 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     public void removeExamAppointment(ExamAppointment appointment) {
         examAppointments.remove(appointment);
         appointment.setExam(null);
+    }
+
+    public List<ExamExercise> getExamExercises() {
+        return examExercises;
+    }
+
+    public void setExamExercises(List<ExamExercise> examExercises) {
+        this.examExercises = examExercises;
+    }
+
+    public void addExamExercise(ExamExercise examExercise) {
+        if (!this.examExercises.contains(examExercise)) {
+            this.examExercises.add(examExercise);
+            examExercise.setExam(this);
+        }
+    }
+
+    public void removeExamExercise(ExamExercise examExercise) {
+        this.examExercises.remove(examExercise);
+        examExercise.setExam(null);
     }
 
 

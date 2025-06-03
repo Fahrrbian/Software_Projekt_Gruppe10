@@ -1,7 +1,6 @@
 package com.gruppe10.exercisemanagement.ui.view;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
-import com.gruppe10.base.ui.Layout.TimedMainLayout;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.*;
 import com.vaadin.flow.component.button.Button;
@@ -11,8 +10,14 @@ import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -42,17 +47,15 @@ public class CreateExerciseView extends VerticalLayout {
     private final TextArea exerciseTextField = new TextArea("Aufgabenstellung eingeben");
     private final TextField scoreField = new TextField("Mögliche Punkte");
     private final ComboBox<String> typDropdown = new ComboBox<>("Aufgabentyp");
-    private final Div specificContent = new Div();
-    private final Button examButton = new Button("Zu einer Prüfung hinzufügen...");
+    private final Div specificContentContainer  = new Div();
     private final Button saveButton = new Button("Speichern");
     private final MultiSelectComboBox<Tag> tagSelector = new MultiSelectComboBox<>("Tags");
     private final Set<Tag> selectedTags = new HashSet<>();
 
-    private final VerticalLayout choiceOptionsLayout = new VerticalLayout();
     private final List<ChoiceOptionEditor> choiceOptionEditors = new ArrayList<>();
-
-    private final VerticalLayout assignmentPairsLayout = new VerticalLayout();
     private final List<AssignmentPairEditor> assignmentPairEditors = new ArrayList<>();
+    private final VerticalLayout editorItemsContainer = new VerticalLayout();
+    private VerticalLayout currentSectionForEditors;
 
     @Autowired
     public CreateExerciseView(FreetextExerciseService freetextExerciseService, SingleChoiceService singlechoiceService, MultipleChoiceService multipleChoiceService, TagService tagService, AssignmentExerciseService assignmentExerciseService) {
@@ -82,18 +85,19 @@ public class CreateExerciseView extends VerticalLayout {
         typDropdown.addValueChangeListener(event -> updateSpecificContent(event.getValue()));
         typDropdown.setValue("Freitextaufgabe");
 
-        exerciseTextField.setWidthFull();
         exerciseTextField.setPlaceholder("Aufgabenstellung eingeben");
 
         scoreField.setPlaceholder("Punkte");
-        scoreField.setWidth("200px");
+
+        Tooltip.forComponent(tagSelector)
+                .withText("Um neue Tags hinzuzufügen, geben Sie den Namen ein und drücken Sie Enter. Bestehende Tags können Sie auswählen.")
+                .withPosition(Tooltip.TooltipPosition.BOTTOM_START);
 
         tagSelector.setItems(tagService.getAll());
         tagSelector.setItemLabelGenerator(Tag::getName);
         tagSelector.setClearButtonVisible(true);
         tagSelector.setAllowCustomValue(true);
         tagSelector.setPlaceholder("Tags auswählen oder neu eingeben...");
-        tagSelector.setWidthFull();
 
         tagSelector.addCustomValueSetListener(event -> {
             String newTagName = event.getDetail().trim();
@@ -109,20 +113,12 @@ public class CreateExerciseView extends VerticalLayout {
             selectedTags.addAll(event.getValue());
         });
 
-        specificContent.setWidthFull();
-        specificContent.getStyle().set("padding", "0");
-        specificContent.getStyle().set("margin", "0");
+        specificContentContainer.setWidthFull();
+        specificContentContainer.getStyle().set("padding", "0");
+        specificContentContainer.getStyle().set("margin", "0");
 
-        choiceOptionsLayout.setPadding(false);
-        choiceOptionsLayout.setMargin(false);
-        choiceOptionsLayout.setSpacing(false);
-
-        assignmentPairsLayout.setPadding(false);
-        assignmentPairsLayout.setMargin(false);
-        assignmentPairsLayout.setSpacing(false);
-
-        formLayout.add(typDropdown, scoreField, exerciseTextField, tagSelector);
-        add(formLayout, specificContent, saveButton);
+        formLayout.add(typDropdown, scoreField, exerciseTextField,tagSelector);
+        add(formLayout, specificContentContainer, saveButton);
 
         binder.forField(exerciseTextField)
                 .asRequired("Aufgabentext darf nicht leer sein")
@@ -140,55 +136,82 @@ public class CreateExerciseView extends VerticalLayout {
         updateSpecificContent(typDropdown.getValue());
     }
 
+    private VerticalLayout createSection(String titleText) {
+        VerticalLayout sectionLayout = new VerticalLayout();
+        sectionLayout.setPadding(true);
+        sectionLayout.setSpacing(false);
+        sectionLayout.setWidthFull();
+        sectionLayout.getStyle()
+                .set("background-color", "var(--lumo-base-color)")
+                .set("border", "1px solid var(--lumo-contrast-10pct)")
+                .set("border-radius", "var(--lumo-border-radius-m)")
+                .set("margin-top", "1.5em");
+        sectionLayout.getStyle().set("margin-bottom", "0");
+
+        H3 sectionTitle = new H3(titleText);
+        sectionTitle.getStyle().set("margin-top", "0").set("margin-bottom", "0.8em");
+        sectionLayout.add(sectionTitle);
+        return sectionLayout;
+    }
+
     private void updateSpecificContent(String exerciseType) {
         exerciseTextField.setInvalid(false);
         scoreField.setInvalid(false);
-        specificContent.removeAll();
-        choiceOptionsLayout.removeAll();
+        specificContentContainer.removeAll();
         choiceOptionEditors.clear();
-        assignmentPairsLayout.removeAll();
         assignmentPairEditors.clear();
+        editorItemsContainer.removeAll();
 
         if ("Single Choice".equals(exerciseType) || "Multiple Choice".equals(exerciseType)) {
-            specificContent.add(choiceOptionsLayout);
+            currentSectionForEditors = createSection("Auswahlmöglichkeiten");
+            currentSectionForEditors.add(editorItemsContainer); // Füge den Container für Editoren hinzu
+            specificContentContainer.add(currentSectionForEditors);
+
             addChoiceOptionEditor();
+
             Button addOptionButton = new Button("+ Antwortmöglichkeit hinzufügen", event -> addChoiceOptionEditor());
-            specificContent.add(addOptionButton);
+            addOptionButton.getStyle().set("margin-top", "1em");
+            currentSectionForEditors.add(addOptionButton);
         }
         else if ("Zuordnungsaufgabe".equals(exerciseType)) {
-            specificContent.add(assignmentPairsLayout);
+            currentSectionForEditors = createSection("Zuordnungspaare");
+            currentSectionForEditors.add(editorItemsContainer);
+            specificContentContainer.add(currentSectionForEditors);
+
             addAssignmentPairEditor();
+
             Button addPairButton = new Button("+ Zuordnungspaar hinzufügen", event -> addAssignmentPairEditor());
-            specificContent.add(addPairButton);
+            addPairButton.getStyle().set("margin-top", "1em");
+            currentSectionForEditors.add(addPairButton);
         }
     }
 
     private void addChoiceOptionEditor() {
         ChoiceOptionEditor editor = new ChoiceOptionEditor();
         editor.setOnDelete(() -> {
-            if (choiceOptionEditors.size() > 1) { // Nur löschen, wenn mehr als eines vorhanden ist
-                choiceOptionsLayout.remove(editor);
+            if (choiceOptionEditors.size() > 1) {
+                editorItemsContainer.remove(editor);
                 choiceOptionEditors.remove(editor);
             } else {
                 Notification.show("Es muss mindestens eine Antwortmöglichkeit vorhanden sein.", 3000, Notification.Position.MIDDLE);
             }
         });
         choiceOptionEditors.add(editor);
-        choiceOptionsLayout.add(editor);
+        editorItemsContainer.add(editor);
     }
 
     private void addAssignmentPairEditor() {
         AssignmentPairEditor editor = new AssignmentPairEditor();
         editor.setOnDelete(() -> {
             if (assignmentPairEditors.size() > 1) {
-                assignmentPairsLayout.remove(editor);
+                editorItemsContainer.remove(editor);
                 assignmentPairEditors.remove(editor);
             } else {
                 Notification.show("Es muss mindestens ein Zuordnungspaar vorhanden sein.", 3000, Notification.Position.MIDDLE);
             }
         });
         assignmentPairEditors.add(editor);
-        assignmentPairsLayout.add(editor);
+        editorItemsContainer.add(editor);
     }
 
     private void save() {

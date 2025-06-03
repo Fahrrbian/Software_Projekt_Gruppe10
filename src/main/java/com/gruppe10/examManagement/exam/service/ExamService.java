@@ -119,4 +119,12 @@ public class ExamService {
         return examRepository.findByCreator(instructor);
     }
 
+    public List<Exam> getAllExams() {
+        return examRepository.findAll();
+    }
+
+    public Exam saveExam(Exam exam) {
+        return examRepository.save(exam);
+    }
+
 }

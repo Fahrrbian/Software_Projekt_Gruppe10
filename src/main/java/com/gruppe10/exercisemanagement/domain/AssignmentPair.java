@@ -12,10 +12,10 @@ public class AssignmentPair extends AbstractEntity<Long>{
     @Column(name = "pair_id")
     private Long id;
 
-    @Column(name = "part_one", nullable = false)
+    @Column(name = "part_one", nullable = false, length = 1000)
     private String partOne;
 
-    @Column(name = "part_two", nullable = false)
+    @Column(name = "part_two", nullable = false, length = 1000)
     private String partTwo;
 
     @ManyToOne(fetch = FetchType.LAZY)

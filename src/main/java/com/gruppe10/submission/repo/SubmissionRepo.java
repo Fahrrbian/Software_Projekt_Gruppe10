@@ -25,5 +25,6 @@ public interface SubmissionRepo extends JpaRepository<Submission, Long> {
     int countByExamAndPassedTrue(Exam exam);
     @Query("SELECT s FROM Submission s LEFT JOIN FETCH s.aufgabenErgebnisse WHERE s.student = :student")
     List<Submission> findByStudentWithAufgabenErgebnisseEager(@Param("student") Student student);
+    boolean existsByExam(Exam exam);
 
 }
