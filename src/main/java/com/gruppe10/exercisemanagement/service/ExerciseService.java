@@ -9,6 +9,7 @@ import com.gruppe10.taskmanagement.domain.Task;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,14 +66,14 @@ public class ExerciseService {
     public List<Exercise> getAllByExamId(Long examId) {
         return repository.findByExam_Id(examId);
     }
-
+    @Transactional
     public void assignExerciseToPruefung(Long exerciseId, Long examId) {
         Exercise exercise = repository.findById(exerciseId)
                 .orElseThrow(() -> new RuntimeException("Aufgabe nicht gefunden"));
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new RuntimeException("Prüfung nicht gefunden"));
 
-        exercise.setExam(exam);
+        exercise.addExam(exam);
         repository.save(exercise);
     }
 

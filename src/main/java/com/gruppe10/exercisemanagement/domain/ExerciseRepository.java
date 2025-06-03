@@ -5,6 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -14,5 +16,9 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long>, JpaSp
 
     Slice<Exercise> findDistinctByTagsIn(List<Tag> tags, Pageable pageable);
 
-    List<Exercise> findByExam_Id(Long examId);
+    //    List<Exercise> findByExam_Id(Long examId);
+
+    @Query("SELECT e FROM Exercise e JOIN e.exams exam WHERE exam.id = :examId")
+    List<Exercise> findByExam_Id(@Param("examId") Long examId);
+
 }

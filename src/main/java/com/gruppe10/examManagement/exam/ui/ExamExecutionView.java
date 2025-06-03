@@ -8,7 +8,6 @@ package com.gruppe10.examManagement.exam.ui;
 import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.view.MainView;
 import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.exam.service.ExamSessionService;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
@@ -87,58 +86,58 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         removeAll();
         add(new H2("Prüfung: " + exam.get().getTitle()));
 
-        exam.get().getExamExercises().stream()
-                .sorted(Comparator.comparing(ExamExercise::getPosition))
-                .forEach(ee -> {
-                    Exercise ex = ee.getExercise();
-                    String questionId = ex.getId().toString();
-                    exerciseMap.put(questionId, ex);
-
-                    add(new Hr(), new Paragraph("Frage: " + ee.getPosition() + ":"));
-
-                    if (ex instanceof SingleChoice singleChoice) {
-                        RadioButtonGroup<ChoiceOption> radioButtonGroup = new RadioButtonGroup<>();
-                        radioButtonGroup.setLabel(singleChoice.getExerciseText());
-                        radioButtonGroup.setItems(singleChoice.getChoiceOptions());
-                        radioButtonGroup.setItemLabelGenerator(ChoiceOption::getText);
-                        radioButtonGroup.addValueChangeListener(e -> {
-                            if (e.getValue() != null) {
-                                rawAnswers.put(questionId, e.getValue().getId().toString());
-                            }
-                        });
-                        add(radioButtonGroup);
-                    } else if (ex instanceof MultipleChoice multipleChoice) {
-                        CheckboxGroup<ChoiceOption> checkboxGroup = new CheckboxGroup<>();
-                        checkboxGroup.setLabel(multipleChoice.getExerciseText());
-                        checkboxGroup.setItems(multipleChoice.getChoiceOptions());
-                        checkboxGroup.setItemLabelGenerator(ChoiceOption::getText);
-                        checkboxGroup.addValueChangeListener(e -> {
-                            List<String> ids = e.getValue().stream()
-                                    .map(option -> {
-                                        return option.getId().toString();
-                                    })
-                                    .toList();
-                            rawAnswers.put(questionId, String.join(",", ids));
-                        });
-                        add(checkboxGroup);
-                    } else if (ex instanceof FreetextExercise freetextExercise) {
-                        TextArea text = new TextArea(freetextExercise.getExerciseText());
-                        text.setWidthFull();
-                        text.addValueChangeListener(e -> {
-                            rawAnswers.put(questionId, e.getValue());
-                        });
-                        add(text);
-                    } else if (ex instanceof AssignmentExercise assignmentExercise) {
-                        //PLATZHALTER
-                        Label info = new Label("Zuordnungsaufgabe: (noch nicht implementiert)");
-                        add(String.valueOf(info));
-                    }
-                });
-        Button submitBtn = new Button("Prüfung abschließen", e -> {
-            handleSubmission();
-        });
-        submitBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        add(new Hr(), submitBtn);
+//        exam.get().getExamExercises().stream()
+//                .sorted(Comparator.comparing(ExamExercise::getPosition))
+//                .forEach(ee -> {
+//                    Exercise ex = ee.getExercise();
+//                    String questionId = ex.getId().toString();
+//                    exerciseMap.put(questionId, ex);
+//
+//                    add(new Hr(), new Paragraph("Frage: " + ee.getPosition() + ":"));
+//
+//                    if (ex instanceof SingleChoice singleChoice) {
+//                        RadioButtonGroup<ChoiceOption> radioButtonGroup = new RadioButtonGroup<>();
+//                        radioButtonGroup.setLabel(singleChoice.getExerciseText());
+//                        radioButtonGroup.setItems(singleChoice.getChoiceOptions());
+//                        radioButtonGroup.setItemLabelGenerator(ChoiceOption::getText);
+//                        radioButtonGroup.addValueChangeListener(e -> {
+//                            if (e.getValue() != null) {
+//                                rawAnswers.put(questionId, e.getValue().getId().toString());
+//                            }
+//                        });
+//                        add(radioButtonGroup);
+//                    } else if (ex instanceof MultipleChoice multipleChoice) {
+//                        CheckboxGroup<ChoiceOption> checkboxGroup = new CheckboxGroup<>();
+//                        checkboxGroup.setLabel(multipleChoice.getExerciseText());
+//                        checkboxGroup.setItems(multipleChoice.getChoiceOptions());
+//                        checkboxGroup.setItemLabelGenerator(ChoiceOption::getText);
+//                        checkboxGroup.addValueChangeListener(e -> {
+//                            List<String> ids = e.getValue().stream()
+//                                    .map(option -> {
+//                                        return option.getId().toString();
+//                                    })
+//                                    .toList();
+//                            rawAnswers.put(questionId, String.join(",", ids));
+//                        });
+//                        add(checkboxGroup);
+//                    } else if (ex instanceof FreetextExercise freetextExercise) {
+//                        TextArea text = new TextArea(freetextExercise.getExerciseText());
+//                        text.setWidthFull();
+//                        text.addValueChangeListener(e -> {
+//                            rawAnswers.put(questionId, e.getValue());
+//                        });
+//                        add(text);
+//                    } else if (ex instanceof AssignmentExercise assignmentExercise) {
+//                        //PLATZHALTER
+//                        Label info = new Label("Zuordnungsaufgabe: (noch nicht implementiert)");
+//                        add(String.valueOf(info));
+//                    }
+//                });
+//        Button submitBtn = new Button("Prüfung abschließen", e -> {
+//            handleSubmission();
+//        });
+//        submitBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+//        add(new Hr(), submitBtn);
     }
 
     private void handleSubmission() {
