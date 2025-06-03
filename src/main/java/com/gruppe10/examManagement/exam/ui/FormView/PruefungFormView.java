@@ -6,9 +6,11 @@ package com.gruppe10.examManagement.exam.ui.FormView;
  **/
 
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.service.ExamService;
+import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.gruppe10.taskmanagement.service.TaskService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -28,8 +30,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
-@Route(value = "pruefung-form/:id")
-@RouteAlias(value = "pruefung-form")
+@Route(value = "pruefung-form/:id", layout = MainLayout.class)
+@RouteAlias(value = "pruefung-form", layout = MainLayout.class)
 @PageTitle("Prüfung")
 @Menu(order = 0, icon = "vaadin:clipboard-check", title = "Prüfungseditor")
 @PermitAll
@@ -44,12 +46,14 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
     private Button createBtn;
     private Button backBtn;
     private Button saveBtn;
+    private final ExerciseService exerciseService;
 
 
-    public PruefungFormView(ExamService examService, TaskService taskService, ServletConfig servletConfig) {
+    public PruefungFormView(ExamService examService, ExerciseService exerciseService, ServletConfig servletConfig) {
         this.examService = examService;
-        this.taskGrid = new TaskGrid(taskService);
+        this.exerciseService = exerciseService;
         this.servletConfig = servletConfig;
+        this.taskGrid = new TaskGrid(exerciseService, examService);
 
 
         setSizeFull();

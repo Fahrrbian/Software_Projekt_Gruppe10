@@ -8,8 +8,10 @@ package com.gruppe10.examManagement.exam.service;
 
 
 import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
+import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.submission.service.SubmissionService;
 import com.gruppe10.usermanagement.domain.User;
 import org.jspecify.annotations.Nullable;
@@ -71,6 +73,7 @@ public class ExamService {
         }
     }
 
+    @Transactional
     public void updatePruefung(Exam IExamInterface, Long id) {
         examRepository.findById(id).ifPresent(pruefung1 -> {
             pruefung1.setTitle(IExamInterface.getTitle());
@@ -83,6 +86,19 @@ public class ExamService {
         });
         updateListener();
     }
+    @Transactional
+    public void addExerciseToExam(Long examId, Exercise exercise) {
+        Optional<Exam> examOpt = examRepository.findById(examId);
+        if (examOpt.isPresent()) {
+            Exam exam = examOpt.get();
+            int newPosition = exam.getExamExercises().size();
+            ExamExercise examExercise = new ExamExercise(exam, exercise, newPosition);
+            exam.getExamExercises().add(examExercise);
+            examRepository.save(exam);
+        }
+    }
+
+
 
     public List<Exam> list(Pageable pageable) {
         return examRepository.findAllBy(pageable).toList();
@@ -111,6 +127,7 @@ public class ExamService {
         return examRepository.findAll().get(examRepository.findAll().size()-1);
     }
 
+    @Transactional
     public Optional<Exam> getById(Long id) {
         try{
             return  examRepository.findById(id);

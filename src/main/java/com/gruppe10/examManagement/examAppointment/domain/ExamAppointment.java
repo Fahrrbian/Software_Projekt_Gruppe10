@@ -47,7 +47,7 @@ public class ExamAppointment extends AbstractEntity<Long> {
     @Column(name = "openToCorrect")
     private boolean openToCorrect;
 
-    @OneToMany(mappedBy = "examAppointment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "examAppointment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<StudentExamAppointment> studentExamAppointments = new ArrayList<>();
 
 

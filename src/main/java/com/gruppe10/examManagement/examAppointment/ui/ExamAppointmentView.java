@@ -1,6 +1,7 @@
 
 package com.gruppe10.examManagement.examAppointment.ui;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.service.ExamService;
@@ -37,7 +38,7 @@ import java.util.Optional;
  * ToDo: Es muss gefiltert werden, dass es sich nur um dem aktuellen Benutzer zugeordnete Exams in der Auswahl handelt
  * **/
 
-@Route("exam-appointments")
+@Route(value = "exam-appointments", layout = MainLayout.class)
 @RouteAlias("exam-appointments/:examId?")
 @PageTitle("Prüfungstermine")
 @Menu(order = 1, icon = "vaadin:calendar", title = "Prüfungstermine")
@@ -143,8 +144,9 @@ public class ExamAppointmentView extends Main implements HasUrlParameter<Long> {
                 examSelect, title, appointmentDate, createBtn
         );
         inputLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
+        inputLayout.setPadding(true);
 
-        add(new ViewToolbar("Prüfungstermine", inputLayout));
+        add(inputLayout);
         add(appointmentGrid);
     }
 

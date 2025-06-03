@@ -1,5 +1,6 @@
 package com.gruppe10.examManagement.examsToCorrect.ui;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.examManagement.examsToCorrect.service.ExamsToCorrectService;
@@ -7,6 +8,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -17,8 +19,9 @@ import java.time.Clock;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-@Route(value = "exams-to-correct")
+@Route(value = "exams-to-correct", layout = MainLayout.class)
 @PageTitle("Zu korrigierende Prüfungen")
+@Menu(order = 4, icon = "vaadin:calendar-o", title = "Prüfungskorrektur")
 @RolesAllowed("INSTRUCTOR")
 public class ExamsToCorrectView extends VerticalLayout {
 
