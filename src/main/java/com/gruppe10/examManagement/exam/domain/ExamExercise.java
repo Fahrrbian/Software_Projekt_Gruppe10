@@ -31,18 +31,15 @@ public class ExamExercise {
     private int position;
 
     // Konstruktoren
-    public ExamExercise() {this.id = new ExamExerciseId();}
+    public ExamExercise() {
+        this.id = new ExamExerciseId();
+    }
 
     public ExamExercise(Exam IExamInterface, Exercise exercise, int position) {
         this.exam = IExamInterface;
         this.exercise = exercise;
-    }
-    
-    public ExamExercise(Exam IExamInterface, Exam exam, int position) {
-        this.exam = exam;
         this.position = position;
         this.id = new ExamExerciseId(IExamInterface.getId(), exercise.getId());
-        //this.id = new ExamExerciseId(IExamInterface.getId(), exam.getId());
     }
 
     public ExamExerciseId getId() {
@@ -59,6 +56,12 @@ public class ExamExercise {
 
     public void setExam(Exam exam) {
         this.exam = exam;
+        if (this.id == null) {
+            this.id = new ExamExerciseId();
+        }
+        if (exam != null) {
+            this.id.setExamId(exam.getId());
+        }
     }
     
     public int getPosition() {
@@ -72,24 +75,6 @@ public class ExamExercise {
     public Exercise getExercise() { 
         return exercise; 
     }
-    
-    public Exam getExam() {
-        return exam;
-    }
-
-    public void setExam(Exam exam) {
-        this.exam = exam;
-        if (this.id == null) {
-            this.id = new ExamExerciseId();
-        }
-        if (exam != null) {
-            this.id.setExamId(exam.getId());
-        }
-    }
-
-    public Exercise getExercise() {
-        return exercise;
-    }
 
     public void setExercise(Exercise exercise) {
         this.exercise = exercise;
@@ -99,14 +84,6 @@ public class ExamExercise {
         if (exercise != null) {
             this.id.setExerciseId(exercise.getId());
         }
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
     }
 
 }

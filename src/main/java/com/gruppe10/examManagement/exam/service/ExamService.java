@@ -6,6 +6,7 @@ package com.gruppe10.examManagement.exam.service;
  **/
 
 import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
@@ -111,6 +112,7 @@ public class ExamService {
             examListener.getUpdate();
         }
     }
+
     public Exam save(Exam exam) {
         return examRepository.save(exam);
     }
@@ -161,6 +163,10 @@ public class ExamService {
 
     public Exam saveExam(Exam exam) {
         return examRepository.save(exam);
+    }
+
+    public Optional<Exam> getExamWithExercises(Long id) {
+        return examRepository.findByIdWithExercises(id);
     }
 
 }

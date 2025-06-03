@@ -41,7 +41,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.List;
 
-@Route(value = "exam-appointment/:pruefung_id", layout = MainLayout.class)
+@Route(value = "exam/:examId", layout = MainLayout.class)
 @PageTitle("Prüfung")
 @RolesAllowed({"INSTRUCTOR", "STUDENT"})
 public class ExamExecutionView extends VerticalLayout implements BeforeEnterObserver {
@@ -74,6 +74,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
             this.currentExam = examService.getExamWithExercises(id);
             if (this.currentExam.isEmpty()) {
                 event.forwardTo(MainView.class);
+                Notification.show("Prüfung nicht gefunden", 3000, Notification.Position.MIDDLE);
             } else {
                 initUI(currentExam);
             }
@@ -84,7 +85,6 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
     private void initUI(Optional<Exam> exam) {
         removeAll();
-        System.out.println("Exam geladen: " + exam);
         add(new H2("Prüfung: " + exam.get().getTitle()));
 
         exam.get().getExamExercises().stream()

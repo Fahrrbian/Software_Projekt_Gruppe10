@@ -13,6 +13,7 @@ import org.springframework.data.domain.Slice;
 public class ExerciseChooseListView extends VerticalLayout {
     private final Grid<Exercise> grid;
     private final ExerciseService exerciseService;
+    private Exercise selectedExercise;
     private final Long currentPruefungId;
 
     public ExerciseChooseListView(ExerciseService exerciseService, Long pruefungId) {
@@ -23,6 +24,10 @@ public class ExerciseChooseListView extends VerticalLayout {
         grid.addColumn(Exercise::getExerciseText).setHeader("Aufgabe");
         grid.addColumn(Exercise::getScore).setHeader("Punkte");
         grid.setHeight("200px");
+
+        grid.asSingleSelect().addValueChangeListener(e -> {
+            selectedExercise = e.getValue();
+        });
 
         add(grid);
         setSpacing(false);
@@ -35,4 +40,9 @@ public class ExerciseChooseListView extends VerticalLayout {
         Slice<Exercise> slice = exerciseService.getAll(pageable);
         grid.setItems(slice.getContent());
     }
+
+    public Exercise getSelectedExercise() {
+        return selectedExercise;
+    }
+
 }

@@ -45,7 +45,7 @@ public abstract class Exercise extends AbstractEntity<Long> {
     public abstract double evaluate(Answer answer);
 
     @Override
-    public @Nullable Long getId() {
+    public Long getId() {
         return id;
     }
 

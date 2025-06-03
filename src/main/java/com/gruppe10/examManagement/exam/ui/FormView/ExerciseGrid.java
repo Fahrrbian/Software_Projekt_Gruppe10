@@ -85,34 +85,14 @@ public class ExerciseGrid extends VerticalLayout {
             ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService, currentPruefungId);
 
             Button saveButton = new Button("Speichern", e -> {
-                /*
-                Exercise exercise;
-
-                String aufgabenText = exercise.getExerciseText();
-                int punkte = exercise.getScore();
-
-                switch (typ) {
-                    case "SingleChoice":
-                        SingleChoice single = new SingleChoice();
-                        single.setExerciseText(aufgabenText);
-                        single.setScore(punkte);
-                        exercise = singleChoiceService.create(single);
-                        break;
-                    case "MultipleChoice":
-                        MultipleChoice multi = new MultipleChoice();
-                        multi.setExerciseText(aufgabenText);
-                        multi.setScore(punkte);
-                        exercise = multipleChoiceService.create(multi);
-                        break;
-                    default:
-                        Notification.show("Unbekannter Aufgabentyp");
-                        return;
+                Exercise selected = exerciseChooseListView.getSelectedExercise();
+                if (selected != null) {
+                    exerciseService.assignExerciseToPruefung(selected.getId(), currentPruefungId);
+                    refreshData();
+                    dialog.close();
+                } else {
+                    Notification.show("Bitte wählen Sie eine Aufgabe aus.");
                 }
-                exerciseService.assignExerciseToPruefung(exercise.getId(), currentPruefungId);
-                refreshData();
-                dialog.close();
-                 */
-
             });
 
             Button cancelButton = new Button("Abbrechen", e -> dialog.close());

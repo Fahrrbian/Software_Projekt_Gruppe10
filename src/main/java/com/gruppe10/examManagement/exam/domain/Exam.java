@@ -193,10 +193,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     public void setAutoPublishResults(boolean autoPublishResults) {
         this.autoPublishResults = autoPublishResults;
     }
-    
-    public List<ExamExercise> getExamExercises() {
-        return examExercises;
-    }
 
     public boolean isHasFreeTextQuestions() {
         return hasFreeTextQuestions;
@@ -204,10 +200,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
 
     public void setHasFreeTextQuestions(boolean hasFreeTextQuestions) {
         this.hasFreeTextQuestions = hasFreeTextQuestions;
-    }
-
-    public void setExamExercises(List<ExamExercise> examExercises) {
-        this.examExercises = examExercises;
     }
 
     public void addExamExercise(ExamExercise examExercise) {
