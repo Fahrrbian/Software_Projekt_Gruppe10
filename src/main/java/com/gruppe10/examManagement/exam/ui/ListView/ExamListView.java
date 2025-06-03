@@ -14,16 +14,19 @@ import com.gruppe10.taskmanagement.domain.Task;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.ServletConfig;
+
 import java.time.Clock;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -33,16 +36,14 @@ import java.util.Set;
 import static com.vaadin.flow.spring.data.VaadinSpringDataHelpers.toSpringPageRequest;
 
 
-@Route(value="pruefung-list", layout = MainLayout.class)
+@Route(value = "pruefung-list", layout = MainLayout.class)
 @PageTitle("Prüfung List")
-//@Menu(order = 0, icon = "vaadin:clipboard-check", title = "Prüfungsliste")
+@Menu(order = 3, icon = "vaadin:clipboard-check", title = "Prüfungsliste")
 @RolesAllowed("INSTRUCTOR")
-//PermitAll durch richtige Rolle tauschen
 public class ExamListView extends VerticalLayout implements ExamListener {
 
     private final ExamService examService;
 
-    final TextField title;
     final Long creator;
     final Button createBtn;
     final Button deleteBtn;
@@ -55,23 +56,15 @@ public class ExamListView extends VerticalLayout implements ExamListener {
         this.examService = examService;
         examService.startListening(this);
 
+        //Hier muss der aktelle Nutzer mit einer CreatorID verbunden sein
         creator = (long) 001;
-
-        title = new TextField();
-        title.setPlaceholder("Titel der neuen Prüfung");
-        title.setAriaLabel("Task description");
-        title.setMaxLength(Task.DESCRIPTION_MAX_LENGTH);
-        title.setMinWidth("20em");
 
         var creatorTextField = new TextField();
 
         //Button zum Erstellen einer Prüfung
         createBtn = new Button("Neue Prüfung", event -> createPruefung());
-        createBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
         //Button zum Löschen einer Prüfung
         deleteBtn = new Button("Eintrag löschen", event -> deletePruefung());
-        deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         var dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(clock.getZone())
                 .withLocale(getLocale());
@@ -115,19 +108,15 @@ public class ExamListView extends VerticalLayout implements ExamListener {
         });
 
 
-
-
-
         setSizeFull();
         addClassNames(LumoUtility.BoxSizing.BORDER, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN,
                 LumoUtility.Padding.MEDIUM, LumoUtility.Gap.SMALL);
 
-        add(new ViewToolbar("Meine Prüfungen", ViewToolbar.group(title, createBtn, deleteBtn)));
+        add(createBtn, deleteBtn);
         add(pruefungGrid);
         add(pruefungEditorView);
         this.servletConfig = servletConfig;
     }
-
 
 
     private void refreshForm() {
@@ -165,9 +154,8 @@ public class ExamListView extends VerticalLayout implements ExamListener {
     }
 
     private void createPruefung() {
-        examService.createPruefung(title.getValue(), creator, null);
+        examService.createPruefung("Neue Prüfung", creator, null);
         pruefungGrid.getDataProvider().refreshAll();
-        title.clear();
         Notification.show("Task added", 3000, Notification.Position.BOTTOM_END)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
     }

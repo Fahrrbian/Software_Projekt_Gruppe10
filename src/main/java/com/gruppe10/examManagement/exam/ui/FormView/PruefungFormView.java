@@ -5,6 +5,7 @@ package com.gruppe10.examManagement.exam.ui.FormView;
  * Date: 02/05/2025
  **/
 
+
 import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.domain.Exam;
@@ -30,7 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @Route(value = "pruefung-form/:id", layout = MainLayout.class)
-@RouteAlias(value = "pruefung-form")
+@RouteAlias(value = "pruefung-form", layout = MainLayout.class)
 @PageTitle("Prüfung")
 @Menu(order = 0, icon = "vaadin:clipboard-check", title = "Prüfungseditor")
 @PermitAll
@@ -51,6 +52,7 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
     public PruefungFormView(ExamService examService, ExerciseService exerciseService, ServletConfig servletConfig) {
         this.examService = examService;
         this.exerciseGrid = new ExerciseGrid(exerciseService);
+        this.exerciseService = exerciseService;
         this.servletConfig = servletConfig;
 
         setSizeFull();
@@ -59,7 +61,7 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
                 LumoUtility.FlexDirection.COLUMN,
                 LumoUtility.Padding.MEDIUM,
                 LumoUtility.Gap.SMALL);
-        this.exerciseService = exerciseService;
+
     }
 
     private void initializeComponents() {

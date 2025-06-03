@@ -1,5 +1,6 @@
 package com.gruppe10.examManagement.examAppointment.ui;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
@@ -12,6 +13,9 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.router.Menu;
@@ -29,12 +33,12 @@ import java.util.List;
  *Diese Klasse ist das der View um sich einen Prüfungstermin in einer Form anzeigen zu lassen
  * **/
 
-@Route(value = "exam-appointment-form/:id")
+@Route(value = "exam-appointment-form/:id", layout = MainLayout.class)
 @RouteAlias(value = "exam-appointment-form")
 @PageTitle("Prüfungstermin")
-@Menu(order = 2, icon = "vaadin:calendar-o", title = "Termineditor")
+//@Menu(order = 2, icon = "vaadin:calendar-o", title = "Termineditor")
 @PermitAll
-public class ExamAppointmentFormView extends Main implements HasUrlParameter<Long> {
+public class ExamAppointmentFormView extends VerticalLayout implements HasUrlParameter<Long> {
     private final ExamAppointmentService appointmentService;
     private final ExamService examService;
     private ExamAppointment appointment;
@@ -111,8 +115,13 @@ public class ExamAppointmentFormView extends Main implements HasUrlParameter<Lon
 
         //View zusammenbauen
         removeAll();
-        add(new ViewToolbar("Termin bearbeiten",
-                ViewToolbar.group(backBtn, saveBtn, importButton, saveStudentsBtn, resetFormBtn)));
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(
+                backBtn, saveBtn, importButton, saveStudentsBtn, resetFormBtn
+        );
+        buttonLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
+        buttonLayout.setPadding(true);
+        add(buttonLayout);
         add(form);
         add(new H3("Zugeordnete Prüflinge"));
         add(studentsGrid);
