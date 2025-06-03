@@ -6,6 +6,7 @@ import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.examManagement.examsToCorrect.service.ExamsToCorrectService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Menu;
@@ -66,16 +67,7 @@ public class ExamsToCorrectView extends VerticalLayout {
 
         // Layout-Einstellungen
         setSizeFull();
-        addClassNames(
-                LumoUtility.BoxSizing.BORDER,
-                LumoUtility.Display.FLEX,
-                LumoUtility.FlexDirection.COLUMN,
-                LumoUtility.Padding.MEDIUM,
-                LumoUtility.Gap.SMALL
-        );
-
-        // Komponenten zum Layout hinzufügen
-        add(new ViewToolbar("Zu korrigierende Prüfungen"));
+        add(new H2("Anstehende Korrekturen"));
         add(examGrid);
     }
 

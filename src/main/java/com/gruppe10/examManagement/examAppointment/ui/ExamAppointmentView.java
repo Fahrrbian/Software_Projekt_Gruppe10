@@ -13,6 +13,8 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -132,20 +134,14 @@ public class ExamAppointmentView extends Main implements HasUrlParameter<Long> {
 
         // Layout
         setSizeFull();
-        addClassNames(
-                LumoUtility.BoxSizing.BORDER,
-                LumoUtility.Display.FLEX,
-                LumoUtility.FlexDirection.COLUMN,
-                LumoUtility.Padding.MEDIUM,
-                LumoUtility.Gap.SMALL
-        );
-
+        add(new H2("Meine Prüfungstermine"));
         HorizontalLayout inputLayout = new HorizontalLayout(
                 examSelect, title, appointmentDate, createBtn
         );
         inputLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
+        inputLayout.setPadding(true);
 
-        add(new ViewToolbar("Prüfungstermine", inputLayout));
+        add(inputLayout);
         add(appointmentGrid);
     }
 

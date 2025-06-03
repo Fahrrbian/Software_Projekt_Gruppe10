@@ -15,8 +15,11 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Menu;
@@ -43,7 +46,6 @@ public class ExamListView extends VerticalLayout implements ExamListener {
 
     private final ExamService examService;
 
-    final TextField title;
     final Long creator;
     final Button createBtn;
     final Button deleteBtn;
@@ -58,21 +60,15 @@ public class ExamListView extends VerticalLayout implements ExamListener {
 
         creator = (long) 001;
 
-        title = new TextField();
-        title.setPlaceholder("Titel der neuen Prüfung");
-        title.setAriaLabel("Task description");
-        title.setMaxLength(Task.DESCRIPTION_MAX_LENGTH);
-        title.setMinWidth("20em");
 
         var creatorTextField = new TextField();
 
         //Button zum Erstellen einer Prüfung
         createBtn = new Button("Neue Prüfung", event -> createPruefung());
-        createBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         //Button zum Löschen einer Prüfung
         deleteBtn = new Button("Eintrag löschen", event -> deletePruefung());
-        deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
 
         var dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(clock.getZone())
                 .withLocale(getLocale());
@@ -120,10 +116,12 @@ public class ExamListView extends VerticalLayout implements ExamListener {
 
 
         setSizeFull();
-        addClassNames(LumoUtility.BoxSizing.BORDER, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN,
-                LumoUtility.Padding.MEDIUM, LumoUtility.Gap.SMALL);
 
-        add(new ViewToolbar("Meine Prüfungen", ViewToolbar.group(title, createBtn, deleteBtn)));
+        HorizontalLayout buttonLayout = new HorizontalLayout(createBtn, deleteBtn);
+        buttonLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
+        buttonLayout.setPadding(true);
+        add(new H2("Meine Prüfungen"));
+        add(buttonLayout);
         add(pruefungGrid);
         add(pruefungEditorView);
         this.servletConfig = servletConfig;
@@ -166,9 +164,8 @@ public class ExamListView extends VerticalLayout implements ExamListener {
     }
 
     private void createPruefung() {
-        examService.createPruefung(title.getValue(), creator, null);
+        examService.createPruefung("Neue Prüfung", creator, null);
         pruefungGrid.getDataProvider().refreshAll();
-        title.clear();
         Notification.show("Task added", 3000, Notification.Position.BOTTOM_END)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
     }

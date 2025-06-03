@@ -1,5 +1,6 @@
 package com.gruppe10.examManagement.exam.ui.FormView;
 
+import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.MultipleChoice;
 import com.gruppe10.exercisemanagement.domain.SingleChoice;
@@ -18,6 +19,9 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * ToDo "Task" durch "Exercise" von Louis tauschen wenn er es hochgeladen hat
@@ -27,12 +31,14 @@ public class ExerciseGrid extends VerticalLayout {
     private final Grid<Exercise> grid;
     private final Button addExerciseBtn;
     private final ExerciseService exerciseService;
+    private final ExamService examService;
     //private final SingleChoiceService singleChoiceService;
     //private final MultipleChoiceService multipleChoiceService;
     private Long currentPruefungId;
 
-    public ExerciseGrid(ExerciseService exerciseService) {
+    public ExerciseGrid(ExerciseService exerciseService, ExamService examService) {
         this.exerciseService = exerciseService;
+        this.examService = examService;
         //this.singleChoiceService = singleChoiceService;
         //this.multipleChoiceService = multipleChoiceService;
 
@@ -77,12 +83,16 @@ public class ExerciseGrid extends VerticalLayout {
         }
     }
 
+
+
+
+
     private void addNewExercise() {
         if (currentPruefungId != null) {
             Dialog dialog = new Dialog();
             dialog.setHeaderTitle("Neue Aufgabe");
 
-            ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService, currentPruefungId);
+            ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService,examService, currentPruefungId);
 
             Button saveButton = new Button("Speichern", e -> {
                 Exercise selected = exerciseChooseListView.getSelectedExercise();

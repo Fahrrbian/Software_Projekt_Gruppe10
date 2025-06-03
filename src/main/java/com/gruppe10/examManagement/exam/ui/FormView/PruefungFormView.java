@@ -14,10 +14,13 @@ import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
@@ -50,7 +53,7 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
 
     public PruefungFormView(ExamService examService, ExerciseService exerciseService, ServletConfig servletConfig) {
         this.examService = examService;
-        this.exerciseGrid = new ExerciseGrid(exerciseService);
+        this.exerciseGrid = new ExerciseGrid(exerciseService,examService);
         this.exerciseService = exerciseService;
         this.servletConfig = servletConfig;
 
@@ -90,8 +93,11 @@ public class PruefungFormView extends VerticalLayout implements HasUrlParameter<
         form = new PruefungForm(examService, IExamInterface);
 
         removeAll(); // Entfernt alle vorherigen Komponenten
-        add(new ViewToolbar("Prüfung bearbeiten",
-                ViewToolbar.group(backBtn, title, createBtn, saveBtn, terminButton)));
+        HorizontalLayout buttonLayout = new HorizontalLayout(backBtn, saveBtn, terminButton);
+        buttonLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
+        buttonLayout.setPadding(true);
+        add(new H2("Prüfung bearbeiten"));
+        add(buttonLayout);
         add(form);
         add(exerciseGrid);
 

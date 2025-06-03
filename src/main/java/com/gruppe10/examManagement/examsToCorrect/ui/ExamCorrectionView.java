@@ -1,5 +1,6 @@
 package com.gruppe10.examManagement.examsToCorrect.ui;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamAppointment;
@@ -15,7 +16,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import jakarta.annotation.security.RolesAllowed;
 
-@Route(value = "exam-correction")
+@Route(value = "exam-correction", layout = MainLayout.class)
 @RouteAlias(value = "exam-correction/:appointmentId?")
 @PageTitle("Prüfungskorrektur")
 @RolesAllowed("INSTRUCTOR")
