@@ -2,9 +2,11 @@ package com.gruppe10.examManagement.examsToCorrect.ui;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
+import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.examManagement.examsToCorrect.service.ExamsToCorrectService;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -27,6 +29,8 @@ public class ExamsToCorrectView extends VerticalLayout {
 
     private final ExamsToCorrectService examsToCorrectService;
     final Grid<ExamAppointment> examGrid;
+    private ExamAppointment exam;
+
 
     @Autowired
     public ExamsToCorrectView(ExamsToCorrectService examsToCorrectService, Clock clock) {
@@ -38,7 +42,12 @@ public class ExamsToCorrectView extends VerticalLayout {
 
         examGrid = new Grid<>();
         examGrid.setItems(examsToCorrectService.getOpenToCorrectAppointments());
-        
+
+        examGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        examGrid.asSingleSelect().addValueChangeListener(event -> {
+            exam = event.getValue();
+        });
+
         // Spalten für die Grid-Ansicht definieren
         examGrid.addColumn(ExamAppointment::getId).setHeader("ID");
         examGrid.addColumn(ExamAppointment::getTitle).setHeader("Terminbezeichnung");
@@ -63,6 +72,24 @@ public class ExamsToCorrectView extends VerticalLayout {
         });
 
         examGrid.setSizeFull();
+
+        Button releaseButton = new Button("Prüfungsergebnisse freigeben", event -> {
+            if (exam == null) {
+                Notification.show("Bitte zuerst eine Prüfung auswählen", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+
+            try {
+                examsToCorrectService.releaseResults(exam.getId());
+                Notification.show("Prüfung wurde veröffentlicht", 3000, Notification.Position.MIDDLE);
+                refreshGrid();
+            } catch (Exception e) {
+                Notification.show("Fehler beim Veröffentlichen: " + e.getMessage(), 3000, Notification.Position.MIDDLE);
+            }
+        });
+        releaseButton.setEnabled(true);
+        releaseButton.addClassName("publish-button");
+
 
         // Layout-Einstellungen
         setSizeFull();

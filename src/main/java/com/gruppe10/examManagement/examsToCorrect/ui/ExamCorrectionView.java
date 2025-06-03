@@ -1,12 +1,14 @@
 package com.gruppe10.examManagement.examsToCorrect.ui;
 
-import com.gruppe10.base.ui.component.ViewToolbar;
+import com.gruppe10.Excel_Export.ui.ReviewDialog;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamAppointment;
 import com.gruppe10.examManagement.examAppointment.service.ExamAppointmentService;
+import com.gruppe10.submission.DTOs.SubmissionDto;
 import com.gruppe10.submission.domain.Submission;
+import com.gruppe10.submission.domain.SubmissionStatus;
+import com.gruppe10.submission.ui.SubmissionUIService;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
@@ -81,11 +83,18 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
 
         // Action-Buttons
         submissionsGrid.addComponentColumn(sea -> {
-            Button korrigierenButton = new Button("Korrigieren",
-                e -> navigateToSubmissionDetail(sea));
-            return korrigierenButton;
-        }).setHeader("Aktionen");
+                    Submission submission = sea.getSubmission();
 
+                    if (submission != null) {
+                        Button korrigierenButton = new Button(
+                                submission.getStatus() == SubmissionStatus.PENDING_REVIEW ? "Korrigieren" : "Ansehen",
+                                e -> openReviewDialog(submission)
+                        );
+                        return korrigierenButton;
+                    } else {
+                        return new Span("Keine Abgabe");
+                    }
+        }).setHeader("Aktionen");
         submissionsGrid.setSizeFull();
     }
 
@@ -116,7 +125,22 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
         }
     }
 
-    private void refreshGrid() {
-        submissionsGrid.setItems(examAppointment.getStudentExamAppointments());
-    }
+
+    private void openReviewDialog(Submission submission) {
+            // Optional: konvertiere Submission → SubmissionDto
+            SubmissionDto dto = SubmissionDto.from(submission);
+            ReviewDialog dialog = new ReviewDialog(dto, new SubmissionUIService()); // ggf. via Konstruktor übergeben
+            dialog.open();
+            dialog.addOpenedChangeListener(e -> {
+                if (!e.isOpened()) {
+                    refreshGrid();
+                }
+            });
+        }
+        private void refreshGrid() {
+            this.examAppointment = examAppointmentService.findById(examAppointment.getId())
+                    .orElseThrow(() -> new NotFoundException("Termin nicht gefunden"));
+            submissionsGrid.setItems(examAppointment.getStudentExamAppointments());
+        }
 }
+

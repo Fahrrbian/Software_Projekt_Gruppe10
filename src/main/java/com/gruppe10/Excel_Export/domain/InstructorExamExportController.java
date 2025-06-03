@@ -75,6 +75,20 @@ public class InstructorExamExportController {
         examService.save(exam);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/{examId}/submissions")
+    public ResponseEntity<List<SubmissionDto>> getSubmissionsForExam(
+            @PathVariable Long examId) {
+
+        Exam exam = examService.getById(examId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+
+        List<Submission> subs = submissionService.getSubmissionsByExam(exam);
+        List<SubmissionDto> dtos = subs.stream()
+                .map(SubmissionDto::from)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
 
     @PatchMapping("/submissions/{subId}/review")
     public ResponseEntity<SubmissionDto> reviewSubmission(
