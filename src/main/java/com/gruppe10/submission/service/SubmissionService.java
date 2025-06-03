@@ -102,6 +102,7 @@ public class SubmissionService {
 
         return submissionRepository.countByExamAndPassedTrue(exam);
     }
+    
     @Transactional(readOnly = true)
     public Optional<Submission> getSubmissionByStudentAndExam(Student student, Exam exam) {
         return submissionRepository.findByStudentAndExam(student, exam);
@@ -112,4 +113,9 @@ public class SubmissionService {
     public Optional<Submission> findById(Long id) {
         return submissionRepository.findById(id);
     }
+
+    public boolean existsByExam(Exam exam) {
+        return submissionRepository.existsByExam(exam);
+    }
+    
 }

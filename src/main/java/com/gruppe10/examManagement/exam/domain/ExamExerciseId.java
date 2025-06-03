@@ -25,6 +25,7 @@ public class ExamExerciseId implements Serializable {
     public Long getExamId() {
         return examId;
     }
+    
     public void setExamId(Long examId) {
         this.examId = examId;
     }
@@ -32,6 +33,7 @@ public class ExamExerciseId implements Serializable {
     public Long getExerciseId() {
         return exerciseId;
     }
+    
     public void setExerciseId(Long exerciseId) {
         this.exerciseId = exerciseId;
     }

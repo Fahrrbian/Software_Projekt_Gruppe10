@@ -5,7 +5,6 @@ package com.gruppe10.examManagement.exam.domain;
  * Date: 30/04/2025
  **/
 
-
 import com.gruppe10.base.domain.AbstractEntity;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.exercisemanagement.domain.Exercise;
@@ -73,7 +72,8 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     @OneToMany(
             mappedBy = "exam",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
     )
     @OrderBy("position ASC")
     private List<ExamExercise> examExercises = new ArrayList<>();
@@ -87,7 +87,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     //Beziehung zu den Terminen
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
     private List<ExamAppointment> examAppointments = new ArrayList<>();
-
 
     //Getter & Setter folgen
     @Override
@@ -126,7 +125,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     public void setCreationDate(Instant creationDate) {
         this.creationDate = creationDate;
     }
-
 
     public @Nullable User getCreator() {
         return creator;
@@ -168,7 +166,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         this.bestehensgrenze = bestehensgrenze;
     }
 
-
     // Getter und Setter für die Liste mit Terminen
     public List<ExamAppointment> getExamAppointments() {
         return examAppointments;
@@ -196,6 +193,10 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     public void setAutoPublishResults(boolean autoPublishResults) {
         this.autoPublishResults = autoPublishResults;
     }
+    
+    public List<ExamExercise> getExamExercises() {
+        return examExercises;
+    }
 
     public boolean isHasFreeTextQuestions() {
         return hasFreeTextQuestions;
@@ -205,5 +206,20 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         this.hasFreeTextQuestions = hasFreeTextQuestions;
     }
 
-}
+    public void setExamExercises(List<ExamExercise> examExercises) {
+        this.examExercises = examExercises;
+    }
 
+    public void addExamExercise(ExamExercise examExercise) {
+        if (!this.examExercises.contains(examExercise)) {
+            this.examExercises.add(examExercise);
+            examExercise.setExam(this);
+        }
+    }
+
+    public void removeExamExercise(ExamExercise examExercise) {
+        this.examExercises.remove(examExercise);
+        examExercise.setExam(null);
+    }
+
+}

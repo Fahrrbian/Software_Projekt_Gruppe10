@@ -155,4 +155,12 @@ public class ExamService {
         examAppointmentRepository.save(appointment);
     }
 
+    public List<Exam> getAllExams() {
+        return examRepository.findAll();
+    }
+
+    public Exam saveExam(Exam exam) {
+        return examRepository.save(exam);
+    }
+
 }

@@ -5,10 +5,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
@@ -62,8 +60,8 @@ class ChoiceOptionEditor extends FormLayout {
         deleteButton.getStyle().set("margin-top", "auto");
         deleteButton.getStyle().set("margin-bottom", "8px");
 
-        answerTextField.getStyle().set("flex", "0 1 80%");
-        correctCheckbox.getStyle().set("flex", "0 1 10%");
+        answerTextField.getStyle().set("flex", "0 1 85%");
+        correctCheckbox.getStyle().set("flex", "0 1 5%");
         deleteButton.getStyle().set("flex", "0 1 5%");
 
         add(answerTextField, correctCheckbox, deleteButton);

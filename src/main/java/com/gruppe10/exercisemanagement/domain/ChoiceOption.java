@@ -12,7 +12,7 @@ public class ChoiceOption extends AbstractEntity<Long> {
     @Column(name = "choice_option_id")
     private Long id;
 
-    @Column(name = "text", nullable = false)
+    @Column(name = "text", nullable = false, length = 1000)
     private String text;
 
     @Column(name = "correct", nullable = false)
