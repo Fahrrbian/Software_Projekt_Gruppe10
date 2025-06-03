@@ -28,8 +28,8 @@ public class TimedMainLayout extends MainLayout implements RouterLayout {
 
     private final Div idleIndicator = new Div("30min");;
 
-    public TimedMainLayout(UserService userService, AuthenticatedUser authenticatedUser) {
-        super(userService, authenticatedUser);
+    public TimedMainLayout(AuthenticatedUser authenticatedUser) {
+        super(authenticatedUser);
         //HorizontalLayout header = new HorizontalLayout();
           idleIndicator.setId("idle-indicator");
         // header.addComponentAtIndex(1, idleIndicator);
