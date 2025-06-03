@@ -98,6 +98,7 @@ public class ExamService {
         });
         updateListener();
     }
+<<<<<<< Updated upstream
     @Transactional
     public void addExerciseToExam(Long examId, Exercise exercise) {
         Optional<Exam> examOpt = examRepository.findById(examId);
@@ -109,6 +110,8 @@ public class ExamService {
             examRepository.save(exam);
         }
     }
+=======
+>>>>>>> Stashed changes
 
 
 

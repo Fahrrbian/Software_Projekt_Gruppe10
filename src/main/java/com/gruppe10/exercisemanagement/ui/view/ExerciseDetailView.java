@@ -4,6 +4,8 @@ import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.service.ExamService;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
+import com.gruppe10.examManagement.examAppointment.service.ExamAppointmentService;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.gruppe10.submission.service.SubmissionService;
@@ -43,13 +45,14 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
     private final UserService userService;
 
     private final H1 pageTitle = new H1("Aufgabe");
+    private final ExamAppointmentService examAppointmentService;
     private Paragraph exerciseTextParagraph = new Paragraph();
     private Paragraph scoreParagraph = new Paragraph();
 
     private Exercise currentExercise;
 
     @Autowired
-    public ExerciseDetailView(ExerciseService exerciseService, ExamService examService, SubmissionService submissionService, UserService userService) {
+    public ExerciseDetailView(ExerciseService exerciseService, ExamService examService, SubmissionService submissionService, UserService userService, ExamAppointmentService examAppointmentService) {
         this.exerciseService = exerciseService;
         this.examService = examService;
         this.submissionService = submissionService;
@@ -57,6 +60,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         setPadding(true);
         setSpacing(true);
         setWidthFull();
+        this.examAppointmentService = examAppointmentService;
     }
 
     @Override
@@ -278,7 +282,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
 
         final Long finalCurrentUserId = currentUserId;
 
-        List<Exam> exams = examService.getAllExams().stream()
+        List<ExamAppointment> exams = examAppointmentService.getAllExams().stream()
                 .filter(exam -> exam.getCreator() != null && exam.getCreator().getId().equals(finalCurrentUserId))
                 .filter(exam -> !submissionService.existsByExam(exam))
                 .collect(Collectors.toList());

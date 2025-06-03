@@ -1,9 +1,15 @@
 package com.gruppe10.examManagement.examAppointment.service;
 
 import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.examAppointment.domain.*;
 import com.gruppe10.examManagement.examAppointment.domain.*;
+<<<<<<< Updated upstream
+=======
+import com.gruppe10.exercisemanagement.domain.Exercise;
+import com.gruppe10.usermanagement.domain.User;
+>>>>>>> Stashed changes
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -19,8 +25,6 @@ import java.util.stream.Collectors;
 @Service
 public class ExamAppointmentService {
 
-    @Autowired
-    private ExamAppointmentRepository repository;
 
     private final ExamAppointmentRepository appointmentRepository;
     private final ExamRepository examRepository;
@@ -75,6 +79,17 @@ public class ExamAppointmentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void addExerciseToExam(Long apptId, Exercise exercise) {
+        Optional<ExamAppointment> examOpt = appointmentRepository.findById(apptId);
+        if (examOpt.isPresent()) {
+            ExamAppointment exam = examOpt.get();
+            int newPosition = exam.getAppointmentExercises().size();
+            ExamExercise examExercise = new ExamExercise(exam, exercise, newPosition);
+            exam.getAppointmentExercises().add(examExercise);
+            appointmentRepository.save(exam);
+        }
+    }
 
 
 
@@ -129,4 +144,5 @@ public class ExamAppointmentService {
     public Optional<ExamAppointment> findById(Long appointmentId) {
         return appointmentRepository.findById(appointmentId);
     }
+
 }

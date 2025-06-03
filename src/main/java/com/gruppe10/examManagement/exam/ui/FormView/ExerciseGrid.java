@@ -1,5 +1,6 @@
 package com.gruppe10.examManagement.exam.ui.FormView;
 
+import com.gruppe10.examManagement.examAppointment.service.ExamAppointmentService;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.MultipleChoice;
 import com.gruppe10.exercisemanagement.domain.SingleChoice;
@@ -27,12 +28,15 @@ public class ExerciseGrid extends VerticalLayout {
     private final Grid<Exercise> grid;
     private final Button addExerciseBtn;
     private final ExerciseService exerciseService;
+    private final ExamAppointmentService examService;
+
     //private final SingleChoiceService singleChoiceService;
     //private final MultipleChoiceService multipleChoiceService;
     private Long currentPruefungId;
 
-    public ExerciseGrid(ExerciseService exerciseService) {
+    public ExerciseGrid(ExerciseService exerciseService, ExamAppointmentService examService) {
         this.exerciseService = exerciseService;
+        this.examService = examService;
         //this.singleChoiceService = singleChoiceService;
         //this.multipleChoiceService = multipleChoiceService;
 
@@ -82,7 +86,7 @@ public class ExerciseGrid extends VerticalLayout {
             Dialog dialog = new Dialog();
             dialog.setHeaderTitle("Neue Aufgabe");
 
-            ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService, currentPruefungId);
+            ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService, examService, currentPruefungId);
 
             Button saveButton = new Button("Speichern", e -> {
                 Exercise selected = exerciseChooseListView.getSelectedExercise();

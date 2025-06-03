@@ -114,8 +114,8 @@ public class SubmissionService {
         return submissionRepository.findById(id);
     }
 
-    public boolean existsByExam(Exam exam) {
-        return submissionRepository.existsByExam(exam);
+    public boolean existsByExam(ExamAppointment appt) {
+        return submissionRepository.existsByExam(appt);
     }
     
 }

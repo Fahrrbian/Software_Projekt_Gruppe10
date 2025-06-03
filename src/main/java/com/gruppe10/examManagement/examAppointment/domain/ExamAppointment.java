@@ -110,6 +110,40 @@ public class ExamAppointment extends AbstractEntity<Long> {
         }
         return openToCorrect;
     }
+<<<<<<< Updated upstream
+=======
+
+
+    public List<Exercise> getQuestions() {
+        return appointmentExercises.stream()
+                .map(ExamExercise::getExercise)
+                .collect(Collectors.toList());
+    }
+    public boolean isAutoPublishResults() {
+        return autoPublishResults;
+    }
+
+    public void setAutoPublishResults(boolean autoPublishResults) {
+        this.autoPublishResults = autoPublishResults;
+    }
+
+    public boolean isHasFreeTextQuestions() {
+        return hasFreeTextQuestions;
+    }
+
+    public void setHasFreeTextQuestions(boolean hasFreeTextQuestions) {
+        this.hasFreeTextQuestions = hasFreeTextQuestions;
+    }
+
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+>>>>>>> Stashed changes
 }
 
 

@@ -3,6 +3,7 @@ package com.gruppe10.examManagement.exam.ui.FormView;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.service.ExamService;
+import com.gruppe10.examManagement.examAppointment.service.ExamAppointmentService;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.gruppe10.taskmanagement.domain.Task;
@@ -27,12 +28,12 @@ import java.util.Optional;
 public class ExerciseChooseListView extends VerticalLayout {
     private final Grid<Exercise> grid;
     private final ExerciseService exerciseService;
-    private final ExamService examService;
+    private final ExamAppointmentService examService;
     private Exercise selectedExercise;
     private final Long currentPruefungId;
 
 
-    public ExerciseChooseListView(ExerciseService exerciseService, ExamService examService, Long pruefungId) {
+    public ExerciseChooseListView(ExerciseService exerciseService, ExamAppointmentService examService, Long pruefungId) {
         this.exerciseService = exerciseService;
         this.examService = examService;
         this.currentPruefungId = pruefungId;
