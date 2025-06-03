@@ -5,11 +5,16 @@ package com.gruppe10.examManagement.exam.service;
  * Date: 30/04/2025
  **/
 
-
-
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
+import com.gruppe10.examManagement.examAppointment.domain.ExamAppointmentRepository;
+import com.gruppe10.exercisemanagement.domain.Answer;
+import com.gruppe10.exercisemanagement.domain.AnswerRepository;
+import com.gruppe10.exercisemanagement.domain.Exercise;
+import com.gruppe10.exercisemanagement.domain.ExerciseRepository;
+import com.gruppe10.exercisemanagement.service.AnswerService;
 import com.gruppe10.submission.service.SubmissionService;
 import com.gruppe10.usermanagement.domain.User;
 import org.jspecify.annotations.Nullable;
@@ -21,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,12 +39,18 @@ public class ExamService {
     private final RepositoryMethodInvocationListener repositoryMethodInvocationListener;
     private List<ExamListener> listener;
     private SubmissionService submissionService;
+    private final ExamAppointmentRepository examAppointmentRepository;
+    private final ExerciseRepository exerciseRepository;
+    private final AnswerService answerService;
 
-    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener, SubmissionService submissionService) {
+    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener, SubmissionService submissionService, ExamAppointmentRepository examAppointmentRepository, ExerciseRepository exerciseRepository, AnswerService answerService) {
         this.submissionService = submissionService;
         this.examRepository = examRepository;
         this.clock = clock;
         this.repositoryMethodInvocationListener = repositoryMethodInvocationListener;
+        this.examAppointmentRepository = examAppointmentRepository;
+        this.exerciseRepository = exerciseRepository;
+        this.answerService = answerService;
     }
 
     //Hier wird ein neues Prüfungsobjekt erstellt und in der Datenbank gespeichert
@@ -119,9 +131,28 @@ public class ExamService {
         }
     }
 
-
     public List<Exam> getExamsByCurrentInstructor(User instructor) {
         return examRepository.findByCreator(instructor);
+    }
+
+    public void assignExercisesToExam(List<Long> exerciseIds, Long examId) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Prüfung nicht gefunden"));
+
+        List<Exercise> exercises = exerciseRepository.findAllById(exerciseIds);
+        for (Exercise exercise : exercises) {
+            exercise.setExam(exam); // Zuordnung
+        }
+
+        exerciseRepository.saveAll(exercises);
+    }
+
+    public void submitAnswers(Collection<Answer> answers) {
+        answerService.saveAnswers(answers);
+    }
+
+    public void saveExamAppointment(ExamAppointment appointment) {
+        examAppointmentRepository.save(appointment);
     }
 
 }

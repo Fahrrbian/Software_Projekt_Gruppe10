@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Table(name = "exam_exercise")
 public class ExamExercise {
 
-
     @EmbeddedId
     private ExamExerciseId id;
 
@@ -21,11 +20,6 @@ public class ExamExercise {
     @MapsId("examId")
     @JoinColumn(name = "pruefung_id")
     private Exam exam;
-/* Ich glaube Task wollten wir ja rausnehmen?
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("taskId")
-    private Task task;
-*/
 
     @MapsId("exerciseId")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -34,7 +28,6 @@ public class ExamExercise {
 
     @Column(name = "position", nullable = false)
     private int position;
-
 
     public ExamExercise() {}
 
@@ -69,5 +62,7 @@ public class ExamExercise {
     }
 
     public Exercise getExercise() { return exercise; }
+    
     public void setExercise(Exercise exercise) { this.exercise = exercise; }
+    
 }

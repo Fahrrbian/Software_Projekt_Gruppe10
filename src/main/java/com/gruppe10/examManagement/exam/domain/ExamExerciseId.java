@@ -9,14 +9,11 @@ import java.util.Objects;
 @Embeddable
 public class ExamExerciseId implements Serializable {
 
-    //private Long taskId; das habe ich rausgenommen
-
     @Column(name = "exercise_id")
     private Long exerciseId;
 
     @Column(name = "pruefung_id")
     private Long examId;
-
 
     public ExamExerciseId() {}
 
@@ -24,7 +21,6 @@ public class ExamExerciseId implements Serializable {
         this.examId = examId;
         this.exerciseId = exerciseId;
     }
-
 
     public Long getExamId() {
         return examId;
@@ -53,4 +49,5 @@ public class ExamExerciseId implements Serializable {
     public int hashCode() {
         return Objects.hash(examId, exerciseId);
     }
+    
 }
