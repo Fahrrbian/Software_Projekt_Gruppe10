@@ -27,14 +27,14 @@ import java.util.Optional;
 public class ExerciseChooseListView extends VerticalLayout {
     private final Grid<Exercise> grid;
     private final ExerciseService exerciseService;
-    private final ExamService examService;
+//    private final ExamService examService;
     private Exercise selectedExercise;
     private final Long currentPruefungId;
 
 
-    public ExerciseChooseListView(ExerciseService exerciseService, ExamService examService, Long pruefungId) {
+    public ExerciseChooseListView(ExerciseService exerciseService, Long pruefungId) {
         this.exerciseService = exerciseService;
-        this.examService = examService;
+//        this.examService = examService;
         this.currentPruefungId = pruefungId;
 
         grid = new Grid<>();
@@ -51,7 +51,7 @@ public class ExerciseChooseListView extends VerticalLayout {
             Exercise selectedExercise = event.getItem();
             if (selectedExercise != null) {
                 try {
-                    examService.addExerciseToExam(currentPruefungId, selectedExercise);
+//                    examService.addExerciseToExam(currentPruefungId, selectedExercise);
 
                     // Erfolgsmeldung anzeigen
                     Notification.show("Aufgabe wurde zur Prüfung hinzugefügt",

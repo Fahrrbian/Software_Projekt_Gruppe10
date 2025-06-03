@@ -70,8 +70,7 @@ public class TaskGrid extends VerticalLayout {
             Dialog dialog = new Dialog();
             dialog.setHeaderTitle("Neue Aufgabe");
 
-            ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService, examService,
-                    currentPruefungId);
+            ExerciseChooseListView exerciseChooseListView = new ExerciseChooseListView(exerciseService, currentPruefungId);
 
             Button saveButton = new Button("Speichern", e -> {
 
