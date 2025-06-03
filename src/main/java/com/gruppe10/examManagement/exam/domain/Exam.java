@@ -69,19 +69,20 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     private double bestehensgrenze;
 
     //Hier sind die zugehörigen Aufgaben-Ids in einer geordneten Liste gespeichert
-    @OneToMany(
-            mappedBy = "exam",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
+    @ManyToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             fetch = FetchType.EAGER
     )
-    @OrderBy("position ASC")
-    private List<ExamExercise> examExercises = new ArrayList<>();
+    @JoinTable(
+            name = "exam_exercise",
+            joinColumns = @JoinColumn(name = "exam_id"),
+            inverseJoinColumns = @JoinColumn(name = "exercise_id")
+    )
+    private List<Exercise> exercises = new ArrayList<>();
+
 
     public List<Exercise> getQuestions() {
-        return examExercises.stream()
-                .map(ExamExercise::getExercise)
-                .collect(Collectors.toList());
+        return exercises;
     }
 
     //Beziehung zu den Terminen
@@ -98,12 +99,12 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         this.id = id;
     }
 
-    public List<ExamExercise> getExamExercises() {
-        return examExercises;
+    public List<Exercise> getExercises() {
+        return exercises;
     }
 
-    public void setExamExercises(List<ExamExercise> examExercises) {
-        this.examExercises = examExercises;
+    public void setExercises(List<Exercise> exercises) {
+        this.exercises = exercises;
     }
 
     @Override
@@ -202,16 +203,15 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         this.hasFreeTextQuestions = hasFreeTextQuestions;
     }
 
-    public void addExamExercise(ExamExercise examExercise) {
-        if (!this.examExercises.contains(examExercise)) {
-            this.examExercises.add(examExercise);
-            examExercise.setExam(this);
+    public void addExercise(Exercise exercise) {
+        if (!this.exercises.contains(exercise)) {
+            this.exercises.add(exercise);
+//            exercise.addExam(this);
         }
     }
 
-    public void removeExamExercise(ExamExercise examExercise) {
-        this.examExercises.remove(examExercise);
-        examExercise.setExam(null);
+    public void removeExercise(Exercise exercise) {
+        this.exercises.remove(exercise);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.gruppe10.submission.DTOs;
 
 import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 
 import java.time.Instant;

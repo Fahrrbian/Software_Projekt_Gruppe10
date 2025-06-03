@@ -2,7 +2,6 @@ package com.gruppe10.exercisemanagement.ui.view;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
@@ -29,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -316,24 +316,46 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         dialog.open();
     }
 
+//    private void addExerciseToExams(Set<Exam> exams, Exercise exerciseToAdd) {
+//        for (Exam exam : exams) {
+//            boolean alreadyExists = exam.getExercises().stream()
+//                    .anyMatch(ee -> ee.getId().equals(exerciseToAdd.getId()));
+//
+//            if (!alreadyExists) {
+//                examService.addExerciseToExam(exam.getId(), exerciseToAdd);
+//                examService.saveExam(exam);
+//                Notification.show("Aufgabe " + exerciseToAdd.getExerciseText() + " zu Prüfung " + exam.getTitle() + " hinzugefügt.", 3000, Notification.Position.MIDDLE);
+//            } else {
+//                Notification.show("Aufgabe " + exerciseToAdd.getExerciseText() + " ist bereits in Prüfung " + exam.getTitle() + ".", 3000, Notification.Position.MIDDLE);
+//            }
+//        }
+//    }
+
     private void addExerciseToExams(Set<Exam> exams, Exercise exerciseToAdd) {
         for (Exam exam : exams) {
-            boolean alreadyExists = exam.getExamExercises().stream()
-                    .anyMatch(ee -> ee.getExercise().getId().equals(exerciseToAdd.getId()));
+            if (exam != null && exerciseToAdd != null) {
+                Long exerciseId = exerciseToAdd.getId();
+                boolean alreadyExists = exerciseId != null &&
+                        exam.getExercises().stream()
+                                .map(Exercise::getId)
+                                .filter(Objects::nonNull)
+                                .anyMatch(id -> id.equals(exerciseId));
 
-            if (!alreadyExists) {
-                ExamExercise examExercise = new ExamExercise();
-                examExercise.setExam(exam);
-                examExercise.setExercise(exerciseToAdd);
-                examExercise.setPosition(exam.getExamExercises().size());
-                exam.getExamExercises().add(examExercise);
-                examService.saveExam(exam);
-                Notification.show("Aufgabe " + exerciseToAdd.getExerciseText() + " zu Prüfung " + exam.getTitle() + " hinzugefügt.", 3000, Notification.Position.MIDDLE);
-            } else {
-                Notification.show("Aufgabe " + exerciseToAdd.getExerciseText() + " ist bereits in Prüfung " + exam.getTitle() + ".", 3000, Notification.Position.MIDDLE);
+                if (!alreadyExists) {
+                    examService.addExerciseToExam(exam.getId(), exerciseToAdd);
+                    // saveExam kann entfernt werden, da addExerciseToExam bereits speichert
+                    Notification.show("Aufgabe " + exerciseToAdd.getExerciseText() +
+                                    " zu Prüfung " + exam.getTitle() + " hinzugefügt.",
+                            3000, Notification.Position.MIDDLE);
+                } else {
+                    Notification.show("Aufgabe " + exerciseToAdd.getExerciseText() +
+                                    " ist bereits in Prüfung " + exam.getTitle() + ".",
+                            3000, Notification.Position.MIDDLE);
+                }
             }
         }
     }
+
 
     private static class FlowLayout extends Div {
         public FlowLayout() {
