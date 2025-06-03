@@ -10,7 +10,6 @@ import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
-import com.gruppe10.taskmanagement.service.TaskService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -30,9 +29,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @Route(value = "pruefung-form/:id", layout = MainLayout.class)
-@RouteAlias(value = "pruefung-form")
+@RouteAlias(value = "pruefung-form", layout = MainLayout.class)
 @PageTitle("Prüfung")
-@Menu(order = 0, icon = "vaadin:clipboard-check", title = "Prüfungseditor")
+@Menu(order = 5, icon = "vaadin:form", title = "Prüfungserstellung")
 @PermitAll
 public class PruefungFormView extends VerticalLayout implements HasUrlParameter<Long> {
 

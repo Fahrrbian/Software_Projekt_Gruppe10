@@ -19,6 +19,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -35,7 +36,7 @@ import static com.vaadin.flow.spring.data.VaadinSpringDataHelpers.toSpringPageRe
 
 @Route(value="pruefung-list", layout = MainLayout.class)
 @PageTitle("Prüfung List")
-//@Menu(order = 0, icon = "vaadin:clipboard-check", title = "Prüfungsliste")
+@Menu(order = 4, icon = "vaadin:records", title = "Prüfungsübersicht")
 @RolesAllowed("INSTRUCTOR")
 //PermitAll durch richtige Rolle tauschen
 public class ExamListView extends VerticalLayout implements ExamListener {

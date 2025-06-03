@@ -13,6 +13,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ import java.util.List;
  * TODO: Beschreibung einfügen.
  */
 
-
 @Route(value = "auswertung", layout = TimedMainLayout.class)
+@Menu(order = 7, icon = "vaadin:list-ol", title = "Prüfungsergebnisse")
 @RolesAllowed("INSTRUCTOR")
 public class InstructorExamResultsView extends VerticalLayout{
 

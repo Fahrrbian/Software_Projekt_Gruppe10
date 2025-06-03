@@ -12,6 +12,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -19,10 +20,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.server.menu.MenuConfiguration;
 import com.vaadin.flow.server.menu.MenuEntry;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
@@ -96,7 +95,28 @@ public class MainLayout extends AppLayout {
     private SideNav createSideNav() {
         var nav = new SideNav();
         nav.addClassNames(Margin.Horizontal.MEDIUM, Margin.Vertical.MEDIUM);
-        MenuConfiguration.getMenuEntries().forEach(entry -> nav.addItem(createSideNavItem(entry)));
+
+        authenticatedUser.get().ifPresent(user -> {
+            String role = user.getRole();
+
+            nav.addItem(new SideNavItem("Prüfungstermine", "exam-appointments", VaadinIcon.CALENDAR.create()));
+
+            if ("INSTRUCTOR".equalsIgnoreCase(role)) {
+                nav.addItem(new SideNavItem("Aufgabenübersicht", "exercises", VaadinIcon.RECORDS.create()));
+                nav.addItem(new SideNavItem("Aufgabenerstellung", "create-exercise", VaadinIcon.FORM.create()));
+                nav.addItem(new SideNavItem("Prüfungsübersicht", "pruefung-list", VaadinIcon.RECORDS.create()));
+                //nav.addItem(new SideNavItem("Prüfungserstellung", "pruefung-form", VaadinIcon.FORM.create()));
+                nav.addItem(new SideNavItem("Prüfungskorrektur", "exams-to-correct", VaadinIcon.CLIPBOARD_CHECK.create()));
+                nav.addItem(new SideNavItem("Prüfungsergebnisse", "auswertung", VaadinIcon.LIST_OL.create()));
+            } else if ("STUDENT".equalsIgnoreCase(role)) {
+                nav.addItem(new SideNavItem("Anstehende Prüfungen", "PLATZHALTER", VaadinIcon.CLIPBOARD.create()));
+                nav.addItem(new SideNavItem("Prüfungsergebnisse", "pruefungsergebnisse", VaadinIcon.LIST_OL.create()));
+            }
+
+            nav.addItem(new SideNavItem("Profil", "user-info", VaadinIcon.COGS.create()));
+        });
+
+        //MenuConfiguration.getMenuEntries().forEach(entry -> nav.addItem(createSideNavItem(entry)));
         return nav;
     }
 
@@ -120,15 +140,6 @@ public class MainLayout extends AppLayout {
         userMenu.addClassNames(Margin.MEDIUM);
 
         var userMenuItem = userMenu.addItem(avatarAndUserName);
-        /*
-        userMenuItem.getSubMenu().addItem("Profil", e -> {
-            UI.getCurrent().getPage().setLocation("/user-info");
-        });
-        userMenuItem.getSubMenu().addItem("Logout", e -> {
-            authenticatedUser.logout();
-            UI.getCurrent().getPage().setLocation("/login");
-        });
-        */
 
         return userMenu;
     }
@@ -145,4 +156,5 @@ public class MainLayout extends AppLayout {
         return authenticatedUser.get().map(user -> user.getForename() + " " + user.getSurname())
                 .orElseThrow(() -> new IllegalStateException("Kein Benutzer eingeloggt"));
     }
+
 }
