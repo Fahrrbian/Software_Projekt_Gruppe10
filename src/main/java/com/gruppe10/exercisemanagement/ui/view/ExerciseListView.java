@@ -21,6 +21,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 
 @Route(value="exercises", layout = MainLayout.class)
 @PageTitle("Aufgaben verwalten")
+@Menu(order = 2, icon = "vaadin:records", title = "Aufgabenübersicht")
 @RolesAllowed("INSTRUCTOR")
 public class ExerciseListView extends VerticalLayout  {
 

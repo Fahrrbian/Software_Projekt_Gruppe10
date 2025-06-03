@@ -13,9 +13,6 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.router.Menu;
@@ -34,11 +31,10 @@ import java.util.List;
  * **/
 
 @Route(value = "exam-appointment-form/:id", layout = MainLayout.class)
-@RouteAlias(value = "exam-appointment-form")
+@RouteAlias(value = "exam-appointment-form", layout = MainLayout.class)
 @PageTitle("Prüfungstermin")
-//@Menu(order = 2, icon = "vaadin:calendar-o", title = "Termineditor")
 @PermitAll
-public class ExamAppointmentFormView extends VerticalLayout implements HasUrlParameter<Long> {
+public class ExamAppointmentFormView extends Main implements HasUrlParameter<Long> {
     private final ExamAppointmentService appointmentService;
     private final ExamService examService;
     private ExamAppointment appointment;
@@ -115,13 +111,8 @@ public class ExamAppointmentFormView extends VerticalLayout implements HasUrlPar
 
         //View zusammenbauen
         removeAll();
-
-        HorizontalLayout buttonLayout = new HorizontalLayout(
-                backBtn, saveBtn, importButton, saveStudentsBtn, resetFormBtn
-        );
-        buttonLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
-        buttonLayout.setPadding(true);
-        add(buttonLayout);
+        add(new ViewToolbar("Termin bearbeiten",
+                ViewToolbar.group(backBtn, saveBtn, importButton, saveStudentsBtn, resetFormBtn)));
         add(form);
         add(new H3("Zugeordnete Prüflinge"));
         add(studentsGrid);

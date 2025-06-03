@@ -21,7 +21,7 @@ import java.time.format.FormatStyle;
 
 @Route(value = "exams-to-correct", layout = MainLayout.class)
 @PageTitle("Zu korrigierende Prüfungen")
-@Menu(order = 4, icon = "vaadin:calendar-o", title = "Prüfungskorrektur")
+@Menu(order = 6, icon = "vaadin:clipboard-check", title = "Prüfungskorrektur")
 @RolesAllowed("INSTRUCTOR")
 public class ExamsToCorrectView extends VerticalLayout {
 

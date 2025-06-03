@@ -39,7 +39,7 @@ import java.util.Optional;
  * **/
 
 @Route(value = "exam-appointments", layout = MainLayout.class)
-@RouteAlias("exam-appointments/:examId?")
+@RouteAlias(value = "exam-appointments/:examId?", layout = MainLayout.class)
 @PageTitle("Prüfungstermine")
 @Menu(order = 1, icon = "vaadin:calendar", title = "Prüfungstermine")
 @PermitAll
@@ -144,9 +144,8 @@ public class ExamAppointmentView extends Main implements HasUrlParameter<Long> {
                 examSelect, title, appointmentDate, createBtn
         );
         inputLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
-        inputLayout.setPadding(true);
 
-        add(inputLayout);
+        add(new ViewToolbar("Prüfungstermine", inputLayout));
         add(appointmentGrid);
     }
 
