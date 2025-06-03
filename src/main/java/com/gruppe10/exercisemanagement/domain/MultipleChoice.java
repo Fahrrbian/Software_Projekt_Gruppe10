@@ -16,10 +16,6 @@ public class MultipleChoice extends Exercise{
     @JoinColumn(name = "multiple_choice_id")
     private Set<ChoiceOption> choiceOptions = new HashSet<>();
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     public Set<ChoiceOption> getChoiceOptions() {
         return choiceOptions;
     }
@@ -67,15 +63,5 @@ public class MultipleChoice extends Exercise{
             //   long richtigGewählt = selectedIds.stream().filter(correctIds::contains).count();
             //   return maxPoints * ((double) richtigGewählt / correctIds.size());
         }
-    }
-
-    @Override
-    public @Nullable Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 }

@@ -14,11 +14,6 @@ import java.util.*;
 @DiscriminatorValue("SingleChoice")
 public class SingleChoice extends Exercise {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true,
@@ -59,15 +54,5 @@ public class SingleChoice extends Exercise {
 
     public void removeChoiceOption(ChoiceOption option) {
         choiceOptions.remove(option);
-    }
-
-    @Override
-    public @Nullable Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 }
