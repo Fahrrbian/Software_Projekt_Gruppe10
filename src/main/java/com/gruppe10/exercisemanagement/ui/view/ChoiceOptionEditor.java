@@ -60,7 +60,7 @@ class ChoiceOptionEditor extends FormLayout {
         deleteButton.getStyle().set("margin-top", "auto");
         deleteButton.getStyle().set("margin-bottom", "8px");
 
-        answerTextField.getStyle().set("flex", "0 1 85%");
+        answerTextField.getStyle().set("flex", "0 1 80%");
         correctCheckbox.getStyle().set("flex", "0 1 5%");
         deleteButton.getStyle().set("flex", "0 1 5%");
 
