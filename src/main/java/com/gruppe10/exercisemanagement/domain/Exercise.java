@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -38,10 +40,14 @@ public abstract class Exercise extends AbstractEntity<Long> {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exam_id")
-    private Exam exam;
-    
+    @ManyToMany(
+            mappedBy = "exercises",
+            fetch = FetchType.LAZY
+    )
+    private List<Exam> exams = new ArrayList<>();
+
+
+
     public abstract double evaluate(Answer answer);
 
     @Override
@@ -77,12 +83,12 @@ public abstract class Exercise extends AbstractEntity<Long> {
         this.tags = tags;
     }
 
-    public Exam getExam() {
-        return exam;
+    public List<Exam> getExam() {
+        return exams;
     }
 
-    public void setExam(Exam exam) {
-        this.exam = exam;
+    public void addExam(Exam exam) {
+        exam.addExercise(this);
     }
     
 }

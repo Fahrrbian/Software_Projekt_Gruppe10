@@ -55,4 +55,5 @@ public class SingleChoice extends Exercise {
     public void removeChoiceOption(ChoiceOption option) {
         choiceOptions.remove(option);
     }
+
 }

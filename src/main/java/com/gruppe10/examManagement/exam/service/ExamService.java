@@ -6,7 +6,6 @@ package com.gruppe10.examManagement.exam.service;
  **/
 
 import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.exam.domain.ExamExercise;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
 import com.gruppe10.exercisemanagement.domain.Exercise;
@@ -103,9 +102,7 @@ public class ExamService {
         Optional<Exam> examOpt = examRepository.findById(examId);
         if (examOpt.isPresent()) {
             Exam exam = examOpt.get();
-            int newPosition = exam.getExamExercises().size();
-            ExamExercise examExercise = new ExamExercise(exam, exercise, newPosition);
-            exam.getExamExercises().add(examExercise);
+            exam.addExercise(exercise);
             examRepository.save(exam);
         }
     }
@@ -159,7 +156,7 @@ public class ExamService {
 
         List<Exercise> exercises = exerciseRepository.findAllById(exerciseIds);
         for (Exercise exercise : exercises) {
-            exercise.setExam(exam); // Zuordnung
+            exercise.addExam(exam); // Zuordnung
         }
 
         exerciseRepository.saveAll(exercises);

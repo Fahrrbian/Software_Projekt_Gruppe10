@@ -1,5 +1,6 @@
 package com.gruppe10.examManagement.exam.ui.FormView;
 
+import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.MultipleChoice;
 import com.gruppe10.exercisemanagement.domain.SingleChoice;

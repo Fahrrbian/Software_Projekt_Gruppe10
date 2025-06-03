@@ -64,4 +64,5 @@ public class MultipleChoice extends Exercise{
             //   return maxPoints * ((double) richtigGewählt / correctIds.size());
         }
     }
+
 }

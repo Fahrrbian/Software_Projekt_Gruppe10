@@ -36,4 +36,5 @@ public class AssignmentExercise extends Exercise{
     public double evaluate(Answer answer) {
         return 0;
     }
+
 }
