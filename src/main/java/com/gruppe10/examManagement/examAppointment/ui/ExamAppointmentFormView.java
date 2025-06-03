@@ -1,5 +1,6 @@
 package com.gruppe10.examManagement.examAppointment.ui;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
@@ -29,10 +30,9 @@ import java.util.List;
  *Diese Klasse ist das der View um sich einen Prüfungstermin in einer Form anzeigen zu lassen
  * **/
 
-@Route(value = "exam-appointment-form/:id")
-@RouteAlias(value = "exam-appointment-form")
+@Route(value = "exam-appointment-form/:id", layout = MainLayout.class)
+@RouteAlias(value = "exam-appointment-form", layout = MainLayout.class)
 @PageTitle("Prüfungstermin")
-@Menu(order = 2, icon = "vaadin:calendar-o", title = "Termineditor")
 @PermitAll
 public class ExamAppointmentFormView extends Main implements HasUrlParameter<Long> {
     private final ExamAppointmentService appointmentService;

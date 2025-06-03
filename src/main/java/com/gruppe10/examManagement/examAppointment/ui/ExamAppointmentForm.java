@@ -19,7 +19,6 @@ import java.util.List;
  *Diese Klasse ist das Formular um sich einen Prüfungstermin anzeigen zu lassen
  * **/
 
-
 public class ExamAppointmentForm extends FormLayout {
     private final ExamAppointment appointment;
     private final TextField title;

@@ -6,7 +6,6 @@
 package com.gruppe10.usermanagement.ui.view;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
-import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointmentRepository;
 import com.gruppe10.usermanagement.domain.User;
@@ -29,12 +28,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
 @Route(value = "user-info", layout = MainLayout.class)
 @PageTitle("User Info")
-@Menu(order = 2, icon = "vaadin:cogs", title = "Profil")
+@Menu(order = 8, icon = "vaadin:cogs", title = "Profil")
 @RolesAllowed({"INSTRUCTOR", "STUDENT"})
 public class UserInfoView extends VerticalLayout {
 
@@ -49,20 +51,19 @@ public class UserInfoView extends VerticalLayout {
         setPadding(true);
         setSpacing(true);
         setWidthFull();
-        add(new ViewToolbar("Benutzerprofil"));
 
         //Hier evtl. anpassen an AuthenticatedUser
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UserDetails userDetails) {
             Optional<User> optionalUser = userService.findByEmail(userDetails.getUsername());
-            optionalUser.ifPresent(user -> { initUserInfoView(user); });
+            optionalUser.ifPresent(user -> { initUI(user); });
         } else {
             add(new Div("Fehler beim Laden des Benutzers"));
         }
     }
 
-    private void initUserInfoView(User user) {
-        add(new H2("Profil von " + user.getForename() + " " + user.getSurname()));
+    private void initUI(User user) {
+        add(new H2("Benutzerprofil von " + user.getForename() + " " + user.getSurname()));
 
         // Gemeinsame Informationen
         FormLayout formLayout = new FormLayout();
@@ -86,10 +87,15 @@ public class UserInfoView extends VerticalLayout {
         } else if ("STUDENT".equals(user.getRoleAsString())) {
             add(new H3("Prüfungshistorie"));
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy").withZone(ZoneId.systemDefault());
+
             Grid<ExamAppointment> examGrid = new Grid<>(ExamAppointment.class, false);
-            examGrid.addColumn(exam -> exam.getTitle()).setHeader("Modul");
-            examGrid.addColumn(exam -> exam.getAppointmentDate()).setHeader("Prüfungstermin");
-            examGrid.addColumn(exam -> exam.getId()).setHeader("Note"); //Hier benötigen wir eine Punktzahl, aus der sich die Note errechnen lässt. Berechnung in einer separaten Methode.
+            examGrid.addColumn(exam -> exam.getTitle()).setHeader("Modul (hier Bezeichnung des Prüfungstermins)");
+            examGrid.addColumn(exam -> {
+                Instant date = exam.getAppointmentDate();
+                return date != null ? formatter.format(date) : "";
+            }).setHeader("Prüfungstermin");
+            examGrid.addColumn(exam -> exam.getId()).setHeader("Note (hier eigentlich ID)"); //Hier benötigen wir eine Punktzahl, aus der sich die Note errechnen lässt. Berechnung in einer separaten Methode.
 
             List<ExamAppointment> examHistory = examDateRepository.findAll(); //Hier benötigen wir die Prüfungen eines Studenten (vllt. mit Prüfungstermin-Entität)
             examGrid.setItems(examHistory);
@@ -141,5 +147,7 @@ public class UserInfoView extends VerticalLayout {
         dialog.getFooter().add(cancelButton, saveButton);
         dialog.open();
     }
+
+
 
 }

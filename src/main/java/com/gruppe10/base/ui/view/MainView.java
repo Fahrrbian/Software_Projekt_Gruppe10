@@ -1,7 +1,6 @@
 package com.gruppe10.base.ui.view;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
-import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.security.AuthenticatedUser;
 import com.vaadin.flow.component.Component;
@@ -10,8 +9,6 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,8 +38,6 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     public void initMainView(User user) {
-        add(new H2("Willkommen, " + user.getForename() + " " + user.getSurname()));
-
         VerticalLayout layout = new VerticalLayout();
         layout.setWidth("50%");
         layout.setPadding(true);
@@ -50,15 +45,15 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
         layout.setAlignItems(FlexComponent.Alignment.STRETCH);
 
         if ("INSTRUCTOR".equalsIgnoreCase(user.getRole())) {
-            layout.add(createCard("Aufgabenverwaltung", "Verwaltung von Aufgaben", "exercises"));
-            layout.add(createCard("Prüfungsverwaltung", "Verwaltung von Prüfungen", "pruefung-list"));
-            layout.add(createCard("Prüfungskorrektur", "Korrektur von Prüfungen", "PLATZHALTER"));
-            layout.add(createCard("Prüfungsauswertung", "Auswertungen von Prüfungen", "auswertung"));
-            layout.add(createCard("Profil", "Ändere deine persönlichen Daten oder dein Passwort.", "user-info"));
+            layout.add(createCard("Aufgabenübersicht", "Verwaltung von Aufgaben", "exercises"));
+            layout.add(createCard("Prüfungsübersicht", "Verwaltung von Prüfungen", "pruefung-list"));
+            layout.add(createCard("Prüfungskorrektur", "Korrektur von Prüfungen", "exams-to-correct"));
+            layout.add(createCard("Prüfungsergebnisse", "Auswertungen von Prüfungen", "auswertung"));
+            layout.add(createCard("Profil", "Verwaltung von persönlichen Daten", "user-info"));
         } else if ("STUDENT".equalsIgnoreCase(user.getRole())) {
-            layout.add(createCard("Meine Kurse", "Informationen zu deinem aktuellen Kurs.", "PLATZHALTER"));
-            layout.add(createCard("Nächste Prüfung", "Hier findest du deine anstehenden Prüfungen.", "pruefungsergebnisse"));
-            layout.add(createCard("Profil", "Ändere deine persönlichen Daten oder dein Passwort.", "user-info"));
+            layout.add(createCard("Anstehende Prüfungen", "Übersicht über anstehende Prüfungen", "PLATZHALTER"));
+            layout.add(createCard("Prüfungsergebnisse", "Überblick über Prüfungsergebnisse", "pruefungsergebnisse"));
+            layout.add(createCard("Profil", "Verwaltung von persönlichen Daten", "user-info"));
         }
 
         add(layout);
@@ -91,12 +86,4 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
         return card;
     }
 
-
 }
-/**
- * Navigates to the main view.
-
-public static void showMainView() {
-    UI.getCurrent().navigate(MainView.class);
-}
-*/

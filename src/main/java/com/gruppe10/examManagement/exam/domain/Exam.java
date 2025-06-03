@@ -5,9 +5,9 @@ package com.gruppe10.examManagement.exam.domain;
  * Date: 30/04/2025
  **/
 
-
 import com.gruppe10.base.domain.AbstractEntity;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
+import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.usermanagement.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -16,6 +16,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "exam")
@@ -27,6 +28,16 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pruefung_id")
     private Long id;
+
+
+    //Flags für Submission-Flow um bei reinen MC/SC direkt zu publishen und Freitext vorhanden
+    @Column(name = "auto_publish_results", nullable = false,
+            columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean autoPublishResults;
+
+    @Column(name = "has_free_text_questions", nullable = false,
+            columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean hasFreeTextQuestions;
 
     //Prüfungstitel
     @Column(name = "title", nullable = false, length = DESCRIPTION_MAX_LENGTH)
@@ -67,15 +78,32 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     @OrderBy("position ASC")
     private List<ExamExercise> examExercises = new ArrayList<>();
 
+    public List<Exercise> getQuestions() {
+        return examExercises.stream()
+                .map(ExamExercise::getExercise)
+                .collect(Collectors.toList());
+    }
+
     //Beziehung zu den Terminen
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
     private List<ExamAppointment> examAppointments = new ArrayList<>();
-
 
     //Getter & Setter folgen
     @Override
     public @Nullable Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<ExamExercise> getExamExercises() {
+        return examExercises;
+    }
+
+    public void setExamExercises(List<ExamExercise> examExercises) {
+        this.examExercises = examExercises;
     }
 
     @Override
@@ -97,7 +125,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     public void setCreationDate(Instant creationDate) {
         this.creationDate = creationDate;
     }
-
 
     public @Nullable User getCreator() {
         return creator;
@@ -139,7 +166,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         this.bestehensgrenze = bestehensgrenze;
     }
 
-
     // Getter und Setter für die Liste mit Terminen
     public List<ExamAppointment> getExamAppointments() {
         return examAppointments;
@@ -160,13 +186,20 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         examAppointments.remove(appointment);
         appointment.setExam(null);
     }
-
-    public List<ExamExercise> getExamExercises() {
-        return examExercises;
+    public boolean isAutoPublishResults() {
+        return autoPublishResults;
     }
 
-    public void setExamExercises(List<ExamExercise> examExercises) {
-        this.examExercises = examExercises;
+    public void setAutoPublishResults(boolean autoPublishResults) {
+        this.autoPublishResults = autoPublishResults;
+    }
+
+    public boolean isHasFreeTextQuestions() {
+        return hasFreeTextQuestions;
+    }
+
+    public void setHasFreeTextQuestions(boolean hasFreeTextQuestions) {
+        this.hasFreeTextQuestions = hasFreeTextQuestions;
     }
 
     public void addExamExercise(ExamExercise examExercise) {
@@ -181,6 +214,4 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         examExercise.setExam(null);
     }
 
-
 }
-

@@ -47,9 +47,8 @@ public class ExamAppointment extends AbstractEntity<Long> {
     @Column(name = "openToCorrect")
     private boolean openToCorrect;
 
-    @OneToMany(mappedBy = "examAppointment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "examAppointment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<StudentExamAppointment> studentExamAppointments = new ArrayList<>();
-
 
     // Getter und Setter folgen
     @Override
@@ -79,6 +78,14 @@ public class ExamAppointment extends AbstractEntity<Long> {
 
     public void setAppointmentDate(Instant appointmentDate) {
         this.appointmentDate = appointmentDate;
+    }
+
+    public boolean isGesperrt() {
+        return gesperrt;
+    }
+
+    public void setGesperrt(boolean gesperrt) {
+        this.gesperrt = gesperrt;
     }
 
     public List<StudentExamAppointment> getStudentExamAppointments() {
