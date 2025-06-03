@@ -37,12 +37,10 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 public class MainLayout extends AppLayout {
 
-    private final UserService userService;
     private final AuthenticatedUser authenticatedUser;
     protected HorizontalLayout header;
 
-    public MainLayout(UserService userService, AuthenticatedUser authenticatedUser) {
-        this.userService = userService;
+    public MainLayout(AuthenticatedUser authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
         setPrimarySection(AppLayout.Section.DRAWER);
         createHeader();
@@ -106,7 +104,7 @@ public class MainLayout extends AppLayout {
                 nav.addItem(new SideNavItem("Aufgabenerstellung", "create-exercise", VaadinIcon.FORM.create()));
                 nav.addItem(new SideNavItem("Prüfungsübersicht", "pruefung-list", VaadinIcon.RECORDS.create()));
                 //nav.addItem(new SideNavItem("Prüfungserstellung", "pruefung-form", VaadinIcon.FORM.create()));
-                nav.addItem(new SideNavItem("Prüfungskorrektur", "exams-to-correct", VaadinIcon.CLIPBOARD_CHECK.create()));
+                nav.addItem(new SideNavItem("Prüfungskorrektur", "exam-correction", VaadinIcon.CLIPBOARD_CHECK.create()));
                 nav.addItem(new SideNavItem("Prüfungsergebnisse", "auswertung", VaadinIcon.LIST_OL.create()));
             } else if ("STUDENT".equalsIgnoreCase(role)) {
                 nav.addItem(new SideNavItem("Anstehende Prüfungen", "PLATZHALTER", VaadinIcon.CLIPBOARD.create()));
