@@ -104,7 +104,7 @@ public class MainLayout extends AppLayout {
                 nav.addItem(new SideNavItem("Aufgabenerstellung", "create-exercise", VaadinIcon.FORM.create()));
                 nav.addItem(new SideNavItem("Prüfungsübersicht", "pruefung-list", VaadinIcon.RECORDS.create()));
                 //nav.addItem(new SideNavItem("Prüfungserstellung", "pruefung-form", VaadinIcon.FORM.create()));
-                nav.addItem(new SideNavItem("Prüfungskorrektur", "exam-correction", VaadinIcon.CLIPBOARD_CHECK.create()));
+                nav.addItem(new SideNavItem("Prüfungskorrektur", "exams-to-correct", VaadinIcon.CLIPBOARD_CHECK.create()));
                 nav.addItem(new SideNavItem("Prüfungsergebnisse", "auswertung", VaadinIcon.LIST_OL.create()));
             } else if ("STUDENT".equalsIgnoreCase(role)) {
                 nav.addItem(new SideNavItem("Anstehende Prüfungen", "PLATZHALTER", VaadinIcon.CLIPBOARD.create()));

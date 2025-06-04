@@ -47,7 +47,7 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
         if ("INSTRUCTOR".equalsIgnoreCase(user.getRole())) {
             layout.add(createCard("Aufgabenübersicht", "Verwaltung von Aufgaben", "exercises"));
             layout.add(createCard("Prüfungsübersicht", "Verwaltung von Prüfungen", "pruefung-list"));
-            layout.add(createCard("Prüfungskorrektur", "Korrektur von Prüfungen", "exam-correction"));
+            layout.add(createCard("Prüfungskorrektur", "Korrektur von Prüfungen", "exams-to-correct"));
             layout.add(createCard("Prüfungsergebnisse", "Auswertungen von Prüfungen", "auswertung"));
             layout.add(createCard("Profil", "Verwaltung von persönlichen Daten", "user-info"));
         } else if ("STUDENT".equalsIgnoreCase(user.getRole())) {
