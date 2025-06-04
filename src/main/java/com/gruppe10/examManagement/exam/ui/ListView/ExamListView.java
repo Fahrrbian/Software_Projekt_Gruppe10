@@ -8,15 +8,19 @@ package com.gruppe10.examManagement.exam.ui.ListView;
 import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.IExamInterface;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
+import com.gruppe10.security.AuthenticatedUser;
 import com.gruppe10.taskmanagement.domain.Task;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Menu;
@@ -42,9 +46,8 @@ import static com.vaadin.flow.spring.data.VaadinSpringDataHelpers.toSpringPageRe
 public class ExamListView extends VerticalLayout implements ExamListener {
 
     private final ExamService examService;
-
+    private final AuthenticatedUser authenticatedUser;
     final TextField title;
-    final Long creator;
     final Button createBtn;
     final Button deleteBtn;
     final Grid<Exam> pruefungGrid;
@@ -52,11 +55,12 @@ public class ExamListView extends VerticalLayout implements ExamListener {
     private final ServletConfig servletConfig;
     private Long lastActiveId;
 
-    public ExamListView(ExamService examService, Clock clock, ServletConfig servletConfig) {
-        this.examService = examService;
-        examService.startListening(this);
 
-        creator = (long) 001;
+    public ExamListView(ExamService examService, Clock clock, ServletConfig servletConfig, AuthenticatedUser authenticatedUser
+    ) {
+        this.examService = examService;
+        this.authenticatedUser = authenticatedUser;
+        examService.startListening(this);
 
         title = new TextField();
         title.setPlaceholder("Titel der neuen Prüfung");
@@ -123,7 +127,12 @@ public class ExamListView extends VerticalLayout implements ExamListener {
         addClassNames(LumoUtility.BoxSizing.BORDER, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN,
                 LumoUtility.Padding.MEDIUM, LumoUtility.Gap.SMALL);
 
-        add(new ViewToolbar("Meine Prüfungen", ViewToolbar.group(title, createBtn, deleteBtn)));
+        add(new H2("Meine Prüfungen"));
+        HorizontalLayout buttonLayout = new HorizontalLayout(createBtn,deleteBtn);
+        buttonLayout.setAlignItems(Alignment.BASELINE);
+        buttonLayout.setPadding(true);
+
+        add(buttonLayout);
         add(pruefungGrid);
         add(pruefungEditorView);
         this.servletConfig = servletConfig;
@@ -166,14 +175,16 @@ public class ExamListView extends VerticalLayout implements ExamListener {
     }
 
     private void createPruefung() {
-        examService.createPruefung(title.getValue(), creator, null);
-        pruefungGrid.getDataProvider().refreshAll();
-        title.clear();
-        Notification.show("Task added", 3000, Notification.Position.BOTTOM_END)
-                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        authenticatedUser.get().ifPresent(user -> {
+            examService.createPruefung(user, null);
+            pruefungGrid.getDataProvider().refreshAll();
+            title.clear();
+            Notification.show("Prüfung erstellt", 3000, Notification.Position.BOTTOM_END)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        });
     }
 
-    public void getUpdate() {
+        public void getUpdate() {
         refreshForm();
     }
 

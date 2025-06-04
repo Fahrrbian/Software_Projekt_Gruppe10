@@ -1,6 +1,7 @@
 package com.gruppe10.examManagement.examAppointment.domain;
 
 import com.gruppe10.base.domain.AbstractEntity;
+import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.submission.domain.Submission;
 import jakarta.persistence.*;
 import org.jspecify.annotations.Nullable;
@@ -13,16 +14,16 @@ import org.jspecify.annotations.Nullable;
  **/
 
 @Entity
-@Table(name = "student_exam_appointment")
-public class StudentExamAppointment extends AbstractEntity<Long> {
+@Table(name = "student_exam")
+public class StudentExam extends AbstractEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "exam_appointment_id", nullable = false)
-    private ExamAppointment examAppointment;
+    @JoinColumn(name = "exam_id", nullable = false)
+    private Exam exam;
 
     @Column(name = "nachname", nullable = false)
     private String nachname;
@@ -44,12 +45,12 @@ public class StudentExamAppointment extends AbstractEntity<Long> {
         return id;
     }
 
-    public ExamAppointment getExamAppointment() {
-        return examAppointment;
+    public Exam getExam() {
+        return exam;
     }
 
-    public void setExamAppointment(ExamAppointment examAppointment) {
-        this.examAppointment = examAppointment;
+    public void setExam(Exam exam) {
+        this.exam = exam;
     }
 
     public String getNachname() {

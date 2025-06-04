@@ -21,7 +21,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
- * ToDo "Task" durch "Exercise" von Louis tauschen wenn er es hochgeladen hat
+ *
  **/
 
 public class ExerciseGrid extends VerticalLayout {
@@ -58,12 +58,10 @@ public class ExerciseGrid extends VerticalLayout {
 
         // Layout aufbauen
         add(
-                new H3("Aufgaben"),
                 new HorizontalLayout(addExerciseBtn),
                 grid
         );
 
-        setSpacing(false);
         setPadding(false);
     }
 
@@ -78,7 +76,7 @@ public class ExerciseGrid extends VerticalLayout {
         }
     }
 
-    private void addNewExercise() {
+    public void addNewExercise() {
         if (currentPruefungId != null) {
             Dialog dialog = new Dialog();
             dialog.setHeaderTitle("Neue Aufgabe");

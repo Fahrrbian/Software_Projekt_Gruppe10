@@ -1,5 +1,9 @@
 package com.gruppe10.examManagement.examsToCorrect.ui;
 
+import com.gruppe10.base.ui.Layout.MainLayout;
+import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.service.ExamService;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.Excel_Export.ui.ReviewDialog;
 import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamAppointment;
@@ -17,42 +21,37 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import jakarta.annotation.security.RolesAllowed;
 
-@Route(value = "exam-correction")
+@Route(value = "exam-correction", layout = MainLayout.class)
 @RouteAlias(value = "exam-correction/:appointmentId?")
 @PageTitle("Prüfungskorrektur")
 @RolesAllowed("INSTRUCTOR")
 public class ExamCorrectionView extends VerticalLayout implements HasUrlParameter<Long> {
 
-    private final Grid<StudentExamAppointment> submissionsGrid;
-    private ExamAppointment examAppointment;
-    private final ExamAppointmentService examAppointmentService;
+    private final Grid<StudentExam> submissionsGrid;
+    private Exam exam;
+    private final ExamService examService;
 
-    public ExamCorrectionView(ExamAppointmentService examAppointmentService) {
-        this.examAppointmentService = examAppointmentService;
+    public ExamCorrectionView(ExamService examService) {
+        this.examService = examService;
         this.submissionsGrid = new Grid<>();
         setSizeFull();
     }
 
     @Override
-    public void setParameter(BeforeEvent event, @OptionalParameter Long appointmentId) {
-        if (appointmentId == null) {
+    public void setParameter(BeforeEvent event, @OptionalParameter Long examId) {
+        if (examId == null) {
             throw new NotFoundException("Keine Prüfungstermin-ID angegeben");
         }
 
-        this.examAppointment = examAppointmentService.findById(appointmentId)
+        this.exam = examService.getById(examId)
             .orElseThrow(() -> new NotFoundException("Prüfungstermin nicht gefunden"));
 
-        // Header-Bereich
-        H2 viewTitle = new H2("Prüfungskorrektur: " + examAppointment.getTitle());
-        Span examInfo = new Span("Prüfung: " + examAppointment.getExam().getTitle());
-        
         configureSubmissionsGrid();
-        
+
         // Layout
         removeAll(); // Clear previous content
         add(
-            viewTitle,
-            examInfo,
+                new H2("Prüfungskorrektur: " + exam.getTitle()),
             submissionsGrid
         );
         
@@ -64,7 +63,7 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
             .setHeader("Name")
             .setSortable(true);
             
-        submissionsGrid.addColumn(StudentExamAppointment::getMatrikelnummer)
+        submissionsGrid.addColumn(StudentExam::getMatrikelnummer)
             .setHeader("Matrikelnummer")
             .setSortable(true);
 
@@ -115,7 +114,7 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
 //        return filterLayout;
 //    }
 
-    private void navigateToSubmissionDetail(StudentExamAppointment sea) {
+    private void navigateToSubmissionDetail(StudentExam sea) {
         if (sea.getSubmission() != null) {
             getUI().ifPresent(ui -> 
                 ui.navigate("submission-correction/" + sea.getSubmission().getId()));
@@ -124,8 +123,11 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
                 3000, Notification.Position.MIDDLE);
         }
     }
-
-
+    /*
+    private void refreshGrid() {
+        submissionsGrid.setItems(exam.getStudentExamAppointments());
+    }
+*/
     private void openReviewDialog(Submission submission) {
             // Optional: konvertiere Submission → SubmissionDto
             SubmissionDto dto = SubmissionDto.from(submission);
