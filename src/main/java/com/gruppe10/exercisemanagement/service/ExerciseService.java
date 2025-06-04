@@ -5,7 +5,6 @@ import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.ExerciseRepository;
 import com.gruppe10.exercisemanagement.domain.Tag;
-import com.gruppe10.taskmanagement.domain.Task;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;

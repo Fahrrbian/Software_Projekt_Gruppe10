@@ -17,6 +17,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import jakarta.annotation.security.RolesAllowed;
+import org.springframework.data.domain.Page;
 
 import java.time.Clock;
 import java.time.format.DateTimeFormatter;
@@ -56,7 +57,7 @@ public class StudentExamListView extends VerticalLayout {
         examGrid.addColumn(Exam::getBestehensgrenze).setHeader("Bestehensgrenze").setAutoWidth(true);
 
         examGrid.setItems(query ->
-                listAllOpenExams()
+                listAllOpenExams(query.getOffset(), query.getLimit())
                         .stream());
 
         examGrid.addItemDoubleClickListener(event -> {
@@ -68,8 +69,9 @@ public class StudentExamListView extends VerticalLayout {
         add(examGrid);
     }
 
-    public List<Exam> listAllOpenExams() {
-        return examService.findByGesperrtFalse();
+    public Page<Exam> listAllOpenExams(int offset, int limit) {
+        int page = offset / limit;
+        return examService.findByGesperrtFalsePaged(page, limit);
     }
 
 }

@@ -95,8 +95,6 @@ public class MainLayout extends AppLayout {
         authenticatedUser.get().ifPresent(user -> {
             String role = user.getRole();
 
-            nav.addItem(new SideNavItem("Prüfungstermine", "exam-appointments", VaadinIcon.CALENDAR.create()));
-
             if ("INSTRUCTOR".equalsIgnoreCase(role)) {
                 nav.addItem(new SideNavItem("Aufgabenübersicht", "exercises", VaadinIcon.RECORDS.create()));
                 nav.addItem(new SideNavItem("Aufgabenerstellung", "create-exercise", VaadinIcon.FORM.create()));

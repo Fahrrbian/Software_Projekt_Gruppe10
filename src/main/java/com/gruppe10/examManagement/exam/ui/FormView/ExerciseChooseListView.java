@@ -1,29 +1,13 @@
 package com.gruppe10.examManagement.exam.ui.FormView;
 
-import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
-import com.gruppe10.taskmanagement.domain.Task;
-import com.gruppe10.taskmanagement.service.TaskService;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.gruppe10.base.ui.Layout.MainLayout;
-import com.gruppe10.exercisemanagement.domain.Exercise;
-import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.Route;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 
 public class ExerciseChooseListView extends VerticalLayout {

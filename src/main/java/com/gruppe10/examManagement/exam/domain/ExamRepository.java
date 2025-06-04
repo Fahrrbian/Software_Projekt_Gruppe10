@@ -6,6 +6,7 @@ package com.gruppe10.examManagement.exam.domain;
  **/
 
 import com.gruppe10.usermanagement.domain.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -39,8 +40,7 @@ public interface ExamRepository extends JpaRepository<Exam, Long>, JpaSpecificat
     List<Exam> findExamsToCorrect();
 
     @Query("SELECT e FROM Exam e WHERE e.gesperrt = false")
-    List<Exam> findByGesperrtFalse();
-
+    Page<Exam> findByGesperrtFalse(Pageable pageable);
 
 }
 

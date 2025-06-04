@@ -1,6 +1,5 @@
 package com.gruppe10.exercisemanagement.domain;
 
-import com.gruppe10.taskmanagement.domain.Task;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;

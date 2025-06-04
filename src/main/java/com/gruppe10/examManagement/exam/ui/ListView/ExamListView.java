@@ -11,8 +11,8 @@ import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.IExamInterface;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
+import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.security.AuthenticatedUser;
-import com.gruppe10.taskmanagement.domain.Task;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -64,7 +64,7 @@ public class ExamListView extends VerticalLayout implements ExamListener {
         title = new TextField();
         title.setPlaceholder("Titel der neuen Prüfung");
         title.setAriaLabel("Task description");
-        title.setMaxLength(Task.DESCRIPTION_MAX_LENGTH);
+        title.setMaxLength(Exercise.TEXT_MAX_LENGTH);
         title.setMinWidth("20em");
 
         var creatorTextField = new TextField();

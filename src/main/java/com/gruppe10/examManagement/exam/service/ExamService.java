@@ -19,6 +19,8 @@ import com.gruppe10.exercisemanagement.service.AnswerService;
 import com.gruppe10.submission.service.SubmissionService;
 import com.gruppe10.usermanagement.domain.User;
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener;
 import org.springframework.stereotype.Service;
@@ -210,7 +212,15 @@ public class ExamService {
         }
     }
 
+    /*
     public List<Exam> findByGesperrtFalse() {
         return examRepository.findByGesperrtFalse();
     }
+     */
+
+    public Page<Exam> findByGesperrtFalsePaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return examRepository.findByGesperrtFalse(pageable);
+    }
+
 }
