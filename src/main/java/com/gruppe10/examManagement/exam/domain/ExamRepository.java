@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,12 @@ public interface ExamRepository extends JpaRepository<Exam, Long>, JpaSpecificat
     @Query("SELECT e FROM Exam e LEFT JOIN FETCH e.exercises WHERE e.id = :id")
     Optional<Exam> findByIdWithExercises(@Param("id") Long id);
 
+    // Methoden für die ExamAppointment-Funktionalität
+    @Query("SELECT e FROM Exam e WHERE e.appointmentDate >= :date")
+    List<Exam> findUpcomingExams(@Param("date") Instant date);
+
+    @Query("SELECT e FROM Exam e WHERE e.openToCorrect = true")
+    List<Exam> findExamsToCorrect();
 
 
 }

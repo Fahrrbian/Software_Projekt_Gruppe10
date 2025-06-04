@@ -9,8 +9,6 @@ import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.view.MainView;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.service.ExamService;
-import com.gruppe10.examManagement.exam.service.ExamSessionService;
-import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
 import com.gruppe10.submission.domain.FreeTextAnswer;

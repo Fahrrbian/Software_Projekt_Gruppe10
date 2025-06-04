@@ -6,7 +6,7 @@ package com.gruppe10.examManagement.exam.domain;
  **/
 
 import com.gruppe10.base.domain.AbstractEntity;
-import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.usermanagement.domain.User;
 import jakarta.persistence.*;
@@ -16,7 +16,6 @@ import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "exam")
@@ -68,6 +67,17 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     @Nullable
     private double bestehensgrenze;
 
+    // Felder von ExamAppointment
+    @Column(name = "appointment_date")
+    private Instant appointmentDate;
+
+    @Column(name = "gesperrt")
+    private Boolean gesperrt = false;
+
+    @Column(name = "openToCorrect")
+    private boolean openToCorrect;
+
+
     //Hier sind die zugehörigen Aufgaben-Ids in einer geordneten Liste gespeichert
     @ManyToMany(
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
@@ -85,9 +95,21 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         return exercises;
     }
 
-    //Beziehung zu den Terminen
-    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
-    private List<ExamAppointment> examAppointments = new ArrayList<>();
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<StudentExam> studentExamAppointments = new ArrayList<>();
+
+
+    // Hilfsmethoden für StudentExamAppointment
+    public void addStudentExamAppointment(StudentExam appointment) {
+        studentExamAppointments.add(appointment);
+        appointment.setExam(this);
+    }
+
+    public void removeStudentExamAppointment(StudentExam appointment) {
+        studentExamAppointments.remove(appointment);
+        appointment.setExam(null);
+    }
+
 
     //Getter & Setter folgen
     @Override
@@ -166,27 +188,6 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
     public void setBestehensgrenze(double bestehensgrenze) {
         this.bestehensgrenze = bestehensgrenze;
     }
-
-    // Getter und Setter für die Liste mit Terminen
-    public List<ExamAppointment> getExamAppointments() {
-        return examAppointments;
-    }
-
-    public void setExamAppointments(List<ExamAppointment> examAppointments) {
-        this.examAppointments = examAppointments;
-    }
-
-    // Methode zum Hinzufügen eines Termins
-    public void addExamAppointment(ExamAppointment appointment) {
-        examAppointments.add(appointment);
-        appointment.setExam(this);
-    }
-
-    // Methode zum Entfernen eines Termins
-    public void removeExamAppointment(ExamAppointment appointment) {
-        examAppointments.remove(appointment);
-        appointment.setExam(null);
-    }
     public boolean isAutoPublishResults() {
         return autoPublishResults;
     }
@@ -214,4 +215,48 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         this.exercises.remove(exercise);
     }
 
+    //  Getter und Setter für die ExamAppointment Felder
+    public Instant getAppointmentDate() {
+        return appointmentDate;
+    }
+
+    public void setAppointmentDate(Instant appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
+
+    public boolean isGesperrt() {
+        return gesperrt;
+    }
+
+    public void setGesperrt(boolean gesperrt) {
+        this.gesperrt = gesperrt;
+    }
+
+    public List<StudentExam> getStudentExamAppointments() {
+        return studentExamAppointments;
+    }
+
+    public void setStudentExamAppointments(List<StudentExam> studentExamAppointments) {
+        this.studentExamAppointments = studentExamAppointments;
+    }
+
+    public boolean getOpentoCorrect() {
+        if (!studentExamAppointments.isEmpty()) {
+            studentExamAppointments.forEach(studentExamAppointment -> {
+                try {
+                    if (studentExamAppointment.getSubmission().getPassed() == null) {
+                        openToCorrect = true;
+                    }
+                } catch (Exception e) {
+                    openToCorrect = true;
+                }
+            });
+        }
+        return openToCorrect;
+    }
+
+
+    public void removeAllStudentExamAppointments() {
+        studentExamAppointments.clear();
+    }
 }

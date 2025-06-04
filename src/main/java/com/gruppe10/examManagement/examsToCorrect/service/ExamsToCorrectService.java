@@ -2,6 +2,7 @@ package com.gruppe10.examManagement.examsToCorrect.service;
 
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
+import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.examAppointment.domain.*;
 import com.gruppe10.examManagement.examAppointment.service.ExamAppointmentService;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,21 +22,21 @@ import java.util.stream.Collectors;
 @Service
 public class ExamsToCorrectService {
 
-    private final ExamAppointmentRepository appointmentRepository;
-    private final ExamAppointmentService examAppointmentService;
+    private final ExamRepository examRepository;
+    private final ExamService examService;
 
     @Autowired
-    public ExamsToCorrectService(ExamAppointmentRepository appointmentRepository,
-                                 ExamAppointmentService examAppointmentService) {
-        this.appointmentRepository = appointmentRepository;
-        this.examAppointmentService = examAppointmentService;
+    public ExamsToCorrectService(ExamRepository examRepository,
+                                 ExamService examService) {
+        this.examRepository = examRepository;
+        this.examService = examService;
     }
 
 
     //Suche nach ExamAppointments die den Status openToCorrect haben
-    public List<ExamAppointment> getOpenToCorrectAppointments() {
-        List<ExamAppointment> openToCorrectExams = new ArrayList<>();
-        examAppointmentService.getAllAppointments(Pageable.unpaged()).forEach(examAppointment -> {
+    public List<Exam> getOpenToCorrectExams() {
+        List<Exam> openToCorrectExams = new ArrayList<>();
+        examService.getAllExams().forEach(examAppointment -> {
             if (examAppointment.getOpentoCorrect()) {
                 openToCorrectExams.add(examAppointment);
             }
