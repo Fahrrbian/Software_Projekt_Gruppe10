@@ -42,7 +42,6 @@ import static com.vaadin.flow.spring.data.VaadinSpringDataHelpers.toSpringPageRe
 @PageTitle("Prüfung List")
 @Menu(order = 4, icon = "vaadin:records", title = "Prüfungsübersicht")
 @RolesAllowed("INSTRUCTOR")
-//PermitAll durch richtige Rolle tauschen
 public class ExamListView extends VerticalLayout implements ExamListener {
 
     private final ExamService examService;

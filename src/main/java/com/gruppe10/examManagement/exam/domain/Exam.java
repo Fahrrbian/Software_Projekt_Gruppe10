@@ -255,6 +255,9 @@ public class Exam extends AbstractEntity<Long> implements IExamInterface {
         return openToCorrect;
     }
 
+    public void setOpenToCorrect(boolean openToCorrect) {
+        this.openToCorrect = openToCorrect;
+    }
 
     public void removeAllStudentExamAppointments() {
         studentExamAppointments.clear();

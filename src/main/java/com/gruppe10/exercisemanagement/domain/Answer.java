@@ -7,7 +7,9 @@ package com.gruppe10.exercisemanagement.domain;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Answer {
@@ -23,6 +25,12 @@ public class Answer {
     private List<String> selectedOptions = new ArrayList<>();
 
     private String textAnswer;
+
+    @ElementCollection
+    @CollectionTable(name = "assignment_mappings", joinColumns = @JoinColumn(name = "answer_id"))
+    @MapKeyColumn(name = "left_side")
+    @Column(name = "right_side")
+    private Map<String, String> assignmentMappings = new HashMap<>();
 
     //Optional: ID eines Benutzers, um Antwort zuzuordnen
     private Long userId;
@@ -53,6 +61,14 @@ public class Answer {
 
     public void setTextAnswer(String textAnswer) {
         this.textAnswer = textAnswer;
+    }
+
+    public Map<String, String> getAssignmentMappings() {
+        return assignmentMappings;
+    }
+
+    public void setAssignmentMappings(Map<String, String> assignmentMappings) {
+        this.assignmentMappings = assignmentMappings;
     }
 
     public Long getUserId() {

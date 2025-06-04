@@ -209,4 +209,8 @@ public class ExamService {
 
         }
     }
+
+    public List<Exam> findByGesperrtFalse() {
+        return examRepository.findByGesperrtFalse();
+    }
 }

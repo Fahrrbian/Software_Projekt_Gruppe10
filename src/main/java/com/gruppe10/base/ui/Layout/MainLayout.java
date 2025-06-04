@@ -79,14 +79,12 @@ public class MainLayout extends AppLayout {
     protected void createDrawer() {
         String username = getFullName();
 
-        //HorizontalLayout userInfo = new HorizontalLayout(new H3(username));
         HorizontalLayout userInfo = new HorizontalLayout(new H3("Menü"));
         userInfo.setAlignItems(FlexComponent.Alignment.CENTER);
         userInfo.getStyle().set("padding-left", "0.5rem");
         userInfo.getStyle().set("padding-top", "0.3rem");
         userInfo.getStyle().set("padding-bottom", "1rem");
 
-        //Header userInfoHeader = new Header(userInfo);
         addToDrawer(userInfo, new Scroller(createSideNav()), createUserInfo());
     }
 
@@ -107,7 +105,7 @@ public class MainLayout extends AppLayout {
                 nav.addItem(new SideNavItem("Prüfungskorrektur", "exams-to-correct", VaadinIcon.CLIPBOARD_CHECK.create()));
                 nav.addItem(new SideNavItem("Prüfungsergebnisse", "auswertung", VaadinIcon.LIST_OL.create()));
             } else if ("STUDENT".equalsIgnoreCase(role)) {
-                nav.addItem(new SideNavItem("Anstehende Prüfungen", "PLATZHALTER", VaadinIcon.CLIPBOARD.create()));
+                nav.addItem(new SideNavItem("Anstehende Prüfungen", "student-pruefung-list", VaadinIcon.CLIPBOARD.create()));
                 nav.addItem(new SideNavItem("Prüfungsergebnisse", "pruefungsergebnisse", VaadinIcon.LIST_OL.create()));
             }
 

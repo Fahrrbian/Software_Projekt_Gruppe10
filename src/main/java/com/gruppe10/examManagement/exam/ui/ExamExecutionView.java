@@ -6,6 +6,8 @@
 package com.gruppe10.examManagement.exam.ui;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
+import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
@@ -14,6 +16,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -27,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Route(value = "exam/:examId", layout = MainLayout.class)
 @PageTitle("Prüfung")
@@ -35,19 +39,24 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
     private final ExerciseService exerciseService;
     private final ExamService examService;
+    private final ExamRepository examRepository;
+    private Exam exam;
 
     private List<Exercise> exercises = new ArrayList<>();
     private Map<Long, Answer> userAnswers = new HashMap<>();
+    private final Map<Long, Map<String, ComboBox<String>>> assignmentComboBoxMap = new HashMap<>();
+
 
     private int currentIndex = 0;
     private Component currentComponent;
     private Timer timer;
 
     @Autowired
-    public ExamExecutionView(ExerciseService exerciseService, ExamService examService) {
+    public ExamExecutionView(ExerciseService exerciseService, ExamService examService, ExamRepository examRepository) {
         this.exerciseService = exerciseService;
         this.examService = examService;
         setSpacing(true);
+        this.examRepository = examRepository;
     }
 
     @Override
@@ -66,9 +75,22 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     }
 
     private void loadExam(Long examId) {
+        Optional<Exam> optionalExam = examRepository.findById(examId);
+        if (optionalExam.isEmpty()) {
+            showError("Prüfung nicht gefunden.");
+            return;
+        }
+
+        this.exam = optionalExam.get();
+
+        if (exam.isGesperrt()) {
+            showError("Diese Prüfung ist gesperrt und kann nicht mehr bearbeitet werden.");
+            return;
+        }
+
         exercises = exerciseService.getAllByExamId(examId);
 
-        timer = new Timer(30 * 60 * 1000L, this::onTimeUp); // 30 Minuten
+        timer = new Timer(30 * 60 * 1000L, this::onTimeUp); //30 Minuten
         add(timer);
 
         showExercise(currentIndex);
@@ -134,7 +156,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
             }
             return checkbox;
 
-        } else if (exercise instanceof FreetextExercise) {
+        } else if (exercise instanceof FreetextExercise freetextExercise) {
             TextArea textArea = new TextArea();
             textArea.setWidthFull();
             if (saved != null && saved.getTextAnswer() != null) {
@@ -142,9 +164,35 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
             }
             return textArea;
 
-        } else if (exercise instanceof AssignmentExercise) {
-            // TODO: Umsetzung der Zuordnungsaufgabe
-            return new Paragraph("Zuordnungsaufgabe: (noch nicht implementiert)");
+        } else if (exercise instanceof AssignmentExercise assignmentExercise) {
+            Map<String, ComboBox<String>> comboBoxes = new HashMap<>();
+            VerticalLayout layout = new VerticalLayout();
+
+            List<String> options = assignmentExercise.getAssignmentPairs().stream()
+                    .map(AssignmentPair::getPartTwo)
+                    .collect(Collectors.toList());
+
+            Collections.shuffle(options);
+
+            for (AssignmentPair pair : assignmentExercise.getAssignmentPairs()) {
+                String left = pair.getPartOne();
+                ComboBox<String> comboBox = new ComboBox<>();
+                comboBox.setLabel(left);
+                comboBox.setItems(options);
+                comboBox.setWidth("40%");
+
+                if (saved != null && saved.getAssignmentMappings() != null) {
+                    comboBox.setValue(saved.getAssignmentMappings().get(left));
+                }
+
+                layout.add(comboBox);
+                comboBoxes.put(left, comboBox);
+            }
+
+            assignmentComboBoxMap.put(exercise.getId(), comboBoxes);
+
+            return layout;
+
         }
 
         return new Paragraph("Unbekannter Aufgabentyp.");
@@ -166,6 +214,15 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         } else if (currentComponent instanceof TextArea) {
             String text = ((TextArea) currentComponent).getValue();
             answer.setTextAnswer(text != null ? text : "");
+        } else if (exercise instanceof AssignmentExercise) {
+            Map<String, ComboBox<String>> comboBoxes = assignmentComboBoxMap.get(exercise.getId());
+            if (comboBoxes != null) {
+                Map<String, String> mappings = new HashMap<>();
+                for (Map.Entry<String, ComboBox<String>> entry : comboBoxes.entrySet()) {
+                    mappings.put(entry.getKey(), entry.getValue().getValue());
+                }
+                answer.setAssignmentMappings(mappings);
+            }
         }
 
         System.out.println("Speichere Antwort für Exercise " + exercise.getId() + ": " + answer.getSelectedOptions());
@@ -194,7 +251,16 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
                     String text = answer.getTextAnswer();
                     preview = text != null && !text.isBlank() ? text : "(keine Antwort)";
                 } else if (ex instanceof AssignmentExercise) {
-                    preview = "(Zuordnungsanzeige folgt)";
+                    Map<String, String> mappings = answer.getAssignmentMappings();
+                    if (mappings != null && !mappings.isEmpty()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (Map.Entry<String, String> entry : mappings.entrySet()) {
+                            String key = entry.getKey();
+                            String value = entry.getValue() != null ? entry.getValue() : "X";
+                            sb.append(key).append(" ➝ ").append(value).append(";\n");
+                        }
+                        preview = !sb.isEmpty() ? sb.toString() : "(keine Antwort)";
+                    }
                 }
             }
 
@@ -206,24 +272,29 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         add(submitButton);
     }
 
+    private void onTimeUp() {
+        Notification.show("Zeit abgelaufen. Prüfung wird abgegeben.");
+        submitExam();
+    }
+
     private void submitExam() {
         examService.submitAnswers(userAnswers.values());
         Notification.show("Prüfung abgegeben.");
         UI.getCurrent().navigate("user-info");
-    }
-
-    private void onTimeUp() {
-        Notification.show("Zeit abgelaufen. Prüfung wird abgegeben.");
-        submitExam();
         blockExamAppointment();
     }
 
     private void blockExamAppointment() {
-        //PLATZHALTER
+        if (exam != null) {
+            exam.setGesperrt(true);
+            exam.setOpenToCorrect(true);
+            examRepository.save(exam);
+        }
     }
 
     private void showError(String message) {
         removeAll();
         add(new Paragraph(message));
     }
+
 }

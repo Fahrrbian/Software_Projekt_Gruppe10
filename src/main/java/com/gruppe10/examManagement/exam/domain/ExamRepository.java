@@ -38,6 +38,9 @@ public interface ExamRepository extends JpaRepository<Exam, Long>, JpaSpecificat
     @Query("SELECT e FROM Exam e WHERE e.openToCorrect = true")
     List<Exam> findExamsToCorrect();
 
+    @Query("SELECT e FROM Exam e WHERE e.gesperrt = false")
+    List<Exam> findByGesperrtFalse();
+
 
 }
 
