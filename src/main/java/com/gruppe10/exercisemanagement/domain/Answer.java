@@ -5,6 +5,7 @@
 
 package com.gruppe10.exercisemanagement.domain;
 
+import com.gruppe10.submission.domain.Submission;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +33,11 @@ public class Answer {
     @Column(name = "right_side")
     private Map<String, String> assignmentMappings = new HashMap<>();
 
-    //Optional: ID eines Benutzers, um Antwort zuzuordnen
     private Long userId;
+
+    @ManyToOne
+    @JoinColumn(name = "submission_id")
+    private Submission submission;
 
     public Long getId() {
         return id;

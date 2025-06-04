@@ -10,10 +10,9 @@ import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
 import com.gruppe10.examManagement.examAppointment.domain.StudentData;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.Answer;
-import com.gruppe10.exercisemanagement.domain.AnswerRepository;
-import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.exercisemanagement.domain.ExerciseRepository;
 import com.gruppe10.exercisemanagement.service.AnswerService;
 import com.gruppe10.submission.service.SubmissionService;
@@ -38,6 +37,7 @@ import java.util.Optional;
 public class ExamService {
 
     private final ExamRepository examRepository;
+    private final StudentExamRepository studentExamRepository;
     private final Clock clock;
     private final RepositoryMethodInvocationListener repositoryMethodInvocationListener;
     private List<ExamListener> listener;
@@ -46,7 +46,8 @@ public class ExamService {
     private final ExerciseRepository exerciseRepository;
     private final AnswerService answerService;
 
-    ExamService(ExamRepository examRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener, SubmissionService submissionService, ExerciseRepository exerciseRepository, AnswerService answerService) {
+    ExamService(ExamRepository examRepository, StudentExamRepository studentExamRepository, Clock clock, RepositoryMethodInvocationListener repositoryMethodInvocationListener, SubmissionService submissionService, ExerciseRepository exerciseRepository, AnswerService answerService) {
+        this.studentExamRepository = studentExamRepository;
         this.submissionService = submissionService;
         this.examRepository = examRepository;
         this.clock = clock;
@@ -211,12 +212,6 @@ public class ExamService {
 
         }
     }
-
-    /*
-    public List<Exam> findByGesperrtFalse() {
-        return examRepository.findByGesperrtFalse();
-    }
-     */
 
     public Page<Exam> findByGesperrtFalsePaged(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);

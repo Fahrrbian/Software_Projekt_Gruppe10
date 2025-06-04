@@ -9,9 +9,16 @@ import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.service.ExamService;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
+import com.gruppe10.submission.domain.Submission;
+import com.gruppe10.submission.domain.SubmissionAnswer;
+import com.gruppe10.submission.service.SubmissionService;
 import com.gruppe10.timer.Timer;
+import com.gruppe10.usermanagement.domain.Student;
+import com.gruppe10.usermanagement.domain.User;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -28,9 +35,13 @@ import com.vaadin.flow.router.*;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.gruppe10.base.ui.security.SecurityUtils.getCurrentUser;
 
 @Route(value = "exam/:examId", layout = MainLayout.class)
 @PageTitle("Prüfung")
@@ -39,8 +50,11 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
     private final ExerciseService exerciseService;
     private final ExamService examService;
+    private final SubmissionService submissionService;
     private final ExamRepository examRepository;
+    private final StudentExamRepository studentExamRepository;
     private Exam exam;
+    private StudentExam studentExam;
 
     private List<Exercise> exercises = new ArrayList<>();
     private Map<Long, Answer> userAnswers = new HashMap<>();
@@ -52,11 +66,13 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     private Timer timer;
 
     @Autowired
-    public ExamExecutionView(ExerciseService exerciseService, ExamService examService, ExamRepository examRepository) {
+    public ExamExecutionView(ExerciseService exerciseService, ExamService examService, SubmissionService submissionService, ExamRepository examRepository, StudentExamRepository studentExamRepository) {
         this.exerciseService = exerciseService;
         this.examService = examService;
-        setSpacing(true);
+        this.submissionService = submissionService;
         this.examRepository = examRepository;
+        this.studentExamRepository = studentExamRepository;
+        setSpacing(true);
     }
 
     @Override
@@ -75,17 +91,44 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     }
 
     private void loadExam(Long examId) {
-        Optional<Exam> optionalExam = examRepository.findById(examId);
-        if (optionalExam.isEmpty()) {
-            showError("Prüfung nicht gefunden.");
+        Optional<User> currentUser = getCurrentUser();
+        if (currentUser.isEmpty()) {
+            showError("Benutzer nicht gefunden.");
             return;
         }
 
-        this.exam = optionalExam.get();
+        Student student = (Student) currentUser.get();
 
-        if (exam.isGesperrt()) {
-            showError("Diese Prüfung ist gesperrt und kann nicht mehr bearbeitet werden.");
-            return;
+        System.out.println("Student-ID: " + student.getId());
+        System.out.println("Exam-ID: " + examId);
+
+        Optional<StudentExam> optionalExam = studentExamRepository.findByStudent_IdAndExam_Id(student.getId(), examId);
+        if (optionalExam.isEmpty()) {
+            // Prüfung wurde noch nicht gestartet – neuen StudentExam-Eintrag anlegen
+            Optional<Exam> examOpt = examRepository.findById(examId);
+            if (examOpt.isEmpty()) {
+                showError("Prüfung nicht vorhanden.");
+                return;
+            }
+
+            Exam exam = examOpt.get();
+
+            StudentExam newStudentExam = new StudentExam();
+            newStudentExam.setExam(exam);
+            newStudentExam.setStudent(student);
+            newStudentExam.setVorname(student.getForename());
+            newStudentExam.setNachname(student.getSurname());
+            newStudentExam.setGesperrt(false);
+            newStudentExam.setCompleted(false);
+
+            studentExam = studentExamRepository.save(newStudentExam);
+        } else {
+            studentExam = optionalExam.get();
+
+            if (studentExam.isGesperrt()) {
+                showError("Diese Prüfung ist gesperrt und kann nicht mehr bearbeitet werden.");
+                return;
+            }
         }
 
         exercises = exerciseService.getAllByExamId(examId);
@@ -278,19 +321,47 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     }
 
     private void submitExam() {
-        examService.submitAnswers(userAnswers.values());
+        Submission submission = new Submission();
+
+        submission.setExam(studentExam.getExam());
+        submission.setSubmittedAt(Instant.now());
+        submission.setStudent(studentExam.getStudent());
+
+        List<SubmissionAnswer> submissionAnswers = new ArrayList<>();
+        for (Map.Entry<Long, Answer> entry : userAnswers.entrySet()) {
+            Answer userAnswer = entry.getValue();
+
+            SubmissionAnswer submissionAnswer = new SubmissionAnswer();
+            submissionAnswer.setSubmission(submission);
+
+            submissionAnswer.setQuestionId(String.valueOf(userAnswer.getExercise().getId()));
+
+            submissionAnswer.setAnswerData(userAnswer.getTextAnswer());
+
+            submissionAnswers.add(submissionAnswer);
+        }
+
+        submission.setAnswers(submissionAnswers);
+
+        studentExam.setSubmission(submission);
+        studentExam.setCompleted(true);
+        studentExam.setGesperrt(true);
+
+        studentExamRepository.save(studentExam);
         Notification.show("Prüfung abgegeben.");
         UI.getCurrent().navigate("user-info");
-        blockExamAppointment();
+        //blockExamAppointment();
     }
 
+    /*
     private void blockExamAppointment() {
-        if (exam != null) {
-            exam.setGesperrt(true);
-            exam.setOpenToCorrect(true);
-            examRepository.save(exam);
+        if (studentExam != null) {
+            studentExam.setGesperrt(true);
+            studentExam.setCompleted(true);
+            studentExamRepository.save(studentExam);
         }
     }
+     */
 
     private void showError(String message) {
         removeAll();
