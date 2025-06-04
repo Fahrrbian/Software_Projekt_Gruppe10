@@ -8,6 +8,12 @@ package com.gruppe10.usermanagement.ui.view;
 import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
+import com.gruppe10.submission.domain.Submission;
+import com.gruppe10.submission.domain.SubmissionAnswer;
+import com.gruppe10.usermanagement.domain.Student;
+import com.gruppe10.usermanagement.domain.StudentRepository;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
 import com.vaadin.flow.component.UI;
@@ -29,8 +35,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,12 +49,14 @@ import java.util.Optional;
 public class UserInfoView extends VerticalLayout {
 
     private final UserService userService;
+    private final StudentExamRepository studentExamRepository;
 
     @Autowired
     private ExamRepository examRepository;
 
-    UserInfoView(UserService userService, ExamRepository examRepository) {
+    UserInfoView(UserService userService, StudentExamRepository studentExamRepository, ExamRepository examRepository) {
         this.userService = userService;
+        this.studentExamRepository = studentExamRepository;
         this.examRepository = examRepository;
         setPadding(true);
         setSpacing(true);
@@ -89,15 +99,18 @@ public class UserInfoView extends VerticalLayout {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy").withZone(ZoneId.systemDefault());
 
-            Grid<Exam> examGrid = new Grid<>(Exam.class, false);
-            examGrid.addColumn(exam -> exam.getTitle()).setHeader("Modul (hier Bezeichnung des Prüfungstermins)");
+            Grid<StudentExam> examGrid = new Grid<>(StudentExam.class, false);
+            examGrid.addColumn(exam -> exam.getExam().getTitle()).setHeader("Prüfung");
             examGrid.addColumn(exam -> {
-                Instant date = exam.getAppointmentDate();
-                return date != null ? formatter.format(date) : "";
+                LocalDateTime submitDate = exam.getEndTime();
+                return submitDate != null ? formatter.format(submitDate.atZone(ZoneId.systemDefault())) : "N/A";
             }).setHeader("Prüfungstermin");
-            examGrid.addColumn(exam -> exam.getId()).setHeader("Note (hier eigentlich ID)"); //Hier benötigen wir eine Punktzahl, aus der sich die Note errechnen lässt. Berechnung in einer separaten Methode.
+            examGrid.addColumn(exam -> exam.getExam().getId()).setHeader("Note (hier eigentlich ID)"); //Hier benötigen wir eine Punktzahl, aus der sich die Note errechnen lässt. Berechnung in einer separaten Methode.
 
-            List<Exam> examHistory = examRepository.findAll(); //Hier benötigen wir die Prüfungen eines Studenten (vllt. mit Prüfungstermin-Entität)
+            List<StudentExam> examHistory = studentExamRepository.findCompletedExamsByStudent(user)
+                    .stream()
+                    .sorted(Comparator.comparing(StudentExam::getEndTime, Comparator.nullsLast(Comparator.reverseOrder())))
+                    .toList();
             examGrid.setItems(examHistory);
 
             examGrid.setWidth("90%");

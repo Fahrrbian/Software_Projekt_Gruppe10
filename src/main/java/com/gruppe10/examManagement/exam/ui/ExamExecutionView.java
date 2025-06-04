@@ -118,6 +118,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
             newStudentExam.setStudent(student);
             newStudentExam.setVorname(student.getForename());
             newStudentExam.setNachname(student.getSurname());
+            newStudentExam.setStartTime(LocalDateTime.now());
             newStudentExam.setGesperrt(false);
             newStudentExam.setCompleted(false);
 
@@ -321,6 +322,8 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     }
 
     private void submitExam() {
+        studentExam.setEndTime(LocalDateTime.now());
+
         Submission submission = new Submission();
 
         submission.setExam(studentExam.getExam());
@@ -350,18 +353,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         studentExamRepository.save(studentExam);
         Notification.show("Prüfung abgegeben.");
         UI.getCurrent().navigate("user-info");
-        //blockExamAppointment();
     }
-
-    /*
-    private void blockExamAppointment() {
-        if (studentExam != null) {
-            studentExam.setGesperrt(true);
-            studentExam.setCompleted(true);
-            studentExamRepository.save(studentExam);
-        }
-    }
-     */
 
     private void showError(String message) {
         removeAll();
