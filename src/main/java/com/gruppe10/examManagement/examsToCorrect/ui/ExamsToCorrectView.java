@@ -4,7 +4,6 @@ import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.base.ui.component.ViewToolbar;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
 import com.gruppe10.examManagement.examsToCorrect.service.ExamsToCorrectService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -31,6 +30,7 @@ public class ExamsToCorrectView extends VerticalLayout {
 
     private final ExamsToCorrectService examsToCorrectService;
     final Grid<Exam> examGrid;
+    private Exam exam;
 
 
     @Autowired

@@ -5,9 +5,6 @@ import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.Excel_Export.ui.ReviewDialog;
-import com.gruppe10.examManagement.examAppointment.domain.ExamAppointment;
-import com.gruppe10.examManagement.examAppointment.domain.StudentExamAppointment;
-import com.gruppe10.examManagement.examAppointment.service.ExamAppointmentService;
 import com.gruppe10.submission.DTOs.SubmissionDto;
 import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.submission.domain.SubmissionStatus;
@@ -140,9 +137,9 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
             });
         }
         private void refreshGrid() {
-            this.examAppointment = examAppointmentService.findById(examAppointment.getId())
+            this.exam = examService.getById(exam.getId())
                     .orElseThrow(() -> new NotFoundException("Termin nicht gefunden"));
-            submissionsGrid.setItems(examAppointment.getStudentExamAppointments());
+            submissionsGrid.setItems(exam.getStudentExamAppointments());
         }
 }
 
