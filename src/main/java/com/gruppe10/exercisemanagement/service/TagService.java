@@ -24,7 +24,6 @@ public class TagService {
         return repository.findById(id);
     }
 
-    // vielleicht später löschen
     public Tag create(Tag tag) {
         return repository.save(tag);
     }

@@ -77,16 +77,21 @@ public class CreateExerciseView extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
         formLayout.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1),
-                new FormLayout.ResponsiveStep("600px", 2)
+                new FormLayout.ResponsiveStep("600px", 2),
+                new FormLayout.ResponsiveStep("1000px", 3)
         );
 
         typDropdown.setItems("Freitextaufgabe", "Single Choice", "Multiple Choice", "Zuordnungsaufgabe");
         typDropdown.addValueChangeListener(event -> updateSpecificContent(event.getValue()));
         typDropdown.setValue("Freitextaufgabe");
+        typDropdown.setWidthFull();
 
         exerciseTextField.setPlaceholder("Aufgabenstellung eingeben");
+        exerciseTextField.setWidthFull();
+        exerciseTextField.setHeight("150px");
 
         scoreField.setPlaceholder("Punkte");
+        scoreField.setWidthFull();
 
         Tooltip.forComponent(tagSelector)
                 .withText("Um neue Tags hinzuzufügen, geben Sie den Namen ein und drücken Sie Enter. Bestehende Tags können Sie auswählen.")
@@ -96,6 +101,7 @@ public class CreateExerciseView extends VerticalLayout {
         tagSelector.setItemLabelGenerator(Tag::getName);
         tagSelector.setClearButtonVisible(true);
         tagSelector.setAllowCustomValue(true);
+        tagSelector.setWidthFull();
         tagSelector.setPlaceholder("Tags auswählen oder neu eingeben...");
 
         tagSelector.addCustomValueSetListener(event -> {
@@ -116,7 +122,10 @@ public class CreateExerciseView extends VerticalLayout {
         specificContentContainer.getStyle().set("padding", "0");
         specificContentContainer.getStyle().set("margin", "0");
 
-        formLayout.add(typDropdown, scoreField, exerciseTextField,tagSelector);
+        formLayout.add(typDropdown, 1);
+        formLayout.add(scoreField, 1);
+        formLayout.add(tagSelector, 1);
+        formLayout.add(exerciseTextField, 3);
         add(formLayout, specificContentContainer, saveButton);
 
         binder.forField(exerciseTextField)
@@ -157,27 +166,39 @@ public class CreateExerciseView extends VerticalLayout {
         exerciseTextField.setInvalid(false);
         scoreField.setInvalid(false);
         specificContentContainer.removeAll();
-        choiceOptionEditors.clear();
+
+        boolean isChoiceType = exerciseType.equals("Single Choice") || exerciseType.equals("Multiple Choice");
+        if (!isChoiceType) {
+            choiceOptionEditors.clear();
+            editorItemsContainer.removeAll();
+        }
+
         assignmentPairEditors.clear();
         editorItemsContainer.removeAll();
 
-        if ("Single Choice".equals(exerciseType) || "Multiple Choice".equals(exerciseType)) {
+        if (isChoiceType) {
+            if (choiceOptionEditors.isEmpty()) {
+                addChoiceOptionEditor();
+            }
             currentSectionForEditors = createSection("Auswahlmöglichkeiten");
-            currentSectionForEditors.add(editorItemsContainer); // Füge den Container für Editoren hinzu
+            currentSectionForEditors.add(editorItemsContainer);
             specificContentContainer.add(currentSectionForEditors);
 
-            addChoiceOptionEditor();
+            if (editorItemsContainer.getChildren().count() < choiceOptionEditors.size()) {
+                choiceOptionEditors.forEach(editorItemsContainer::add);
+            }
 
             Button addOptionButton = new Button("+ Antwortmöglichkeit hinzufügen", event -> addChoiceOptionEditor());
             addOptionButton.getStyle().set("margin-top", "1em");
             currentSectionForEditors.add(addOptionButton);
-        }
-        else if ("Zuordnungsaufgabe".equals(exerciseType)) {
+        } else if ("Zuordnungsaufgabe".equals(exerciseType)) {
             currentSectionForEditors = createSection("Zuordnungspaare");
             currentSectionForEditors.add(editorItemsContainer);
             specificContentContainer.add(currentSectionForEditors);
 
-            addAssignmentPairEditor();
+            if (assignmentPairEditors.isEmpty()) {
+                addAssignmentPairEditor();
+            }
 
             Button addPairButton = new Button("+ Zuordnungspaar hinzufügen", event -> addAssignmentPairEditor());
             addPairButton.getStyle().set("margin-top", "1em");
