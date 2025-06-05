@@ -12,6 +12,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -191,7 +192,7 @@ public class CreateExerciseView extends VerticalLayout {
                 editorItemsContainer.remove(editor);
                 choiceOptionEditors.remove(editor);
             } else {
-                Notification.show("Es muss mindestens eine Antwortmöglichkeit vorhanden sein.", 3000, Notification.Position.MIDDLE);
+                Notification.show("Es muss mindestens eine Antwortmöglichkeit vorhanden sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
         choiceOptionEditors.add(editor);
@@ -205,7 +206,7 @@ public class CreateExerciseView extends VerticalLayout {
                 editorItemsContainer.remove(editor);
                 assignmentPairEditors.remove(editor);
             } else {
-                Notification.show("Es muss mindestens ein Zuordnungspaar vorhanden sein.", 3000, Notification.Position.MIDDLE);
+                Notification.show("Es muss mindestens ein Zuordnungspaar vorhanden sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
         assignmentPairEditors.add(editor);
@@ -240,7 +241,7 @@ public class CreateExerciseView extends VerticalLayout {
             if (specificOptionsValid) {
                 long correctCount = choiceOptionEditors.stream().filter(ChoiceOptionEditor::isCorrect).count();
                 if (correctCount != 1) {
-                    Notification.show("Für Single Choice muss genau eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Für Single Choice muss genau eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
 
                     specificOptionsValid = false;
                 }
@@ -254,7 +255,7 @@ public class CreateExerciseView extends VerticalLayout {
             }
             if (specificOptionsValid) {
                 if (choiceOptionEditors.stream().noneMatch(ChoiceOptionEditor::isCorrect)) {
-                    Notification.show("Für Multiple Choice muss mindestens eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Für Multiple Choice muss mindestens eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
                     specificOptionsValid = false;
                 }
             }
@@ -294,7 +295,7 @@ public class CreateExerciseView extends VerticalLayout {
             freetextExerciseService.createFreetextExercise(freetext);
         }
 
-        Notification.show("Aufgabe gespeichert!", 3000, Notification.Position.MIDDLE);
+        Notification.show("Aufgabe gespeichert!", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         clearInputFields();
     }
 

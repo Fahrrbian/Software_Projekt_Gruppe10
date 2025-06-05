@@ -36,9 +36,19 @@ class ChoiceOptionEditor extends FormLayout {
     }
 
     public ChoiceOption getChoiceOption() {
-        ChoiceOption option = new ChoiceOption();
+//        ChoiceOption option = new ChoiceOption();
+//        binder.writeBeanIfValid(option);
+//        return option;
+        ChoiceOption option = binder.getBean();
+        if (option == null) {
+            option = new ChoiceOption();
+        }
         binder.writeBeanIfValid(option);
         return option;
+    }
+
+    public void setChoiceOption(ChoiceOption option) {
+        binder.readBean(option);
     }
 
     public void setOnDelete(Runnable onDelete) {

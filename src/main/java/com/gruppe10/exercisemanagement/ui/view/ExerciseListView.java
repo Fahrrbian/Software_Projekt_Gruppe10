@@ -16,6 +16,7 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -96,8 +97,6 @@ public class ExerciseListView extends VerticalLayout  {
 
         HorizontalLayout filterRow = new HorizontalLayout(tagFilterComboBox, typeFilterComboBox, manageTagsButton);
         filterRow.setWidthFull();
-        //filterRow.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
-        //filterRow.expand(tagFilterComboBox, typeFilterComboBox);
         filterRow.setAlignItems(FlexComponent.Alignment.BASELINE);
         filterRow.add(tagFilterComboBox, typeFilterComboBox);
 
@@ -236,16 +235,16 @@ public class ExerciseListView extends VerticalLayout  {
                     try {
                         Tag newTag = new Tag(newTagName);
                         tagService.create(newTag);
-                        Notification.show("Tag '" + newTagName + "' erfolgreich hinzugefügt.", 3000, Notification.Position.MIDDLE);
+                        Notification.show("Tag '" + newTagName + "' erfolgreich hinzugefügt.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                         addTagDialog.close();
                         updateTagListInDialog(tagSearchField.getValue());
                         tagFilterComboBox.setItems(tagService.getAll());
                     } catch (Exception e) {
-                        Notification.show("Fehler beim Hinzufügen des Tags: " + e.getMessage(), 5000, Notification.Position.MIDDLE);
+                        Notification.show("Fehler beim Hinzufügen des Tags: " + e.getMessage(), 5000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
                     }
                 }
             } else {
-                Notification.show("Tag-Name darf nicht leer sein.", 3000, Notification.Position.MIDDLE);
+                Notification.show("Tag-Name darf nicht leer sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
         saveNewTagButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -295,25 +294,23 @@ public class ExerciseListView extends VerticalLayout  {
     }
 
     private void confirmTagDeletion(Tag tag) {
-        ConfirmDialog dialog = new ConfirmDialog("Tag löschen",
-                "Möchten Sie den Tag '" + tag.getName() + "' wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
-                "Löschen", event -> {
+        ConfirmDialog dialog = new ConfirmDialog("Tag löschen", "Möchten Sie den Tag '" + tag.getName() + "' wirklich löschen? Dies kann nicht rückgängig gemacht werden.", "Löschen", event -> {
             try {
                 tagService.delete(tag.getId());
-                Notification.show("Tag '" + tag.getName() + "' erfolgreich gelöscht.", 3000, Notification.Position.MIDDLE);
+                Notification.show("Tag '" + tag.getName() + "' erfolgreich gelöscht.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
                 updateTagListInDialog(tagSearchField.getValue());
                 tagFilterComboBox.setItems(tagService.getAll());
                 tagFilterComboBox.clear();
                 updateGrid(null, null);
             } catch (DataIntegrityViolationException e) {
-                Notification.show("Der Tag '" + tag.getName() + "' kann nicht gelöscht werden, da er noch Aufgaben zugewiesen ist.", 5000, Notification.Position.MIDDLE);
+                Notification.show("Der Tag '" + tag.getName() + "' kann nicht gelöscht werden, da er noch Aufgaben zugewiesen ist.", 5000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             } catch (Exception e) {
-                Notification.show("Fehler beim Löschen des Tags: " + e.getMessage(), 5000, Notification.Position.MIDDLE);
+                Notification.show("Fehler beim Löschen des Tags: " + e.getMessage(), 5000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         },
                 "Abbrechen", event -> {
-            Notification.show("Löschvorgang abgebrochen.", 1500, Notification.Position.MIDDLE);
+            Notification.show("Löschvorgang abgebrochen.", 1500, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
         });
         dialog.setConfirmButtonTheme("error primary");
         dialog.open();
