@@ -42,4 +42,11 @@ public class SingleChoiceService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    public SingleChoice update(SingleChoice singleChoice) {
+        if (singleChoice.getId() == null) {
+            throw new IllegalArgumentException("Cannot update SingleChoice: ID is null.");
+        }
+        return repository.save(singleChoice);
+    }
 }

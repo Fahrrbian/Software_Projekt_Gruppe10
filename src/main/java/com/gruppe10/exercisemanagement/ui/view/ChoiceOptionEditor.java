@@ -36,9 +36,19 @@ class ChoiceOptionEditor extends FormLayout {
     }
 
     public ChoiceOption getChoiceOption() {
-        ChoiceOption option = new ChoiceOption();
+//        ChoiceOption option = new ChoiceOption();
+//        binder.writeBeanIfValid(option);
+//        return option;
+        ChoiceOption option = binder.getBean();
+        if (option == null) {
+            option = new ChoiceOption();
+        }
         binder.writeBeanIfValid(option);
         return option;
+    }
+
+    public void setChoiceOption(ChoiceOption option) {
+        binder.readBean(option);
     }
 
     public void setOnDelete(Runnable onDelete) {
@@ -60,7 +70,7 @@ class ChoiceOptionEditor extends FormLayout {
         deleteButton.getStyle().set("margin-top", "auto");
         deleteButton.getStyle().set("margin-bottom", "8px");
 
-        answerTextField.getStyle().set("flex", "0 1 85%");
+        answerTextField.getStyle().set("flex", "0 1 80%");
         correctCheckbox.getStyle().set("flex", "0 1 5%");
         deleteButton.getStyle().set("flex", "0 1 5%");
 

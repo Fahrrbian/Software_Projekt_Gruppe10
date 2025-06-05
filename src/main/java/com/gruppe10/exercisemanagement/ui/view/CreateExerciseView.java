@@ -12,6 +12,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -76,16 +77,21 @@ public class CreateExerciseView extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
         formLayout.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1),
-                new FormLayout.ResponsiveStep("600px", 2)
+                new FormLayout.ResponsiveStep("600px", 2),
+                new FormLayout.ResponsiveStep("1000px", 3)
         );
 
         typDropdown.setItems("Freitextaufgabe", "Single Choice", "Multiple Choice", "Zuordnungsaufgabe");
         typDropdown.addValueChangeListener(event -> updateSpecificContent(event.getValue()));
         typDropdown.setValue("Freitextaufgabe");
+        typDropdown.setWidthFull();
 
         exerciseTextField.setPlaceholder("Aufgabenstellung eingeben");
+        exerciseTextField.setWidthFull();
+        exerciseTextField.setHeight("150px");
 
         scoreField.setPlaceholder("Punkte");
+        scoreField.setWidthFull();
 
         Tooltip.forComponent(tagSelector)
                 .withText("Um neue Tags hinzuzufügen, geben Sie den Namen ein und drücken Sie Enter. Bestehende Tags können Sie auswählen.")
@@ -95,6 +101,7 @@ public class CreateExerciseView extends VerticalLayout {
         tagSelector.setItemLabelGenerator(Tag::getName);
         tagSelector.setClearButtonVisible(true);
         tagSelector.setAllowCustomValue(true);
+        tagSelector.setWidthFull();
         tagSelector.setPlaceholder("Tags auswählen oder neu eingeben...");
 
         tagSelector.addCustomValueSetListener(event -> {
@@ -115,7 +122,10 @@ public class CreateExerciseView extends VerticalLayout {
         specificContentContainer.getStyle().set("padding", "0");
         specificContentContainer.getStyle().set("margin", "0");
 
-        formLayout.add(typDropdown, scoreField, exerciseTextField,tagSelector);
+        formLayout.add(typDropdown, 1);
+        formLayout.add(scoreField, 1);
+        formLayout.add(tagSelector, 1);
+        formLayout.add(exerciseTextField, 3);
         add(formLayout, specificContentContainer, saveButton);
 
         binder.forField(exerciseTextField)
@@ -156,27 +166,39 @@ public class CreateExerciseView extends VerticalLayout {
         exerciseTextField.setInvalid(false);
         scoreField.setInvalid(false);
         specificContentContainer.removeAll();
-        choiceOptionEditors.clear();
+
+        boolean isChoiceType = exerciseType.equals("Single Choice") || exerciseType.equals("Multiple Choice");
+        if (!isChoiceType) {
+            choiceOptionEditors.clear();
+            editorItemsContainer.removeAll();
+        }
+
         assignmentPairEditors.clear();
         editorItemsContainer.removeAll();
 
-        if ("Single Choice".equals(exerciseType) || "Multiple Choice".equals(exerciseType)) {
+        if (isChoiceType) {
+            if (choiceOptionEditors.isEmpty()) {
+                addChoiceOptionEditor();
+            }
             currentSectionForEditors = createSection("Auswahlmöglichkeiten");
-            currentSectionForEditors.add(editorItemsContainer); // Füge den Container für Editoren hinzu
+            currentSectionForEditors.add(editorItemsContainer);
             specificContentContainer.add(currentSectionForEditors);
 
-            addChoiceOptionEditor();
+            if (editorItemsContainer.getChildren().count() < choiceOptionEditors.size()) {
+                choiceOptionEditors.forEach(editorItemsContainer::add);
+            }
 
             Button addOptionButton = new Button("+ Antwortmöglichkeit hinzufügen", event -> addChoiceOptionEditor());
             addOptionButton.getStyle().set("margin-top", "1em");
             currentSectionForEditors.add(addOptionButton);
-        }
-        else if ("Zuordnungsaufgabe".equals(exerciseType)) {
+        } else if ("Zuordnungsaufgabe".equals(exerciseType)) {
             currentSectionForEditors = createSection("Zuordnungspaare");
             currentSectionForEditors.add(editorItemsContainer);
             specificContentContainer.add(currentSectionForEditors);
 
-            addAssignmentPairEditor();
+            if (assignmentPairEditors.isEmpty()) {
+                addAssignmentPairEditor();
+            }
 
             Button addPairButton = new Button("+ Zuordnungspaar hinzufügen", event -> addAssignmentPairEditor());
             addPairButton.getStyle().set("margin-top", "1em");
@@ -191,7 +213,7 @@ public class CreateExerciseView extends VerticalLayout {
                 editorItemsContainer.remove(editor);
                 choiceOptionEditors.remove(editor);
             } else {
-                Notification.show("Es muss mindestens eine Antwortmöglichkeit vorhanden sein.", 3000, Notification.Position.MIDDLE);
+                Notification.show("Es muss mindestens eine Antwortmöglichkeit vorhanden sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
         choiceOptionEditors.add(editor);
@@ -205,7 +227,7 @@ public class CreateExerciseView extends VerticalLayout {
                 editorItemsContainer.remove(editor);
                 assignmentPairEditors.remove(editor);
             } else {
-                Notification.show("Es muss mindestens ein Zuordnungspaar vorhanden sein.", 3000, Notification.Position.MIDDLE);
+                Notification.show("Es muss mindestens ein Zuordnungspaar vorhanden sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
         assignmentPairEditors.add(editor);
@@ -240,7 +262,7 @@ public class CreateExerciseView extends VerticalLayout {
             if (specificOptionsValid) {
                 long correctCount = choiceOptionEditors.stream().filter(ChoiceOptionEditor::isCorrect).count();
                 if (correctCount != 1) {
-                    Notification.show("Für Single Choice muss genau eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Für Single Choice muss genau eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
 
                     specificOptionsValid = false;
                 }
@@ -254,7 +276,7 @@ public class CreateExerciseView extends VerticalLayout {
             }
             if (specificOptionsValid) {
                 if (choiceOptionEditors.stream().noneMatch(ChoiceOptionEditor::isCorrect)) {
-                    Notification.show("Für Multiple Choice muss mindestens eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE);
+                    Notification.show("Für Multiple Choice muss mindestens eine Antwort richtig sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
                     specificOptionsValid = false;
                 }
             }
@@ -294,7 +316,7 @@ public class CreateExerciseView extends VerticalLayout {
             freetextExerciseService.createFreetextExercise(freetext);
         }
 
-        Notification.show("Aufgabe gespeichert!", 3000, Notification.Position.MIDDLE);
+        Notification.show("Aufgabe gespeichert!", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         clearInputFields();
     }
 

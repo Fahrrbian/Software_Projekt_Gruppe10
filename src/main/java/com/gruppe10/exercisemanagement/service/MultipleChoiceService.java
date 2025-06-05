@@ -39,6 +39,13 @@ public class MultipleChoiceService {
                 .orElseThrow(() -> new IllegalArgumentException("MultipleChoice not found"));
     }
 
+    public MultipleChoice update(MultipleChoice multipleChoice) {
+        if (multipleChoice.getId() == null) {
+            throw new IllegalArgumentException("Cannot update MultipleChoice: ID is null.");
+        }
+        return repository.save(multipleChoice);
+    }
+
     public void delete(Long id) {
         repository.deleteById(id);
     }

@@ -8,6 +8,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import java.util.function.Consumer;
 
 
 class AssignmentPairEditor extends FormLayout {
@@ -15,6 +16,7 @@ class AssignmentPairEditor extends FormLayout {
     private final TextField partOneField = new TextField("Teil A");
     private final TextField partTwoField = new TextField("Teil B");
     private final Button deleteButton = new Button(new Icon(VaadinIcon.CLOSE));
+    private Consumer<Boolean> onValueChangeCallback;
 
     public AssignmentPairEditor() {
         setupUI();
@@ -35,8 +37,18 @@ class AssignmentPairEditor extends FormLayout {
         return binder.validate().isOk();
     }
 
+    public void setAssignmentPair(AssignmentPair pair) {
+        binder.readBean(pair);
+    }
+
     public AssignmentPair getAssignmentPair() {
-        AssignmentPair pair = new AssignmentPair();
+//        AssignmentPair pair = new AssignmentPair();
+//        binder.writeBeanIfValid(pair);
+//        return pair;
+        AssignmentPair pair = binder.getBean();
+        if (pair == null) {
+            pair = new AssignmentPair();
+        }
         binder.writeBeanIfValid(pair);
         return pair;
     }

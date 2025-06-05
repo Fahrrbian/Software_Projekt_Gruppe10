@@ -47,4 +47,11 @@ public class FreetextExerciseService {
         freetextExerciseRepository.deleteById(id);
         return true;
     }
+
+    public FreetextExercise update(FreetextExercise freetextExercise) {
+        if (freetextExercise.getId() == null) {
+            throw new IllegalArgumentException("Cannot update FreetextExercise: ID is null.");
+        }
+        return freetextExerciseRepository.save(freetextExercise);
+    }
 }
