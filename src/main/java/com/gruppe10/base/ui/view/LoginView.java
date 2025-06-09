@@ -10,7 +10,12 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServletRequest;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.catalina.security.SecurityUtil;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -25,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 @Route("login")
 @PageTitle("Login | Online Testat")
@@ -115,8 +121,25 @@ public class LoginView extends VerticalLayout {
 				var user = userOpt.get();
 				var token = new UsernamePasswordAuthenticationToken(
 						user, null, user.getAuthorities());
-				SecurityContextHolder.getContext().setAuthentication(token);
+				var securityContext = SecurityContextHolder.getContext();
+				securityContext.setAuthentication(token);
 
+
+				VaadinRequest req = VaadinService.getCurrentRequest();
+				if (req instanceof VaadinServletRequest) {
+					HttpServletRequest httpReq = ((VaadinServletRequest) req).getHttpServletRequest();
+					httpReq.getSession()
+							.setAttribute(
+									HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+									SecurityContextHolder.getContext()
+							);
+				}
+				VaadinSession.getCurrent()
+						.getSession()
+						.setAttribute(
+								HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+								SecurityContextHolder.getContext()
+						);
 
 
 				UI.getCurrent().navigate("/");

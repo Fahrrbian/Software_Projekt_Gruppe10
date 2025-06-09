@@ -1,6 +1,7 @@
 package com.gruppe10.base.ui.view;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
+import com.gruppe10.base.ui.Layout.TimedMainLayout;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.security.AuthenticatedUser;
 import com.vaadin.flow.component.Component;
@@ -15,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * This view shows up when a user navigates to the root ('/') of the application.
  */
-@Route(value = "/", layout = MainLayout.class)
+@Route(value = "/", layout = TimedMainLayout.class)
 @PageTitle("Startseite")
 @RolesAllowed({"INSTRUCTOR", "STUDENT"})
 public class MainView extends VerticalLayout implements BeforeEnterObserver {

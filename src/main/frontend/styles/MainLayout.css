@@ -32,8 +32,6 @@
     margin-right: var(--lumo-space-m);
 }
 
-/* 3) Idle-Indikator (falls vorhanden) */
-
 #idle-indicator {
     display: inline-flex;
     align-items: center;

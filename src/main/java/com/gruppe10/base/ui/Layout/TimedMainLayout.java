@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @UIScope
-@CssImport(value = "./styles/MainLayout.css", themeFor = "vaadin-app-layout")
+@CssImport("./styles/MainLayout.css")
 public class TimedMainLayout extends MainLayout implements RouterLayout {
 
     private final Div idleIndicator = new Div("30min");;

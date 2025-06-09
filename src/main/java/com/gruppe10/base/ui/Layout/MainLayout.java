@@ -65,6 +65,7 @@ public class MainLayout extends AppLayout {
         logout.addClassName(LumoUtility.Margin.Left.AUTO);
 
         header = new HorizontalLayout(toggle, headerText, logout);
+        header.addClassName("app-header");
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         header.setWidthFull();
