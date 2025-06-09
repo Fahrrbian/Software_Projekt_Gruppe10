@@ -1,0 +1,62 @@
+.login-view {
+    height: 100vh;
+    background-color: var(--lumo-shade-5pct);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--lumo-space-m);
+}
+
+/* 2) Überschrift */
+.login-title {
+    font-size: var(--lumo-font-size-xxl);
+    font-weight: 700;
+    margin-bottom: var(--lumo-space-l);
+    color: var(--lumo-primary-text-color);
+    text-align: center;
+}
+
+/* 3) Login-Formular-Box */
+.login-form {
+    width: 340px;
+    max-width: 90%;
+    padding: var(--lumo-space-l);
+    background-color: var(--lumo-base-color);
+    border: 1px solid var(--lumo-shade-10pct);
+    border-radius: var(--lumo-border-radius-md);
+    box-shadow: var(--lumo-box-shadow-s);
+    margin-bottom: var(--lumo-space-l);
+}
+
+/* 4) „Incorrect username or password“-Banner */
+.login-form vaadin-login-overlay-wrapper[error]::part(error-message) {
+    background-color: var(--lumo-error-color-10pct);
+    color: var(--lumo-error-text-color);
+    font-weight: 500;
+}
+
+/* 5) Sign-Up-Link */
+.signup-button {
+    font-size: var(--lumo-font-size-s);
+    color: var(--lumo-primary-color);
+    text-decoration: underline;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.signup-button:hover {
+    color: var(--lumo-primary-text-color);
+    text-decoration: none;
+}
+
+/* 6) Responsive */
+@media (max-width: 400px) {
+    .login-form {
+        width: 100%;
+        padding: var(--lumo-space-m);
+    }
+    .login-title {
+        font-size: var(--lumo-font-size-xl);
+    }
+}

@@ -117,6 +117,8 @@ public class UserService implements UserDetailsService {
         i.setSurname(surname);
         i.setPassword(passwordEncoder.encode(rawPassword));
         i.setRole(Role.INSTRUCTOR);
+
+
         return instructorRepository.save(i);
     }
 
