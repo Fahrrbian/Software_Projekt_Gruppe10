@@ -48,7 +48,7 @@
 
 
 #idle-indicator::before {
-    content: "\23F1";
+    content: "⌛";
     margin-right: var(--lumo-space-xs);
 }
 
