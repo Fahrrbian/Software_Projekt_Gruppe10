@@ -13,9 +13,11 @@ import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.exercisemanagement.domain.*;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
+import com.gruppe10.submission.DTOs.ExamSubmissionDto;
 import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.submission.domain.SubmissionAnswer;
 import com.gruppe10.submission.service.SubmissionService;
+import com.gruppe10.submission.ui.SubmissionUIService;
 import com.gruppe10.timer.Timer;
 import com.gruppe10.usermanagement.domain.Student;
 import com.gruppe10.usermanagement.domain.User;
@@ -55,6 +57,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     private final StudentExamRepository studentExamRepository;
     private Exam exam;
     private StudentExam studentExam;
+    private SubmissionUIService submissionUIService;
 
     private List<Exercise> exercises = new ArrayList<>();
     private Map<Long, Answer> userAnswers = new HashMap<>();
@@ -66,12 +69,13 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     private Timer timer;
 
     @Autowired
-    public ExamExecutionView(ExerciseService exerciseService, ExamService examService, SubmissionService submissionService, ExamRepository examRepository, StudentExamRepository studentExamRepository) {
+    public ExamExecutionView(ExerciseService exerciseService, ExamService examService, SubmissionService submissionService, ExamRepository examRepository, StudentExamRepository studentExamRepository, SubmissionUIService submissionUIService) {
         this.exerciseService = exerciseService;
         this.examService = examService;
         this.submissionService = submissionService;
         this.examRepository = examRepository;
         this.studentExamRepository = studentExamRepository;
+        this.submissionUIService = submissionUIService;
         setSpacing(true);
     }
 
@@ -322,7 +326,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     }
 
     private void submitExam() {
-        studentExam.setEndTime(LocalDateTime.now());
+        /*studentExam.setEndTime(LocalDateTime.now());
 
         Submission submission = new Submission();
 
@@ -353,6 +357,41 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         studentExamRepository.save(studentExam);
         Notification.show("Prüfung abgegeben.");
         UI.getCurrent().navigate("user-info");
+    }*/
+        ExamSubmissionDto dto = new ExamSubmissionDto();
+
+        Map<String, String> raw = new HashMap<>();
+        for (Map.Entry<Long, Answer> entry : userAnswers.entrySet()) {
+            String qid = entry.getKey().toString();
+            Answer a = entry.getValue();
+
+            if (a.getTextAnswer() != null) {
+                // Freitext
+                raw.put(qid, a.getTextAnswer());
+            }
+            else if (a.getSelectedOptions() != null && !a.getSelectedOptions().isEmpty()) {
+                // Single- oder Multiple-Choice
+                // Für SingleChoice ist nur ein Element drin,
+                // für MultipleChoice sind mehrere drin
+                raw.put(qid, String.join(",", a.getSelectedOptions()));
+            }
+            else if (a.getAssignmentMappings() != null && !a.getAssignmentMappings().isEmpty()) {
+                // Zuordnungs-Aufgabe: linke=rechte Paare, durch ; getrennt
+                StringBuilder sb = new StringBuilder();
+                a.getAssignmentMappings().forEach((left, right) -> {
+                    if (sb.length() > 0) sb.append(";");
+                    sb.append(left).append("=").append(right);
+                });
+                raw.put(qid, sb.toString());
+            }
+            else {
+                // keine Antwortwie
+                raw.put(qid, "");
+            }
+        }
+        dto.setRawAnswers(raw);
+        Submission saved = submissionUIService.submitExam(exam.getId(), dto);
+
     }
 
     private void showError(String message) {

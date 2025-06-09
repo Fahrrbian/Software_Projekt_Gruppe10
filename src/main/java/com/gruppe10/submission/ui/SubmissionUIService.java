@@ -1,7 +1,9 @@
 package com.gruppe10.submission.ui;
 
+import com.gruppe10.submission.DTOs.ExamSubmissionDto;
 import com.gruppe10.submission.DTOs.ReviewDto;
 import com.gruppe10.submission.DTOs.SubmissionDto;
+import com.gruppe10.submission.domain.Submission;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -37,6 +39,14 @@ public class SubmissionUIService {
                 .bodyValue(dto)
                 .retrieve()
                 .toBodilessEntity()
+                .block();
+    }
+    public Submission submitExam(Long examId, ExamSubmissionDto payload) {
+        return client.post()
+                .uri("/exams/{examId}/submit", examId)
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(Submission.class)
                 .block();
     }
 }

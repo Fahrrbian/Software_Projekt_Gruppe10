@@ -7,14 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-import com.gruppe10.exercisemanagement.domain.Exercise;
-import com.gruppe10.exercisemanagement.domain.FreetextExercise;
-import com.gruppe10.exercisemanagement.domain.MultipleChoice;
-import com.gruppe10.exercisemanagement.domain.SingleChoice;
+import com.gruppe10.exercisemanagement.domain.*;
+import com.gruppe10.submission.domain.*;
 import com.gruppe10.submission.domain.Answer;
-import com.gruppe10.submission.domain.FreeTextAnswer;
-import com.gruppe10.submission.domain.MultipleChoiceAnswer;
-import com.gruppe10.submission.domain.SingleChoiceAnswer;
 
 
 /**
@@ -39,6 +34,7 @@ public class ExamSubmissionDto {
     public void setRawAnswers(Map<String, String> rawAnswers) {
         this.rawAnswers = rawAnswers;
     }
+
     public Map<String, Answer> toDomainAnswers(Map<String, Exercise> exerciseMap) {
         return rawAnswers.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -71,6 +67,21 @@ public class ExamSubmissionDto {
                                 a.setText(raw);
                                 return a;
                             }
+                            else if (ex instanceof AssignmentExercise) {
+                                AssignmentAnswer a = new AssignmentAnswer();
+                                a.setQuestionId(qid);
+                                // raw ist z.B. "TeilA=Pair1;TeilB=Pair3"
+                                Map<String,String> map = new HashMap<>();
+                                for (String pair : raw.split(";")) {
+                                    String[] kv = pair.split("=", 2);
+                                    if (kv.length == 2) {
+                                        map.put(kv[0].trim(), kv[1].trim());
+                                    }
+                                }
+                                a.setAssignmentMappings(map);
+                                return a;
+                            }
+
                             else {
                                 throw new IllegalArgumentException("Unknown exercise type for ID "+qid);
                             }
