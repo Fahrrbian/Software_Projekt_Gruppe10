@@ -25,11 +25,13 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.*;
 import jakarta.annotation.security.RolesAllowed;
@@ -39,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.gruppe10.base.ui.security.SecurityUtils.getCurrentUser;
 
@@ -177,7 +180,17 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
             showExercise(currentIndex);
         });
 
-        navButtons.add(prevButton, nextButton);
+        Select<Integer> jumpToSelect = new Select<>();
+        jumpToSelect.setItems(IntStream.range(0, exercises.size()).boxed().toList());
+        jumpToSelect.setValue(index);
+        jumpToSelect.setItemLabelGenerator(i -> "Aufgabe " + (i + 1));
+        jumpToSelect.addValueChangeListener(e -> {
+            saveAnswer();
+            currentIndex = e.getValue();
+            showExercise(currentIndex);
+        });
+
+        navButtons.add(prevButton, nextButton, jumpToSelect);
         return navButtons;
     }
 
@@ -314,8 +327,32 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
             add(new Hr());
         }
 
-        Button submitButton = new Button("Prüfung abschließen", e -> submitExam());
-        add(submitButton);
+        Button submitButton = new Button("Prüfung abschließen", e -> {
+            ConfirmDialog dialog = new ConfirmDialog();
+            dialog.setText("Möchten Sie die Prüfung wirklich abschließen?");
+
+            dialog.setConfirmText("Ja");
+            dialog.setCancelable(true);
+            dialog.setCancelText("Nein");
+
+            dialog.addConfirmListener(e2 -> submitExam());
+
+            dialog.open();
+        });
+
+        Select<Integer> jumpToSelect = new Select<>();
+        jumpToSelect.setItems(IntStream.range(0, exercises.size()).boxed().toList());
+        jumpToSelect.setPlaceholder("Zusammenfassung");
+        jumpToSelect.setItemLabelGenerator(i -> "Aufgabe " + (i + 1));
+        jumpToSelect.addValueChangeListener(e -> {
+            saveAnswer();
+            currentIndex = e.getValue();
+            showExercise(currentIndex);
+        });
+
+        HorizontalLayout buttons = new HorizontalLayout(submitButton, jumpToSelect);
+        buttons.setSpacing(true);
+        add(buttons);
     }
 
     private void onTimeUp() {
