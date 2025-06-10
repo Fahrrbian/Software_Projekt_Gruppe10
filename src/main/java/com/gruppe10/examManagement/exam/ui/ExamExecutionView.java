@@ -150,6 +150,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
         Exercise exercise = exercises.get(index);
         add(new H4("Frage " + (index + 1) + ": " + exercise.getExerciseText()));
+        add(new H5("Mögliche Punktzahl: " + exercise.getScore()));
 
         currentComponent = createInputComponent(exercise);
         add(currentComponent);
@@ -279,22 +280,23 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         add(timer);
         add(new H3("Zusammenfassung"));
 
-        for (Exercise ex : exercises) {
-            Answer answer = userAnswers.get(ex.getId());
-            add(new Paragraph("Frage: " + ex.getExerciseText()));
+        for (Exercise exercise : exercises) {
+            Answer answer = userAnswers.get(exercise.getId());
+            add(new Paragraph("Frage: " + exercise.getExerciseText()));
+            add(new Paragraph("Mögliche Punktzahl: " + exercise.getScore()));
 
             String preview = "(keine Antwort)";
             if (answer != null) {
-                if (ex instanceof SingleChoice) {
+                if (exercise instanceof SingleChoice) {
                     List<String> opts = answer.getSelectedOptions();
                     preview = opts != null && !opts.isEmpty() ? opts.get(0) : "(keine Antwort)";
-                } else if (ex instanceof MultipleChoice) {
+                } else if (exercise instanceof MultipleChoice) {
                     List<String> opts = answer.getSelectedOptions();
                     preview = opts != null && !opts.isEmpty() ? String.join(", ", opts) : "(keine Antwort)";
-                } else if (ex instanceof FreetextExercise) {
+                } else if (exercise instanceof FreetextExercise) {
                     String text = answer.getTextAnswer();
                     preview = text != null && !text.isBlank() ? text : "(keine Antwort)";
-                } else if (ex instanceof AssignmentExercise) {
+                } else if (exercise instanceof AssignmentExercise) {
                     Map<String, String> mappings = answer.getAssignmentMappings();
                     if (mappings != null && !mappings.isEmpty()) {
                         StringBuilder sb = new StringBuilder();
