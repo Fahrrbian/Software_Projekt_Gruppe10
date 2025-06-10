@@ -256,7 +256,7 @@ public class CreateExerciseView extends VerticalLayout {
 
         if (baseExercise instanceof SingleChoice single) {
             for (ChoiceOptionEditor editor : choiceOptionEditors) {
-                if (!editor.isValid()) {
+                if (!editor.isValid() || editor.getChoiceOption().getIsCorrect() == null) {
                     specificOptionsValid = false;
                 }
             }

@@ -49,7 +49,11 @@ public class ChoiceOption extends AbstractEntity<Long> {
     }
 
     public boolean isCorrect() {
-        return isCorrect;
+        return Boolean.TRUE.equals(isCorrect);
+    }
+
+    public Boolean getIsCorrect() {
+        return isCorrect != null && isCorrect;
     }
 
     public void setCorrect(boolean correct) {

@@ -502,13 +502,13 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         }
 
         if (currentExercise instanceof SingleChoice) {
-            long correctCount = collectedChoiceOptions.stream().filter(ChoiceOption::isCorrect).count();
+            long correctCount = collectedChoiceOptions.stream().filter(ChoiceOption::getIsCorrect).count();
             if (correctCount != 1) {
                 Notification.show("Für Single Choice muss genau eine Antwort richtig markiert sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
                 return;
             }
         } else if (currentExercise instanceof MultipleChoice) {
-            long correctCount = collectedChoiceOptions.stream().filter(ChoiceOption::isCorrect).count();
+            long correctCount = collectedChoiceOptions.stream().filter(ChoiceOption::getIsCorrect).count();
             if (correctCount < 1) {
                 Notification.show("Für Multiple Choice muss mindestens eine Antwort richtig markiert sein.", 3000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
                 return;
