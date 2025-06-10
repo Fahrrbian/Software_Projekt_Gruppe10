@@ -77,7 +77,7 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
         // Komponente für Punktzahl/Note (falls vorhanden)
         submissionsGrid.addColumn(sea -> {
             Submission sub = sea.getSubmission();
-            return sub != null ? sub.getPassed() : "-";
+            return sub.getTotalPoints() != null ? sub.getTotalPoints() : 0.0;
         }).setHeader("Punkte");
 
         // Action-Buttons
