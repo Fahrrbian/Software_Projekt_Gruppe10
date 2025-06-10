@@ -16,6 +16,5 @@ public interface InstructorRepository extends JpaRepository<Instructor, Long>, J
 
     // If you don't need a total row count, Slice is better than Page.
     Slice<Instructor> findAllBy(Pageable pageable);
-
-    Optional<Instructor> findByEmail(String instructorEmail);
+    Optional<Instructor> findByEmail(String email);
 }

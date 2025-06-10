@@ -19,6 +19,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.converter.StringToLongConverter;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -134,7 +135,7 @@ public class CreateExerciseView extends VerticalLayout {
 
         binder.forField(scoreField)
                 .asRequired("Punkte eingeben")
-                .withConverter(new StringToIntegerConverter("Bitte eine gültige Zahl eingeben"))
+                .withConverter(new StringToLongConverter("Bitte eine gültige Zahl eingeben"))
                 .withValidator(score -> score != null && score > 0, "Punktzahl muss größer 0 sein")
                 .bind(Exercise::getScore, Exercise::setScore);
 

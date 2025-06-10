@@ -49,9 +49,9 @@ public class ExamsToCorrectView extends VerticalLayout {
             exam = event.getValue();
         });
         // Spalten für die Grid-Ansicht definieren
-        examGrid.addColumn(Exam::getId).setHeader("ID");
+        //examGrid.addColumn(Exam::getId).setHeader("ID");
         examGrid.addColumn(Exam::getTitle).setHeader("Terminbezeichnung");
-        examGrid.addColumn(appointment -> dateTimeFormatter.format(appointment.getAppointmentDate()))
+        examGrid.addColumn(appointment -> dateTimeFormatter.format(appointment.getCreationDate()))
                 .setHeader("Prüfungstermin");
         examGrid.addColumn(appointment -> appointment.getStudentExamAppointments().size())
                 .setHeader("Anzahl Teilnehmer");

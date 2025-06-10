@@ -138,7 +138,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
 
         mainBinder.forField(scoreEditor)
                 .asRequired("Punkte eingeben")
-                .withConverter(Double::intValue, Integer::doubleValue, "Bitte eine gültige Zahl eingeben")
+                .withConverter(Double::longValue, Long::doubleValue, "Bitte eine gültige Zahl eingeben")
                 .withValidator(score -> score != null && score > 0, "Punktzahl muss größer 0 sein")
                 .bind(Exercise::getScore, Exercise::setScore);
     }

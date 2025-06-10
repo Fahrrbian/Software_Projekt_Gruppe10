@@ -12,12 +12,11 @@ import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.exercisemanagement.domain.*;
+import com.gruppe10.exercisemanagement.domain.Answer;
 import com.gruppe10.exercisemanagement.service.ExerciseService;
-import com.gruppe10.submission.DTOs.ExamSubmissionDto;
-import com.gruppe10.submission.domain.Submission;
-import com.gruppe10.submission.domain.SubmissionAnswer;
+import com.gruppe10.submission.domain.*;
+import com.gruppe10.submission.service.EvaluationService;
 import com.gruppe10.submission.service.SubmissionService;
-import com.gruppe10.submission.ui.SubmissionUIService;
 import com.gruppe10.timer.Timer;
 import com.gruppe10.usermanagement.domain.Student;
 import com.gruppe10.usermanagement.domain.User;
@@ -30,14 +29,12 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.*;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
@@ -55,27 +52,25 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     private final SubmissionService submissionService;
     private final ExamRepository examRepository;
     private final StudentExamRepository studentExamRepository;
-    private Exam exam;
+    private final EvaluationService evaluationService;
     private StudentExam studentExam;
-    private SubmissionUIService submissionUIService;
 
     private List<Exercise> exercises = new ArrayList<>();
     private Map<Long, Answer> userAnswers = new HashMap<>();
     private final Map<Long, Map<String, ComboBox<String>>> assignmentComboBoxMap = new HashMap<>();
-
 
     private int currentIndex = 0;
     private Component currentComponent;
     private Timer timer;
 
     @Autowired
-    public ExamExecutionView(ExerciseService exerciseService, ExamService examService, SubmissionService submissionService, ExamRepository examRepository, StudentExamRepository studentExamRepository, SubmissionUIService submissionUIService) {
+    public ExamExecutionView(ExerciseService exerciseService, ExamService examService, SubmissionService submissionService, ExamRepository examRepository, StudentExamRepository studentExamRepository, EvaluationService evaluationService) {
         this.exerciseService = exerciseService;
         this.examService = examService;
         this.submissionService = submissionService;
         this.examRepository = examRepository;
         this.studentExamRepository = studentExamRepository;
-        this.submissionUIService = submissionUIService;
+        this.evaluationService = evaluationService;
         setSpacing(true);
     }
 
@@ -108,7 +103,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
         Optional<StudentExam> optionalExam = studentExamRepository.findByStudent_IdAndExam_Id(student.getId(), examId);
         if (optionalExam.isEmpty()) {
-            // Prüfung wurde noch nicht gestartet – neuen StudentExam-Eintrag anlegen
+            //Prüfung wurde noch nicht gestartet. Neuer StudentExam-Eintrag wird anlegt.
             Optional<Exam> examOpt = examRepository.findById(examId);
             if (examOpt.isEmpty()) {
                 showError("Prüfung nicht vorhanden.");
@@ -273,6 +268,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
             }
         }
 
+        //Logging
         System.out.println("Speichere Antwort für Exercise " + exercise.getId() + ": " + answer.getSelectedOptions());
 
         userAnswers.put(exercise.getId(), answer);
@@ -326,72 +322,108 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     }
 
     private void submitExam() {
-        /*studentExam.setEndTime(LocalDateTime.now());
+        studentExam.setEndTime(LocalDateTime.now());
 
-        Submission submission = new Submission();
-
-        submission.setExam(studentExam.getExam());
-        submission.setSubmittedAt(Instant.now());
-        submission.setStudent(studentExam.getStudent());
-
-        List<SubmissionAnswer> submissionAnswers = new ArrayList<>();
+        Map<String, String> answers = new HashMap<>();
         for (Map.Entry<Long, Answer> entry : userAnswers.entrySet()) {
+            Long exerciseId = entry.getKey();
             Answer userAnswer = entry.getValue();
 
-            SubmissionAnswer submissionAnswer = new SubmissionAnswer();
-            submissionAnswer.setSubmission(submission);
+            String answerData = "";
 
-            submissionAnswer.setQuestionId(String.valueOf(userAnswer.getExercise().getId()));
+            if (userAnswer.getSelectedOptions() != null && !userAnswer.getSelectedOptions().isEmpty()) {
+                answerData = String.join(";; ", userAnswer.getSelectedOptions());
+            } else if (userAnswer.getTextAnswer() != null) {
+                answerData = userAnswer.getTextAnswer();
+            } else if (userAnswer.getAssignmentMappings() != null && !userAnswer.getAssignmentMappings().isEmpty()) {
+                answerData = userAnswer.getAssignmentMappings().entrySet().stream()
+                        .map(e -> e.getKey() + "=>" + e.getValue())
+                        .collect(Collectors.joining(";; "));
+            }
 
-            submissionAnswer.setAnswerData(userAnswer.getTextAnswer());
-
-            submissionAnswers.add(submissionAnswer);
+            answers.put(String.valueOf(exerciseId), answerData);
         }
 
-        submission.setAnswers(submissionAnswers);
+        Map<String, com.gruppe10.submission.domain.Answer> domainAnswers = userAnswers.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> String.valueOf(entry.getKey()), // Long → String
+                        entry -> {
+                            var src = entry.getValue();
+
+                            String questionId;
+                            if (src.getExercise() != null && src.getExercise().getId() != null) {
+                                questionId = src.getExercise().getId().toString();
+                            } else {
+                                questionId = String.valueOf(entry.getKey());
+                            }
+
+                            //Logging
+                            System.out.println("--- Verarbeitung Antwort ---");
+                            System.out.println("Frage-ID: " + entry.getKey());
+                            System.out.println("selectedOptions: " + src.getSelectedOptions());
+                            System.out.println("textAnswer: " + src.getTextAnswer());
+                            System.out.println("assignmentMappings: " + src.getAssignmentMappings());
+                            System.out.println("----------------------------");
+
+                            if (src.getSelectedOptions() != null && !src.getSelectedOptions().isEmpty()) {
+                                if (src.getSelectedOptions().size() == 1) {
+                                    var sc = new SingleChoiceAnswer();
+                                    sc.setQuestionId(questionId);
+                                    sc.setSelectedOptionId(src.getSelectedOptions().get(0));
+                                    return sc;
+                                } else {
+                                    var mc = new MultipleChoiceAnswer();
+                                    mc.setQuestionId(questionId);
+                                    mc.setSelectedOptionIds(src.getSelectedOptions());
+                                    return mc;
+                                }
+                            } else if (src.getTextAnswer() != null) {
+                                var ft = new FreeTextAnswer();
+                                ft.setQuestionId(questionId);
+                                ft.setText(src.getTextAnswer());
+                                return ft;
+                            } else if (src.getAssignmentMappings() != null && !src.getAssignmentMappings().isEmpty()) {
+                                var assign = new AssignmentAnswer();
+                                assign.setQuestionId(questionId);
+                                assign.setAssignmentMappings(src.getAssignmentMappings());
+                                return assign;
+                            } else {
+                                throw new IllegalStateException("Unbekannter Antworttyp für Frage " + entry.getKey());
+                            }
+                        }
+                ));
+
+        var result = evaluationService.evaluateExam(studentExam.getExam(), domainAnswers);
+
+        //Logging
+        System.out.println("--- Evaluation Result ---");
+        System.out.println("Per Question Points: " + result.getPerQuestionPoints());
+        System.out.println("Total Points: " + result.getTotalPoints());
+        System.out.println("Passed: " + result.isPassed());
+        System.out.println("-------------------------");
+
+        //Logging
+        Map<String, Double> perQuestionPoints = result.getPerQuestionPoints();
+        System.out.println("Punkte vor Bewertung speichern: " + perQuestionPoints);
+
+        Submission submission = submissionService.bewerten(studentExam.getExam(), studentExam.getStudent(), result.getPerQuestionPoints(), answers);
+        //Logging
+        System.out.println("--- Bewertung starten ---");
+        System.out.println("Exam: " + studentExam.getId());
+        System.out.println("Student: " + studentExam.getStudent().getId());
+        System.out.println("Punkte pro Frage: " + perQuestionPoints);
+        System.out.println("Antworten roh: " + answers);
 
         studentExam.setSubmission(submission);
         studentExam.setCompleted(true);
         studentExam.setGesperrt(true);
+        studentExam.getExam().setOpenToCorrect(true);
 
         studentExamRepository.save(studentExam);
+        examRepository.save(studentExam.getExam());
+
         Notification.show("Prüfung abgegeben.");
         UI.getCurrent().navigate("user-info");
-    }*/
-        ExamSubmissionDto dto = new ExamSubmissionDto();
-
-        Map<String, String> raw = new HashMap<>();
-        for (Map.Entry<Long, Answer> entry : userAnswers.entrySet()) {
-            String qid = entry.getKey().toString();
-            Answer a = entry.getValue();
-
-            if (a.getTextAnswer() != null) {
-                // Freitext
-                raw.put(qid, a.getTextAnswer());
-            }
-            else if (a.getSelectedOptions() != null && !a.getSelectedOptions().isEmpty()) {
-                // Single- oder Multiple-Choice
-                // Für SingleChoice ist nur ein Element drin,
-                // für MultipleChoice sind mehrere drin
-                raw.put(qid, String.join(",", a.getSelectedOptions()));
-            }
-            else if (a.getAssignmentMappings() != null && !a.getAssignmentMappings().isEmpty()) {
-                // Zuordnungs-Aufgabe: linke=rechte Paare, durch ; getrennt
-                StringBuilder sb = new StringBuilder();
-                a.getAssignmentMappings().forEach((left, right) -> {
-                    if (sb.length() > 0) sb.append(";");
-                    sb.append(left).append("=").append(right);
-                });
-                raw.put(qid, sb.toString());
-            }
-            else {
-                // keine Antwortwie
-                raw.put(qid, "");
-            }
-        }
-        dto.setRawAnswers(raw);
-        Submission saved = submissionUIService.submitExam(exam.getId(), dto);
-
     }
 
     private void showError(String message) {

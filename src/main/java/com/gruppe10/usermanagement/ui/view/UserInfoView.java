@@ -62,7 +62,6 @@ public class UserInfoView extends VerticalLayout {
         setSpacing(true);
         setWidthFull();
 
-        //Hier evtl. anpassen an AuthenticatedUser
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UserDetails userDetails) {
             Optional<User> optionalUser = userService.findByEmail(userDetails.getUsername());
@@ -105,7 +104,19 @@ public class UserInfoView extends VerticalLayout {
                 LocalDateTime submitDate = exam.getEndTime();
                 return submitDate != null ? formatter.format(submitDate.atZone(ZoneId.systemDefault())) : "N/A";
             }).setHeader("Prüfungstermin");
-            examGrid.addColumn(exam -> exam.getExam().getId()).setHeader("Note (hier eigentlich ID)"); //Hier benötigen wir eine Punktzahl, aus der sich die Note errechnen lässt. Berechnung in einer separaten Methode.
+            //examGrid.addColumn(exam -> exam.getSubmission().getTotalPoints()).setHeader("Punktzahl");
+            examGrid.addColumn(exam -> {
+                Submission submission = exam.getSubmission();
+                if (submission == null) {
+                    return "N/A";
+                }
+                Boolean passed = submission.getPassed();
+                if (passed == null) {
+                    return "N/A";
+                }
+                return passed ? "✔" : "✖";
+            }).setHeader("Bestanden");
+            examGrid.addColumn(exam -> berechneNote(exam)).setHeader("Note");
 
             List<StudentExam> examHistory = studentExamRepository.findCompletedExamsByStudent(user)
                     .stream()
@@ -159,6 +170,31 @@ public class UserInfoView extends VerticalLayout {
         Button cancelButton = new Button("Abbrechen", e -> dialog.close());
         dialog.getFooter().add(cancelButton, saveButton);
         dialog.open();
+    }
+
+    private String berechneNote(StudentExam exam) {
+        Submission submission = exam.getSubmission();
+        if (submission == null || submission.getAnswers() == null) return "N/A";
+
+        double erreichtePunkte = submission.getTotalPoints() != null ? submission.getTotalPoints() : 0.0;
+        double gesamtpunkte = exam.getExam().getGesamtpunkte();
+
+        double prozent = 100.0 * erreichtePunkte / gesamtpunkte;
+        return formatiereNote(prozent);
+    }
+
+    private String formatiereNote(double prozent) {
+        if (prozent >= 95.0) return "1,0";
+        if (prozent >= 90.0) return "1,3";
+        if (prozent >= 85.0) return "1,7";
+        if (prozent >= 80.0) return "2,0";
+        if (prozent >= 75.0) return "2,3";
+        if (prozent >= 70.0) return "2,7";
+        if (prozent >= 65.0) return "3,0";
+        if (prozent >= 60.0) return "3,3";
+        if (prozent >= 55.0) return "3,7";
+        if (prozent >= 50.0) return "4,0";
+        return "5,0";
     }
 
 }

@@ -26,7 +26,7 @@ public abstract class Exercise extends AbstractEntity<Long> {
     private Long id;
 
     @Column(name = "score", nullable = false)
-    private int score;
+    private Long score;
 
     @Column(name = "exercise_text", length = TEXT_MAX_LENGTH)
     @Size(max = TEXT_MAX_LENGTH)
@@ -59,11 +59,11 @@ public abstract class Exercise extends AbstractEntity<Long> {
         this.id = id;
     }
 
-    public int getScore() {
+    public Long getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(Long score) {
         this.score = score;
     }
 

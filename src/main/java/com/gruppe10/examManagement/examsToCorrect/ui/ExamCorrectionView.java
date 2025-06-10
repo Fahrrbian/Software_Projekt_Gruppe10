@@ -8,6 +8,7 @@ import com.gruppe10.Excel_Export.ui.ReviewDialog;
 import com.gruppe10.submission.DTOs.SubmissionDto;
 import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.submission.domain.SubmissionStatus;
+import com.gruppe10.submission.service.SubmissionService;
 import com.gruppe10.submission.ui.SubmissionUIService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -27,9 +28,11 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
     private final Grid<StudentExam> submissionsGrid;
     private Exam exam;
     private final ExamService examService;
+    private final SubmissionService submissionService;
 
-    public ExamCorrectionView(ExamService examService) {
+    public ExamCorrectionView(ExamService examService, SubmissionService submissionService) {
         this.examService = examService;
+        this.submissionService = submissionService;
         this.submissionsGrid = new Grid<>();
         setSizeFull();
     }
@@ -84,7 +87,7 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
                     if (submission != null) {
                         Button korrigierenButton = new Button(
                                 submission.getStatus() == SubmissionStatus.PENDING_REVIEW ? "Korrigieren" : "Ansehen",
-                                e -> openReviewDialog(submission)
+                                e -> openReviewDialog(submission.getId())
                         );
                         return korrigierenButton;
                     } else {
@@ -120,26 +123,25 @@ public class ExamCorrectionView extends VerticalLayout implements HasUrlParamete
                 3000, Notification.Position.MIDDLE);
         }
     }
-    /*
-    private void refreshGrid() {
-        submissionsGrid.setItems(exam.getStudentExamAppointments());
+
+    private void openReviewDialog(Long submissionId) {
+        Submission fullSubmission = submissionService.findFullyLoaded(submissionId);
+
+        SubmissionDto dto = SubmissionDto.from(fullSubmission);
+
+        ReviewDialog dialog = new ReviewDialog(dto, updatedDto -> {
+            submissionService.updateSubmissionFromDto(updatedDto);
+            refreshGrid();
+        });
+
+        dialog.open();
     }
-*/
-    private void openReviewDialog(Submission submission) {
-            // Optional: konvertiere Submission → SubmissionDto
-            SubmissionDto dto = SubmissionDto.from(submission);
-            ReviewDialog dialog = new ReviewDialog(dto, new SubmissionUIService()); // ggf. via Konstruktor übergeben
-            dialog.open();
-            dialog.addOpenedChangeListener(e -> {
-                if (!e.isOpened()) {
-                    refreshGrid();
-                }
-            });
-        }
-        private void refreshGrid() {
+
+    private void refreshGrid() {
             this.exam = examService.getById(exam.getId())
                     .orElseThrow(() -> new NotFoundException("Termin nicht gefunden"));
             submissionsGrid.setItems(exam.getStudentExamAppointments());
-        }
+    }
+
 }
 

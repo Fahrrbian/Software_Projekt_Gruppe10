@@ -22,21 +22,23 @@ public class EvaluationService {
     public ExamResult evaluateExam(Exam exam, Map<String, Answer> answers) {
         Map<String, Double> perQuestionPoints = new HashMap<>();
 
-        for (Exercise q : exam.getQuestions()) {
-/*            Answer a = answers.get(q.getId());
-            double pts = q.evaluate(a);
-            perQuestionPoints.put(q.getId(), pts); Wie soll das funktionieren, wenn in der perQuestionPoints ein String Wert in der map erwartet wird? */
-            String questionId = q.getId().toString();
-            Answer a = answers.get(questionId);
-            double pts = q.evaluate(a);
-            perQuestionPoints.put(questionId, pts);
+        for (Exercise exercise : exam.getQuestions()) {
+            String questionId = exercise.getId().toString();
+            Answer answer = answers.get(questionId);
 
+            double points = 0.0;
+
+            if (answer != null)
+                points = exercise.evaluate(answer);
+
+            perQuestionPoints.put(questionId, points);
         }
 
         double total = perQuestionPoints.values()
                 .stream()
                 .mapToDouble(Double::doubleValue)
                 .sum();
+
         boolean passed = total >= exam.getBestehensgrenze();
 
         return new ExamResult(perQuestionPoints, total, passed);

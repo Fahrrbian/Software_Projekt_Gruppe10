@@ -1,12 +1,16 @@
 package com.gruppe10.submission.service;
 
+import com.gruppe10.submission.DTOs.SubmissionDto;
 import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.submission.domain.SubmissionAnswer;
 import com.gruppe10.submission.domain.SubmissionStatus;
 import com.gruppe10.usermanagement.domain.User;
+import com.vaadin.flow.router.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -93,6 +97,7 @@ public class SubmissionService {
     public List<Submission> getSubmissionsByStudentFullyFetched(Student student) {
         return submissionRepository.findByStudentWithAufgabenErgebnisseEager(student);
     }
+
     public int countParticipants(Exam exam) {
 
         return submissionRepository.countByExam(exam);
@@ -117,5 +122,43 @@ public class SubmissionService {
     public boolean existsByExam(Exam exam) {
         return submissionRepository.existsByExam(exam);
     }
-    
+
+    @Transactional
+    public void updateSubmissionFromDto(SubmissionDto dto) {
+        Submission submission = submissionRepository.findById(dto.getSubmissionId())
+                .orElseThrow(() -> new NotFoundException("Submission nicht gefunden"));
+
+        //Vergabe von neuen Punkten
+        Map<String, Double> neuePunkte = dto.getPerQuestionPoints();
+        submission.setAufgabenErgebnisse(new HashMap<>(neuePunkte));
+
+        //Berechnung der Gesamtpunktzahl
+        double totalPoints = submission.calculateTotal();
+        submission.setTotalPoints(totalPoints);
+
+        //Überprüfung, ob bestanden oder nicht
+        double maxPoints = submission.getExam().getExercises().stream()
+                .mapToDouble(e -> e.getScore() != null ? e.getScore() : 0.0)
+                .sum();
+
+        boolean passed = maxPoints > 0 && totalPoints >= (submission.getExam().getBestehensgrenze());
+        submission.setPassed(passed);
+
+        submission.setStatus(SubmissionStatus.REVIEWED);
+
+        submissionRepository.save(submission);
+    }
+
+    @Transactional
+    public Submission findFullyLoaded(Long id) {
+        Submission submission = submissionRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Nicht gefunden"));
+
+        //Zugriff erzwingt Laden der Ergebnisse
+        submission.getAufgabenErgebnisse().size();
+        submission.getAnswers().size();
+
+        return submission;
+    }
+
 }

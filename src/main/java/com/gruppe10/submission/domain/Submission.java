@@ -123,6 +123,7 @@ public class Submission {
     public void setSubmittedAt(Instant submittedAt) {
         this.submittedAt = submittedAt;
     }
+
     public double calculateTotal() {
         return aufgabenErgebnisse.values()
                 .stream()

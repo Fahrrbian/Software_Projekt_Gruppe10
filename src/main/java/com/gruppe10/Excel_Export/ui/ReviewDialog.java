@@ -14,8 +14,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 
 import java.util.HashMap;
 import java.util.Map;
-
-
+import java.util.function.Consumer;
 
 /**
  * ReviewDialog.java
@@ -27,7 +26,8 @@ import java.util.Map;
  */
 
 public class ReviewDialog extends Dialog {
-    public ReviewDialog(SubmissionDto sub, SubmissionUIService svc) {
+
+    public ReviewDialog(SubmissionDto sub, Consumer<SubmissionDto> onSave) {
         setWidth("700px");
         setHeight("500px");
 
@@ -37,20 +37,20 @@ public class ReviewDialog extends Dialog {
         form.addFormItem(new Div(), "Student: " + sub.getEmail());
         form.addFormItem(new Div(), "Status: " + sub.getStatus());
 
-        Map<String,String> rawAnswers = sub.getRawAnswers();
-        Map<String,Double> perPoints  = sub.getPerQuestionPoints();
+        Map<String, String> rawAnswers = sub.getRawAnswers();
+        Map<String, Double> perPoints = sub.getPerQuestionPoints();
         Map<String, NumberField> pointFields = new HashMap<>();
 
         for (String qid : rawAnswers.keySet()) {
-            String raw  = rawAnswers.get(qid);
-            Double auto = perPoints.get(qid);
+            String raw = rawAnswers.get(qid);
+            Double auto = perPoints.getOrDefault(qid, 0.0);
 
             Div rawDiv = new Div();
             rawDiv.setText("Frage " + qid + " – Antwort: " + raw);
 
             NumberField ptsField = new NumberField();
-            ptsField.setLabel("Punkte (automatisch: " + (auto!=null?auto:0.0) + ")");
-            ptsField.setValue(auto != null ? auto : 0.0);
+            ptsField.setLabel("Punkte (automatisch: " + auto + ")");
+            ptsField.setValue(auto);
             ptsField.setMin(0);
             pointFields.put(qid, ptsField);
 
@@ -59,15 +59,12 @@ public class ReviewDialog extends Dialog {
         }
 
         Button save = new Button("Speichern & Freigeben", evt -> {
-            ReviewDto dto = new ReviewDto();
-            Map<String,Double> updates = new HashMap<>();
-            pointFields.forEach((qid, fld) ->
-                    updates.put(qid, fld.getValue() != null ? fld.getValue() : 0.0)
-            );
-            dto.setUpdatedPoints(updates);
+            Map<String, Double> updatedPoints = new HashMap<>();
+            pointFields.forEach((qid, fld) -> updatedPoints.put(qid, fld.getValue() != null ? fld.getValue() : 0.0));
 
-            // hier: PATCH /api/instructor/submissions/{subId}/review
-            svc.reviewSubmission(sub.getSubmissionId().toString(), dto);
+            sub.setPerQuestionPoints(updatedPoints);
+
+            onSave.accept(sub);
 
             Notification.show("Punkte gespeichert und Freigabe erteilt", 2000, Notification.Position.MIDDLE);
             sub.setStatus(SubmissionStatus.REVIEWED);

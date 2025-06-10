@@ -13,6 +13,8 @@ import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.exam.ui.ExamListener;
 import com.gruppe10.exercisemanagement.domain.Exercise;
 import com.gruppe10.security.AuthenticatedUser;
+import com.gruppe10.submission.domain.Submission;
+import com.gruppe10.usermanagement.domain.User;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -83,12 +85,22 @@ public class ExamListView extends VerticalLayout implements ExamListener {
 
         pruefungGrid = new Grid<>();
         pruefungGrid.setItems(query -> examService.list(toSpringPageRequest(query)).stream());
-        pruefungGrid.addColumn(Exam::getId).setHeader("Id");
+//        pruefungGrid.addColumn(Exam::getId).setHeader("Id");
         pruefungGrid.addColumn(Exam::getTitle).setHeader("Titel");
-        pruefungGrid.addColumn(Exam::getCreatorId).setHeader("Creator ID");
+        pruefungGrid.addColumn(exam -> {
+            User creator = exam.getCreator();
+            if (creator == null) {
+                return "N/A";
+            }
+            String email = creator.getEmail();
+            if (email == null) {
+                return "N/A";
+            }
+            return email;
+        }).setHeader("Ersteller");
 //        pruefungGrid.addColumn(pruefung -> Optional.ofNullable(pruefung.()).map(dateFormatter::format).orElse("Never"))
 //                .setHeader("Due Date");
-        pruefungGrid.addColumn(pruefung -> dateTimeFormatter.format(pruefung.getCreationDate())).setHeader("Creation Date");
+        pruefungGrid.addColumn(pruefung -> dateTimeFormatter.format(pruefung.getCreationDate())).setHeader("Erstellungsdatum");
         pruefungGrid.addColumn(Exam::getGesamtpunkte).setHeader("Gesamtpunkte");
         pruefungGrid.addColumn(Exam::getBestehensgrenze).setHeader("Bestehensgrenze");
 

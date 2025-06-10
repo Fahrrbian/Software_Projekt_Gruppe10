@@ -22,7 +22,7 @@ public class QuestionDto {
 
     private String questionId;
     private String text;
-    private int score;
+    private Long score;
     private Type type;
     private List<OptionDto> options;  // nur für Choice-Fragen
 
@@ -67,11 +67,11 @@ public class QuestionDto {
         this.text = text;
     }
 
-    public int getScore() {
+    public Long getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(Long score) {
         this.score = score;
     }
 

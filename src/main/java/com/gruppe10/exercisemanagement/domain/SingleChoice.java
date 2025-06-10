@@ -26,19 +26,19 @@ public class SingleChoice extends Exercise {
     @Override
     public double evaluate(Answer answer) {
         if (!(answer instanceof SingleChoiceAnswer scAnswer)) {
-            throw new IllegalArgumentException(
-                    "Answer must be SingleChoiceAnswer for SingleChoice exercise"
-            );
-    }
-        return choiceOptions.stream()
-                .filter(opt -> opt.getId().toString().equals(scAnswer.getSelectedOptionId()))
-                .findFirst()
-                .map(ChoiceOption::isCorrect)
-                .map(correct -> correct ? getScore() : 0.0)  // statt getMaxPoints()
-                .orElse(0.0);
-    }
+            throw new IllegalArgumentException("Answer ist nicht vom Typ SingleChoiceAnswer");
+        }
 
+        String selected = scAnswer.getSelectedOptionId();
 
+        for (ChoiceOption opt : choiceOptions) {
+            if (opt.getText().equals(selected)) {
+                return opt.isCorrect() ? getScore() : 0.0;
+            }
+        }
+
+        return 0.0;
+    }
 
     public Set<ChoiceOption> getChoiceOptions() {
         return choiceOptions;

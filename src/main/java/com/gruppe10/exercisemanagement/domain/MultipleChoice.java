@@ -5,9 +5,9 @@ import com.gruppe10.submission.domain.MultipleChoiceAnswer;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import org.jspecify.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @DiscriminatorValue("MultipleChoice")
@@ -39,30 +39,29 @@ public class MultipleChoice extends Exercise{
         }
         MultipleChoiceAnswer mcAnswer = (MultipleChoiceAnswer) answer;
 
+        Set<String> correctAnswers = choiceOptions.stream()
+                .filter(ChoiceOption::isCorrect)
+                .map(ChoiceOption::getText)
+                .collect(Collectors.toSet());
 
-        Set<String> correctIds = new HashSet<>();
-        for (ChoiceOption opt : choiceOptions) {
-            if (opt.isCorrect()) {
-                correctIds.add(opt.getId().toString());
-            }
-        }
+        Set<String> selectedAnswers = new HashSet<>(mcAnswer.getSelectedOptionIds());
 
-        // Die vom Studenten gewählten Option-IDs:
-        Set<String> selectedIds = new HashSet<>(mcAnswer.getSelectedOptionIds()); // List<String> oder Set<String>
+        double maxPoints = this.getScore();
+        int correctCount = correctAnswers.size();
 
+        double pointsPerCorrect = maxPoints / correctCount;
 
-        if (selectedIds.equals(correctIds)) {
-            return this.getScore();
-        } else {
+        long right = selectedAnswers.stream()
+                .filter(correctAnswers::contains)
+                .count();
 
-            //  Keine Teilpunkte:
-            return 0.0;
-            //
-            //  Teilpunkte vergeben :
-            //   double maxPoints = this.getScore();
-            //   long richtigGewählt = selectedIds.stream().filter(correctIds::contains).count();
-            //   return maxPoints * ((double) richtigGewählt / correctIds.size());
-        }
+        long wrong = selectedAnswers.stream()
+                .filter(rightAnswer -> !correctAnswers.contains(rightAnswer))
+                .count();
+
+        double score = pointsPerCorrect * (right - wrong);
+
+        return Math.max(0.0, score);
     }
 
 }

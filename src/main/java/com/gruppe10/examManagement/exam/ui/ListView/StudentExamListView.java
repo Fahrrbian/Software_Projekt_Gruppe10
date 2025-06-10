@@ -64,7 +64,7 @@ public class StudentExamListView extends VerticalLayout {
                 .withLocale(Locale.getDefault())
                 .withZone(clock.getZone());
 
-        examGrid.addColumn(studentExam -> studentExam.getExam().getId()).setHeader("ID").setAutoWidth(true);
+        //examGrid.addColumn(studentExam -> studentExam.getExam().getId()).setHeader("ID").setAutoWidth(true);
         examGrid.addColumn(studentExam -> studentExam.getExam().getTitle()).setHeader("Titel").setAutoWidth(true);
         examGrid.addColumn(studentExam ->
                 dateTimeFormatter.format(studentExam.getExam().getCreationDate())
