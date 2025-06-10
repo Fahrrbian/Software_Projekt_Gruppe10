@@ -101,8 +101,9 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
         Student student = (Student) currentUser.get();
 
-        System.out.println("Student-ID: " + student.getId());
-        System.out.println("Exam-ID: " + examId);
+        //Logging
+//        System.out.println("Student-ID: " + student.getId());
+//        System.out.println("Exam-ID: " + examId);
 
         Optional<StudentExam> optionalExam = studentExamRepository.findByStudent_IdAndExam_Id(student.getId(), examId);
         if (optionalExam.isEmpty()) {
@@ -283,7 +284,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         }
 
         //Logging
-        System.out.println("Speichere Antwort für Exercise " + exercise.getId() + ": " + answer.getSelectedOptions());
+//        System.out.println("Speichere Antwort für Exercise " + exercise.getId() + ": " + answer.getSelectedOptions());
 
         userAnswers.put(exercise.getId(), answer);
     }
@@ -315,7 +316,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
                         StringBuilder sb = new StringBuilder();
                         for (Map.Entry<String, String> entry : mappings.entrySet()) {
                             String key = entry.getKey();
-                            String value = entry.getValue() != null ? entry.getValue() : "X";
+                            String value = entry.getValue() != null ? entry.getValue() : "(keine Antwort)";
                             sb.append(key).append(" ➝ ").append(value).append(";\n");
                         }
                         preview = !sb.isEmpty() ? sb.toString() : "(keine Antwort)";
@@ -384,77 +385,78 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         }
 
         Map<String, com.gruppe10.submission.domain.Answer> domainAnswers = userAnswers.entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> String.valueOf(entry.getKey()), // Long → String
-                        entry -> {
-                            var src = entry.getValue();
+                .map(entry -> {
+                    Answer userAnswer = entry.getValue();
 
-                            String questionId;
-                            if (src.getExercise() != null && src.getExercise().getId() != null) {
-                                questionId = src.getExercise().getId().toString();
-                            } else {
-                                questionId = String.valueOf(entry.getKey());
-                            }
+                    String questionId;
+                    if (userAnswer.getExercise() != null && userAnswer.getExercise().getId() != null) {
+                        questionId = userAnswer.getExercise().getId().toString();
+                    } else {
+                        questionId = String.valueOf(entry.getKey());
+                    }
 
-                            //Logging
-                            System.out.println("--- Verarbeitung Antwort ---");
-                            System.out.println("Frage-ID: " + entry.getKey());
-                            System.out.println("selectedOptions: " + src.getSelectedOptions());
-                            System.out.println("textAnswer: " + src.getTextAnswer());
-                            System.out.println("assignmentMappings: " + src.getAssignmentMappings());
-                            System.out.println("----------------------------");
+                    //Logging
+//                    System.out.println("--- Verarbeitung der Antwort ---");
+//                    System.out.println("Frage-ID: " + entry.getKey());
+//                    System.out.println("selectedOptions: " + userAnswer.getSelectedOptions());
+//                    System.out.println("textAnswer: " + userAnswer.getTextAnswer());
+//                    System.out.println("assignmentMappings: " + userAnswer.getAssignmentMappings());
+//                    System.out.println("----------------------------");
 
-                            if (src.getSelectedOptions() != null && !src.getSelectedOptions().isEmpty()) {
-                                if (src.getSelectedOptions().size() == 1) {
-                                    var sc = new SingleChoiceAnswer();
-                                    sc.setQuestionId(questionId);
-                                    sc.setSelectedOptionId(src.getSelectedOptions().get(0));
-                                    return sc;
-                                } else {
-                                    var mc = new MultipleChoiceAnswer();
-                                    mc.setQuestionId(questionId);
-                                    mc.setSelectedOptionIds(src.getSelectedOptions());
-                                    return mc;
-                                }
-                            } else if (src.getTextAnswer() != null) {
-                                var ft = new FreeTextAnswer();
-                                ft.setQuestionId(questionId);
-                                ft.setText(src.getTextAnswer());
-                                return ft;
-                            } else if (src.getAssignmentMappings() != null && !src.getAssignmentMappings().isEmpty()) {
-                                var assign = new AssignmentAnswer();
-                                assign.setQuestionId(questionId);
-                                assign.setAssignmentMappings(src.getAssignmentMappings());
-                                return assign;
-                            } else {
-                                throw new IllegalStateException("Unbekannter Antworttyp für Frage " + entry.getKey());
-                            }
+                    com.gruppe10.submission.domain.Answer answer = null;
+
+                    if (userAnswer.getSelectedOptions() != null && !userAnswer.getSelectedOptions().isEmpty()) {
+                        if (userAnswer.getSelectedOptions().size() == 1) {
+                            var sc = new SingleChoiceAnswer();
+                            sc.setQuestionId(questionId);
+                            sc.setSelectedOptionId(userAnswer.getSelectedOptions().get(0));
+                            answer = sc;
+                        } else {
+                            var mc = new MultipleChoiceAnswer();
+                            mc.setQuestionId(questionId);
+                            mc.setSelectedOptionIds(userAnswer.getSelectedOptions());
+                            answer = mc;
                         }
-                ));
+                    } else if (userAnswer.getTextAnswer() != null && !userAnswer.getTextAnswer().isBlank()) {
+                        var ft = new FreeTextAnswer();
+                        ft.setQuestionId(questionId);
+                        ft.setText(userAnswer.getTextAnswer());
+                        answer = ft;
+                    } else if (userAnswer.getAssignmentMappings() != null && !userAnswer.getAssignmentMappings().isEmpty()) {
+                        var assign = new AssignmentAnswer();
+                        assign.setQuestionId(questionId);
+                        assign.setAssignmentMappings(userAnswer.getAssignmentMappings());
+                        answer = assign;
+                    }
+
+                    return answer != null ? Map.entry(questionId, answer) : null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
 
         var result = evaluationService.evaluateExam(studentExam.getExam(), domainAnswers);
 
         //Logging
-        System.out.println("--- Evaluation Result ---");
-        System.out.println("Per Question Points: " + result.getPerQuestionPoints());
-        System.out.println("Total Points: " + result.getTotalPoints());
-        System.out.println("Passed: " + result.isPassed());
-        System.out.println("-------------------------");
+//        System.out.println("--- Evaluation Result ---");
+//        System.out.println("Per Question Points: " + result.getPerQuestionPoints());
+//        System.out.println("Total Points: " + result.getTotalPoints());
+//        System.out.println("Passed: " + result.isPassed());
+//        System.out.println("-------------------------");
 
         //Logging
-        Map<String, Double> perQuestionPoints = result.getPerQuestionPoints();
-        System.out.println("Punkte vor Bewertung speichern: " + perQuestionPoints);
+//        Map<String, Double> perQuestionPoints = result.getPerQuestionPoints();
+//        System.out.println("Punkte vor Bewertung speichern: " + perQuestionPoints);
 
         Submission submission = submissionService.bewerten(studentExam.getExam(), studentExam.getStudent(), result.getPerQuestionPoints(), answers);
         //Logging
-        System.out.println("--- Bewertung starten ---");
-        System.out.println("Exam: " + studentExam.getId());
-        System.out.println("Student: " + studentExam.getStudent().getId());
-        System.out.println("Punkte pro Frage: " + perQuestionPoints);
-        System.out.println("Antworten roh: " + answers);
+//        System.out.println("--- Bewertung starten ---");
+//        System.out.println("Exam: " + studentExam.getId());
+//        System.out.println("Student: " + studentExam.getStudent().getId());
+//        System.out.println("Punkte pro Frage: " + perQuestionPoints);
+//        System.out.println("Antworten roh: " + answers);
 
         studentExam.setSubmission(submission);
-        studentExam.setCompleted(true);
         studentExam.setGesperrt(true);
         studentExam.getExam().setOpenToCorrect(true);
 

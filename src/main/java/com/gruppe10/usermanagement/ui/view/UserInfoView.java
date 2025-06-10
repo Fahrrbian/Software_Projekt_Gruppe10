@@ -120,7 +120,7 @@ public class UserInfoView extends VerticalLayout {
 
             List<StudentExam> examHistory = studentExamRepository.findCompletedExamsByStudent(user)
                     .stream()
-                    .sorted(Comparator.comparing(StudentExam::getEndTime, Comparator.nullsLast(Comparator.reverseOrder())))
+                    .sorted(Comparator.comparing(studentExam -> studentExam.getEndTime(), Comparator.nullsLast(Comparator.reverseOrder())))
                     .toList();
             examGrid.setItems(examHistory);
 

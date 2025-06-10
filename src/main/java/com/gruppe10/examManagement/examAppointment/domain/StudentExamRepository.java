@@ -23,4 +23,6 @@ public interface StudentExamRepository extends JpaRepository<StudentExam, Long> 
 
     @Query("SELECT se FROM StudentExam se WHERE se.student = :student AND se.completed = true")
     List<StudentExam> findCompletedExamsByStudent(@Param("student") User student);
+
+    Optional<StudentExam> findBySubmission_Id(Long submissionId);
 }

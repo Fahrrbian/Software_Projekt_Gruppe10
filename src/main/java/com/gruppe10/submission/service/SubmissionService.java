@@ -1,5 +1,7 @@
 package com.gruppe10.submission.service;
 
+import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.submission.DTOs.SubmissionDto;
 import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.submission.domain.SubmissionAnswer;
@@ -31,15 +33,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SubmissionService {
     private final SubmissionRepo submissionRepository;
+    private final StudentExamRepository studentExamRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public SubmissionService(SubmissionRepo submissionRepository, ApplicationEventPublisher eventPublisher) {
+    public SubmissionService(SubmissionRepo submissionRepository, StudentExamRepository studentExamRepository, ApplicationEventPublisher eventPublisher) {
         this.submissionRepository = submissionRepository;
+        this.studentExamRepository = studentExamRepository;
         this.eventPublisher = eventPublisher;
     }
-    public SubmissionService(SubmissionRepo submissionRepository) {
+
+    public SubmissionService(SubmissionRepo submissionRepository, StudentExamRepository studentExamRepository) {
         this.submissionRepository = submissionRepository;
+        this.studentExamRepository = studentExamRepository;
         this.eventPublisher = new ApplicationEventPublisher() {
             @Override
             public void publishEvent(Object event) {
@@ -47,7 +53,6 @@ public class SubmissionService {
             }
         };
     }
-
 
     @Transactional
     public Submission bewerten(Exam exam, User user, Map<String, Double> punkteMap, Map<String, String> rawAnswers) {
@@ -107,6 +112,11 @@ public class SubmissionService {
 
         return submissionRepository.countByExamAndPassedTrue(exam);
     }
+
+    @Transactional(readOnly = true)
+    public List<StudentExam> getCompletedExamsByStudent(Student student) {
+        return studentExamRepository.findCompletedExamsByStudent(student);
+    }
     
     @Transactional(readOnly = true)
     public Optional<Submission> getSubmissionByStudentAndExam(Student student, Exam exam) {
@@ -147,6 +157,12 @@ public class SubmissionService {
         submission.setStatus(SubmissionStatus.REVIEWED);
 
         submissionRepository.save(submission);
+
+        studentExamRepository.findBySubmission_Id(submission.getId())
+                .ifPresent(studentExam -> {
+                    studentExam.setCompleted(true);
+                    studentExamRepository.save(studentExam);
+                });
     }
 
     @Transactional

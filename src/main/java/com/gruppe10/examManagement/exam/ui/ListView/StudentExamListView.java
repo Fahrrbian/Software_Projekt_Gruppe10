@@ -77,11 +77,10 @@ public class StudentExamListView extends VerticalLayout {
 
             Optional<User> currentUser = getCurrentUser();
             if (currentUser.isPresent() && currentUser.get() instanceof Student student) {
-                // Schritt 1: Offene Prüfungen laden
-                List<Exam> offenePruefungen = examService.findByGesperrtFalsePaged(page, query.getLimit()).getContent();
 
-                // Schritt 2: StudentExam-Einträge erzeugen (falls nicht vorhanden)
-                for (Exam exam : offenePruefungen) {
+                List<Exam> openExams = examService.findByGesperrtFalsePaged(page, query.getLimit()).getContent();
+
+                for (Exam exam : openExams) {
                     Optional<StudentExam> existing = studentExamRepository.findByStudent_IdAndExam_Id(student.getId(), exam.getId());
                     if (existing.isEmpty()) {
                         StudentExam se = new StudentExam();
@@ -95,12 +94,11 @@ public class StudentExamListView extends VerticalLayout {
                     }
                 }
 
-                // Schritt 3: Jetzt die relevanten StudentExams zurückgeben
                 Pageable pageable = PageRequest.of(page, query.getLimit());
                 return studentExamRepository.findByStudentAndGesperrtFalse(currentUser, pageable).stream();
             }
 
-            return Stream.empty(); // Falls kein Student gefunden wurde
+            return Stream.empty();
         });
 
         examGrid.addItemDoubleClickListener(event -> {
@@ -111,11 +109,6 @@ public class StudentExamListView extends VerticalLayout {
         });
 
         add(examGrid);
-    }
-
-    public Page<Exam> listAllOpenExams(int offset, int limit) {
-        int page = offset / limit;
-        return examService.findByGesperrtFalsePaged(page, limit);
     }
 
 }

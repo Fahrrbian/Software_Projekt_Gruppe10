@@ -2,6 +2,7 @@ package com.gruppe10.Excel_Export.ui;
 
 import com.gruppe10.base.ui.Layout.TimedMainLayout;
 import com.gruppe10.base.ui.security.SecurityUtils;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.submission.domain.Submission;
 import com.gruppe10.submission.service.SubmissionService;
 import com.gruppe10.usermanagement.domain.Student;
@@ -27,27 +28,23 @@ import java.util.List;
 
 @Route(value = "pruefungsergebnisse", layout = TimedMainLayout.class)
 @RolesAllowed("STUDENT")
-//@Theme(variant = Lumo.LIGHT)
 public class ExamResultsView extends VerticalLayout{
 
     private final SubmissionService submissionService;
 
     @Autowired
     public ExamResultsView(SubmissionService submissionService) {
+        this.submissionService = submissionService;
 
         setSizeFull();
-        setPadding(false);
-        setSpacing(false);
-
-        this.submissionService = submissionService;
+        setPadding(true);
+        setSpacing(true);
 
         H2 title = new H2("Meine Prüfungsergebnisse");
         title.getStyle().set("margin-bottom", "var(--lumo-space-m)");
         User currentUser = (User) SecurityUtils.getCurrentUser().orElse(null);
-        if (currentUser instanceof Student student) {
-            System.out.println("-------------------->currentUser = " + currentUser);
-            List<Submission> submissions = submissionService.getSubmissionsByStudent(student);
 
+        if (currentUser instanceof Student) {
             Grid<Submission> grid = new Grid<>(Submission.class, false);
             grid.addColumn(sub -> sub.getExam().getTitle()).setHeader("Prüfung");
             grid.addColumn(Submission::getTotalPoints).setHeader("Gesamtpunkte");
@@ -59,10 +56,18 @@ public class ExamResultsView extends VerticalLayout{
                 return passed ? "✔" : "✖";
             }).setHeader("Bestanden");
 
-            grid.setItems(submissionService.getSubmissionsByStudent(
-                    (Student) SecurityUtils.getCurrentUser().get()));
-            grid.setSizeFull();                                      // füllt die Höhe des Eltern-Layouts
-            grid.addThemeVariants(                                  // optische Verbesserungen
+            List<Submission> completedSubmissions = submissionService.getSubmissionsByStudent(
+                            (Student) SecurityUtils.getCurrentUser().get())
+                    .stream()
+                    .filter(sub -> {
+                        StudentExam studentExam = sub.getStudentExam();
+                        return studentExam != null && studentExam.isCompleted();
+                    })
+                    .toList();
+
+            grid.setItems(completedSubmissions);
+            grid.setSizeFull();
+            grid.addThemeVariants(
                     GridVariant.LUMO_ROW_STRIPES,
                     GridVariant.LUMO_COLUMN_BORDERS
             );

@@ -1,6 +1,7 @@
 package com.gruppe10.submission.domain;
 
 import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.usermanagement.domain.Student;
 import jakarta.persistence.*;
 
@@ -51,6 +52,9 @@ public class Submission {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<SubmissionAnswer> answers = new ArrayList<>();
+
+    @OneToOne(mappedBy = "submission")
+    private StudentExam studentExam;
 
     public SubmissionStatus getStatus() {
         return status;
@@ -122,6 +126,14 @@ public class Submission {
 
     public void setSubmittedAt(Instant submittedAt) {
         this.submittedAt = submittedAt;
+    }
+
+    public StudentExam getStudentExam() {
+        return studentExam;
+    }
+
+    public void setStudentExam(StudentExam studentExam) {
+        this.studentExam = studentExam;
     }
 
     public double calculateTotal() {
