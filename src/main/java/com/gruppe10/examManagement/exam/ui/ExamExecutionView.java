@@ -464,7 +464,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         examRepository.save(studentExam.getExam());
 
         Notification.show("Prüfung abgegeben.");
-        UI.getCurrent().navigate("user-info");
+        UI.getCurrent().navigate("/");
     }
 
     private void showError(String message) {
