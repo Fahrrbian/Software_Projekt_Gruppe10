@@ -105,6 +105,7 @@ public class CreateExerciseView extends VerticalLayout {
         tagSelector.setWidthFull();
         tagSelector.setPlaceholder("Tags auswählen oder neu eingeben...");
 
+        // Listener zum Suchen vorhandenen Tags oder erstellt neuen, falls nicht vorhanden
         tagSelector.addCustomValueSetListener(event -> {
             String newTagName = event.getDetail().trim();
             if (!newTagName.isEmpty()) {
@@ -163,6 +164,7 @@ public class CreateExerciseView extends VerticalLayout {
         return sectionLayout;
     }
 
+    //Aktualisiert die Eingabefelder für aufgabenspezifische Inhalte je nach ausgewähltem Aufgabentyp.
     private void updateSpecificContent(String exerciseType) {
         exerciseTextField.setInvalid(false);
         scoreField.setInvalid(false);
@@ -207,6 +209,8 @@ public class CreateExerciseView extends VerticalLayout {
         }
     }
 
+    //Fügt eine neue Eingabekomponente für eine Antwortmöglichkeit hinzu für Single oder Multiple Choice Aufgaben
+    //Beinhaltet ein Eingabefeld für die Antwortmöglichkeit, eine checkbox für true oder false und einen Löschenbutton
     private void addChoiceOptionEditor() {
         ChoiceOptionEditor editor = new ChoiceOptionEditor();
         editor.setOnDelete(() -> {
@@ -221,6 +225,8 @@ public class CreateExerciseView extends VerticalLayout {
         editorItemsContainer.add(editor);
     }
 
+    //Fügt eine neue Eingabekomponente für eine Zuordnungsmöglischkeit hinzu für Zuordnungsaufgaben
+    //Beinhaltet zwei Eingabefelder für den ersten und zweiten Teil des Zuordnungspaares und einen Löschenbutton
     private void addAssignmentPairEditor() {
         AssignmentPairEditor editor = new AssignmentPairEditor();
         editor.setOnDelete(() -> {

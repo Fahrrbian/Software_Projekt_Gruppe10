@@ -105,11 +105,13 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         tagSelector.setAllowCustomValue(true);
         tagSelector.setPlaceholder("Tags auswählen oder neu eingeben...");
         tagSelector.setTooltipText("Um neue Tags hinzuzufügen, geben Sie den Namen ein und drücken Sie Enter. Bestehende Tags können Sie auswählen.");
+        // Renderer für die Anzeige der Tags als "Badge"
         tagSelector.setRenderer(new ComponentRenderer<>(tag -> {
             Span tagSpan = new Span(tag.getName());
             tagSpan.getElement().getThemeList().add("badge pill");
             return tagSpan;
         }));
+        // Listener, um Tags zu finden oder neue benutzerdefinierte Tags hinzuzufügen
         tagSelector.addCustomValueSetListener(event -> {
             String newTagName = event.getDetail().trim();
             if (!newTagName.isEmpty()) {
@@ -143,6 +145,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
                 .bind(Exercise::getScore, Exercise::setScore);
     }
 
+    //Lädt die Übung anhand der URL-Parameter (exerciseId) und zeigt die Details an.
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         RouteParameters parameters = event.getRouteParameters();
@@ -183,10 +186,12 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         }
     }
 
+    //Hilfsmethode zum Setzen des Flags, ob ungespeicherte Änderungen vorliegen.
     private void setUnsavedChanges(boolean hasChanges) {
         this.hasUnsavedChanges = hasChanges;
     }
 
+    //Zeigt die Details einer Aufgabe an (Anzeigemodus).
     private void displayExerciseDetails(Exercise exercise) {
         removeAll();
         isEditing = false;
@@ -265,6 +270,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         add(addExamButton);
     }
 
+    //Aktiviert den Bearbeitungsmodus für die aktuell geladenen Aufgabe.
     private void enterEditMode() {
         removeAll();
         isEditing = true;
@@ -305,6 +311,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         exerciseTypeSection.add(typeDescription);
         add(exerciseTypeSection);
 
+        // Entfernt alten ClickListener, falls vorhanden, um doppelte Listener zu vermeiden
         if (addOptionOrPairButtonClickListenerRegistration != null) {
             addOptionOrPairButtonClickListenerRegistration.remove();
             addOptionOrPairButtonClickListenerRegistration = null;
@@ -428,6 +435,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
     private void addChoiceOptionEditor(ChoiceOption option) {
         ChoiceOptionEditor editor = new ChoiceOptionEditor();
         editor.setChoiceOption(option);
+        // Callback für das Löschen des Editors
         editor.setOnDelete(() -> {
             if (choiceOptionEditors.size() > 1) {
                 specificContentContainer.remove(editor);
@@ -444,6 +452,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
     private void addAssignmentPairEditor(AssignmentPair pair) {
         AssignmentPairEditor editor = new AssignmentPairEditor();
         editor.setAssignmentPair(pair);
+        // Callback für das Löschen des Editors
         editor.setOnDelete(() -> {
             if (assignmentPairEditors.size() > 1) {
                 specificContentContainer.remove(editor);
@@ -576,6 +585,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         return sectionLayout;
     }
 
+    //Zeigt eine Liste von ChoiceOptions als Zeilen mit Symbol und Text an.
     private void showChoiceOptions(VerticalLayout parentSectionLayout, List<ChoiceOption> options) {
         for (ChoiceOption option : options) {
             HorizontalLayout optionLayout = new HorizontalLayout();
@@ -608,6 +618,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         }
     }
 
+    //Zeigt AssignmentPairs in einem grid-artigen Layout mit Pfeil dazwischen an.
     private void showAssignmentPairs(VerticalLayout parentSectionLayout, List<AssignmentPair> pairs) {
         for (AssignmentPair pair : pairs) {
             HorizontalLayout pairLayout = new HorizontalLayout();
@@ -642,6 +653,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
             pairLayout.add(partOne, arrowIcon, partTwo);
             parentSectionLayout.add(pairLayout);
 
+            // Separator als dünne Linie darunter
             Div separator = new Div();
             separator.getStyle()
                     .set("width", "100%")
@@ -652,6 +664,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
             parentSectionLayout.add(separator);
         }
 
+        // Entfernt die letzte Trennlinie, falls vorhanden, um optisch besser abzuschließen
         if (!pairs.isEmpty() && parentSectionLayout.getComponentCount() > 0) {
             Component lastComponent = parentSectionLayout.getComponentAt(parentSectionLayout.getComponentCount() - 1);
             if (lastComponent instanceof Div &&
@@ -670,6 +683,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
         dialogLayout.setSpacing(true);
         dialogLayout.setPadding(true);
 
+        // Aktuellen Benutzer aus dem SecurityContext holen
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
@@ -699,6 +713,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
 
         final Long finalCurrentUserId = currentUserId;
 
+        // Liste der Prüfungen des aktuellen Nutzers, die noch keine Abgaben haben
         List<Exam> exams = examService.getAllExams().stream()
                 .filter(exam -> exam.getCreator() != null && exam.getCreator().getId().equals(finalCurrentUserId))
                 .filter(exam -> !submissionService.existsByExam(exam))
@@ -758,6 +773,7 @@ public class ExerciseDetailView extends VerticalLayout implements BeforeEnterObs
     }
 
 
+    //Eine einfache Hilfsklasse für ein flexibles Layout mit flex-wrap, um die Tag-Elemente nebeneinander mit Abstand anzuordnen.
     private static class FlowLayout extends Div {
         public FlowLayout() {
             getStyle().set("display", "flex");

@@ -10,6 +10,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import java.util.function.Consumer;
 
+// Editor-Komponente für ein einzelnes Zuordnungspaar (Teil A <-> Teil B) (wird in CreateExerciseView verwendet und beim bearbeiten einer Aufgabe in der ExerciseDetailView)
 
 class AssignmentPairEditor extends FormLayout {
     private final Binder<AssignmentPair> binder = new Binder<>(AssignmentPair.class);
@@ -23,6 +24,7 @@ class AssignmentPairEditor extends FormLayout {
         setupBinder();
     }
 
+    // Datenbindung und Validierung einrichten
     private void setupBinder() {
         binder.forField(partOneField)
                 .asRequired("Teil A erforderlich")
@@ -37,10 +39,12 @@ class AssignmentPairEditor extends FormLayout {
         return binder.validate().isOk();
     }
 
+    // Übergibt ein bestehendes AssignmentPair an den Editor
     public void setAssignmentPair(AssignmentPair pair) {
         binder.readBean(pair);
     }
 
+    // Gibt ein befülltes AssignmentPair zurück (sofern validiert)
     public AssignmentPair getAssignmentPair() {
 //        AssignmentPair pair = new AssignmentPair();
 //        binder.writeBeanIfValid(pair);
@@ -53,6 +57,7 @@ class AssignmentPairEditor extends FormLayout {
         return pair;
     }
 
+    // Setzt, was passieren soll, wenn der Löschen-Button gedrückt wird
     public void setOnDelete(Runnable onDelete) {
         deleteButton.addClickListener(e -> onDelete.run());
     }

@@ -110,7 +110,7 @@ public class ExerciseListView extends VerticalLayout  {
     }
 
     private void configureExerciseGrid() {
-        exerciseGrid.addColumn(Exercise::getExerciseText).setHeader("Aufgabentext").setAutoWidth(true);
+        exerciseGrid.addColumn(Exercise::getExerciseText).setHeader("Aufgabentext").setWidth("40%").setFlexGrow(0);
         exerciseGrid.addColumn(Exercise::getScore).setHeader("Punkte");
         exerciseGrid.addColumn(e ->
                 e.getTags().stream().map(Tag::getName).collect(Collectors.joining(", "))
@@ -122,6 +122,7 @@ public class ExerciseListView extends VerticalLayout  {
         exerciseGrid.setSizeFull();
     }
 
+    // Übersetzt die Namen in die ichtige Anzeige
     private String resolveType(Exercise exercise) {
         if (exercise.getClass().getSimpleName().equals("FreetextExercise")) {
             return "Freitextaufgabe";
@@ -135,6 +136,7 @@ public class ExerciseListView extends VerticalLayout  {
         return "Unbekannt";
     }
 
+    // Navigiert zur Detailansicht einer Übung zur Bearbeitung
     private Button createEditButton(Exercise exercise) {
         return new Button("Bearbeiten", click ->
                 getUI().ifPresent(ui -> ui.navigate(ExerciseDetailView.class, new RouteParameters("exerciseId", String.valueOf(exercise.getId()))))
@@ -261,6 +263,7 @@ public class ExerciseListView extends VerticalLayout  {
         addTagDialog.open();
     }
 
+    // Aktualisiert die Tag-Liste im Dialog basierend auf Suchtext
     private void updateTagListInDialog(String searchText) {
         tagsContainer.removeAll();
 
