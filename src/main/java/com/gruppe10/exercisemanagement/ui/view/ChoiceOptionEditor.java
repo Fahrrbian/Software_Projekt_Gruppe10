@@ -10,7 +10,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
-
+// Editor-Komponente für eine ChoiceOption (wird in CreateExerciseView verwendet und beim bearbeiten einer Aufgabe in der ExerciseDetailView)
 class ChoiceOptionEditor extends FormLayout {
     private final Binder<ChoiceOption> binder = new Binder<>(ChoiceOption.class);
     private final TextField answerTextField = new TextField("Antwortmöglichkeit eingeben");
@@ -22,6 +22,7 @@ class ChoiceOptionEditor extends FormLayout {
         setupBinder();
     }
 
+    // Konfiguriert die Datenbindung zwischen UI-Feldern und ChoiceOption-Objekt
     private void setupBinder() {
         binder.forField(answerTextField)
                 .asRequired("Antworttext erforderlich")
@@ -35,6 +36,7 @@ class ChoiceOptionEditor extends FormLayout {
         return binder.validate().isOk();
     }
 
+    // Gibt eine gültige ChoiceOption-Instanz basierend auf aktuellen Eingaben zurück
     public ChoiceOption getChoiceOption() {
 //        ChoiceOption option = new ChoiceOption();
 //        binder.writeBeanIfValid(option);
@@ -47,10 +49,12 @@ class ChoiceOptionEditor extends FormLayout {
         return option;
     }
 
+    // Lädt eine bestehende ChoiceOption zur Bearbeitung in die Felder
     public void setChoiceOption(ChoiceOption option) {
         binder.readBean(option);
     }
 
+    // Übergibt eine Callback-Funktion, die beim Klick auf den Lösch-Button ausgeführt wird
     public void setOnDelete(Runnable onDelete) {
         deleteButton.addClickListener(e -> onDelete.run());
     }
