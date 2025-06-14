@@ -42,7 +42,7 @@
     font-weight: 600;
     color: var(--lumo-primary-text-color);
     background-color: var(--lumo-primary-color-10pct);
-    border-radius: var(--lumo-border-radius-md);
+    border-radius: var(--lumo-border-radius-m);
     transition: background-color 150ms ease;
 }
 

@@ -1,7 +1,7 @@
 package com.gruppe10.base.ui.Layout;
 
 import com.gruppe10.security.AuthenticatedUser;
-import com.gruppe10.usermanagement.service.UserService;
+import com.gruppe10.usermanagement.domain.Student;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -11,7 +11,6 @@ import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
@@ -20,19 +19,13 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.server.menu.MenuEntry;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 /**
- * InitUser.java
- * <p>
  * Created by Fabian Holtapel on 08.05.2025.
  * Fixed by Christian Markow on 26.05.2025.
- * <p>
- * Description:
- * Standard-Layout
  */
 
 public class MainLayout extends AppLayout {
@@ -56,15 +49,33 @@ public class MainLayout extends AppLayout {
                 LumoUtility.FontSize.LARGE,
                 LumoUtility.Margin.LARGE);
 
+        Span versionAndPossibleStudentNumberInfo = new Span();
+        authenticatedUser.get().ifPresent(user -> {
+            String role = user.getRole();
+
+            if ("STUDENT".equalsIgnoreCase(role) && user instanceof Student student) {
+                int studentNumber = student.getStudentNumber();
+                versionAndPossibleStudentNumberInfo.setText("Matrikelnummer: " + studentNumber + " | Version: 1.02");
+            } else {
+                versionAndPossibleStudentNumberInfo.setText("Version: 1.02");
+            }
+        });
+        versionAndPossibleStudentNumberInfo.addClassName(LumoUtility.Margin.Left.AUTO);
+        versionAndPossibleStudentNumberInfo.getStyle()
+                .set("font-weight", "normal")
+                .set("border", "0.5px solid black")
+                .set("border-radius", "0.25em")
+                .set("padding", "0.25em 0.5em");
+
         Button logout = new Button("Logout", e -> {
             authenticatedUser.logout();
             UI.getCurrent().getPage().setLocation("/login");
         });
         logout.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        logout.getStyle().set("cursor", "pointer");
         logout.addClassName(LumoUtility.Margin.Left.AUTO);
+        logout.getStyle().set("cursor", "pointer");
 
-        header = new HorizontalLayout(toggle, headerText, logout);
+        header = new HorizontalLayout(toggle, headerText, versionAndPossibleStudentNumberInfo, logout);
         header.addClassName("app-header");
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
@@ -78,8 +89,6 @@ public class MainLayout extends AppLayout {
     }
 
     protected void createDrawer() {
-        String username = getFullName();
-
         HorizontalLayout userInfo = new HorizontalLayout(new H3("Menü"));
         userInfo.setAlignItems(FlexComponent.Alignment.CENTER);
         userInfo.getStyle().set("padding-left", "0.5rem");
@@ -100,7 +109,6 @@ public class MainLayout extends AppLayout {
                 nav.addItem(new SideNavItem("Aufgabenübersicht", "exercises", VaadinIcon.RECORDS.create()));
                 nav.addItem(new SideNavItem("Aufgabenerstellung", "create-exercise", VaadinIcon.FORM.create()));
                 nav.addItem(new SideNavItem("Prüfungsübersicht", "pruefung-list", VaadinIcon.RECORDS.create()));
-                //nav.addItem(new SideNavItem("Prüfungserstellung", "pruefung-form", VaadinIcon.FORM.create()));
                 nav.addItem(new SideNavItem("Prüfungskorrektur", "exams-to-correct", VaadinIcon.CLIPBOARD_CHECK.create()));
                 nav.addItem(new SideNavItem("Prüfungsergebnisse", "auswertung", VaadinIcon.LIST_OL.create()));
             } else if ("STUDENT".equalsIgnoreCase(role)) {
@@ -111,7 +119,6 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Profil", "user-info", VaadinIcon.COGS.create()));
         });
 
-        //MenuConfiguration.getMenuEntries().forEach(entry -> nav.addItem(createSideNavItem(entry)));
         return nav;
     }
 
@@ -133,18 +140,9 @@ public class MainLayout extends AppLayout {
         var userMenu = new MenuBar();
         userMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
         userMenu.addClassNames(Margin.MEDIUM);
-
-        var userMenuItem = userMenu.addItem(avatarAndUserName);
+        userMenu.addItem(avatarAndUserName);
 
         return userMenu;
-    }
-
-    private SideNavItem createSideNavItem(MenuEntry menuEntry) {
-        if (menuEntry.icon() != null) {
-            return new SideNavItem(menuEntry.title(), menuEntry.path(), new Icon(menuEntry.icon()));
-        } else {
-            return new SideNavItem(menuEntry.title(), menuEntry.path());
-        }
     }
 
     private String getFullName() {
