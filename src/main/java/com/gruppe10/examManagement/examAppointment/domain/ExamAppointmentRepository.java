@@ -9,8 +9,6 @@
 //
 //public interface ExamAppointmentRepository extends JpaRepository<ExamAppointment, Long> {
 //
-//    // If you don't need a total row count, Slice is better than Page.
-//    //↑ Übernommen aus Vaadin.start
 //    Slice<ExamAppointment> findAllBy(Pageable pageable);
 //
 //

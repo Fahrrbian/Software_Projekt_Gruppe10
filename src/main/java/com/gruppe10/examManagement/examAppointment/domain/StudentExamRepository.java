@@ -25,4 +25,5 @@ public interface StudentExamRepository extends JpaRepository<StudentExam, Long> 
     List<StudentExam> findCompletedExamsByStudent(@Param("student") User student);
 
     Optional<StudentExam> findBySubmission_Id(Long submissionId);
+
 }

@@ -29,7 +29,7 @@ public class InstructorService {
 
     public void createInstructor(String email, String forename, String surname, String password) {
         if ("test".equals(email)) {
-            throw new RuntimeException("This is for testing the error handler");
+            throw new RuntimeException("Fehler");
         }
         var instructor = new Instructor();
         instructor.setEmail(email);

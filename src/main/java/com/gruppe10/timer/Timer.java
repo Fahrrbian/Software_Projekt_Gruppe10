@@ -11,10 +11,12 @@ import java.util.TimerTask;
 import com.vaadin.flow.component.html.Span;
 import java.time.Instant;
 
+//Einfacher Timer zur Anzeige der verbleibenden Prüfungsbearbeitungszeit
 public class Timer extends HorizontalLayout {
 
     private final Span timeLabel = new Span();
-    private final long duration; // in Millisekunden
+    //Dauer in Millisekunden
+    private final long duration;
     private final Runnable onTimeUp;
 
     private final java.util.Timer timer = new java.util.Timer(true);
@@ -32,6 +34,7 @@ public class Timer extends HorizontalLayout {
         start();
     }
 
+    //Start des Timers bei UI-Zugriff
     private void start() {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -52,6 +55,7 @@ public class Timer extends HorizontalLayout {
         }, 0, 1000);
     }
 
+    //Aktualisierung der Zeitanzeige
     private void updateLabel(long remaining) {
         long totalSeconds = remaining / 1000;
         long minutes = totalSeconds / 60;

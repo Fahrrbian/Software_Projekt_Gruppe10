@@ -15,8 +15,6 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long>, JpaSp
 
     Slice<Exercise> findDistinctByTagsIn(List<Tag> tags, Pageable pageable);
 
-    //    List<Exercise> findByExam_Id(Long examId);
-
     @Query("SELECT e FROM Exercise e JOIN e.exams exam WHERE exam.id = :examId")
     List<Exercise> findByExam_Id(@Param("examId") Long examId);
 

@@ -66,6 +66,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    //Methode von Christian Markow
     /*
     public User registerUser(String email,
                              String rawPassword,
@@ -94,6 +95,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
      */
+
     @Transactional
     public Student registerStudent(String email, String rawPassword,
                                    String forename, String surname) {

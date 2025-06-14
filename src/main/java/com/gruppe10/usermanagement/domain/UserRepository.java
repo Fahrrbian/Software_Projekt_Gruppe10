@@ -17,11 +17,11 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
-    // If you don't need a total row count, Slice is better than Page.
     Slice<User> findAllBy(Pageable pageable);
 
     Optional<User> findByEmail(String email);
 
     @Query("SELECT COALESCE(MAX(s.studentNumber),0) FROM Student s")
     int findMaxStudentNumber();
+
 }

@@ -22,7 +22,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -69,9 +68,8 @@ public class StudentExamListView extends VerticalLayout {
         examGrid.addColumn(studentExam ->
                 dateTimeFormatter.format(studentExam.getExam().getCreationDate())
         ).setHeader("Erstellt am").setAutoWidth(true);
-        //examGrid.addColumn(Exam::getGesamtpunkte).setHeader("Gesamtpunkte").setAutoWidth(true);
-        //examGrid.addColumn(Exam::getBestehensgrenze).setHeader("Bestehensgrenze").setAutoWidth(true);
 
+        //Zuweisung von nicht gesperrten Prüfungen an Prüfling und Erzeugung sowie Anzeige von nutzerspezifischen Prüfungen
         examGrid.setItems(query -> {
             int page = query.getOffset() / query.getLimit();
 

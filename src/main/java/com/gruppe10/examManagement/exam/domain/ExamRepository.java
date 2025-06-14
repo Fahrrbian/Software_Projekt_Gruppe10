@@ -21,7 +21,6 @@ import java.util.Optional;
 
 public interface ExamRepository extends JpaRepository<Exam, Long>, JpaSpecificationExecutor<Exam>{
 
-    // If you don't need a total row count, Slice is better than Page.
     Slice<Exam> findAllBy(Pageable pageable);
 
     List<Exam> findByCreator(User creator);

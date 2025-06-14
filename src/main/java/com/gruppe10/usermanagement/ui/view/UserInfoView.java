@@ -6,14 +6,9 @@
 package com.gruppe10.usermanagement.ui.view;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
-import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.submission.domain.Submission;
-import com.gruppe10.submission.domain.SubmissionAnswer;
-import com.gruppe10.usermanagement.domain.Student;
-import com.gruppe10.usermanagement.domain.StudentRepository;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
 import com.vaadin.flow.component.UI;
@@ -29,7 +24,6 @@ import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,17 +45,14 @@ public class UserInfoView extends VerticalLayout {
     private final UserService userService;
     private final StudentExamRepository studentExamRepository;
 
-    @Autowired
-    private ExamRepository examRepository;
-
-    UserInfoView(UserService userService, StudentExamRepository studentExamRepository, ExamRepository examRepository) {
+    UserInfoView(UserService userService, StudentExamRepository studentExamRepository) {
         this.userService = userService;
         this.studentExamRepository = studentExamRepository;
-        this.examRepository = examRepository;
         setPadding(true);
         setSpacing(true);
         setWidthFull();
 
+        //Abfrage des eingeloggten Nutzers und Laden der nutzerspezifischen UI
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UserDetails userDetails) {
             Optional<User> optionalUser = userService.findByEmail(userDetails.getUsername());
@@ -74,7 +65,7 @@ public class UserInfoView extends VerticalLayout {
     private void initUI(User user) {
         add(new H2("Benutzerprofil von " + user.getForename() + " " + user.getSurname()));
 
-        // Gemeinsame Informationen
+        //Gemeinsame Inhalte
         FormLayout formLayout = new FormLayout();
         formLayout.addFormItem(new Span(user.getForename() + " " + user.getSurname()), "Name");
         formLayout.addFormItem(new Span("********"), "Passwort");
@@ -84,7 +75,7 @@ public class UserInfoView extends VerticalLayout {
         }), "");
         add(formLayout);
 
-        // Rollenspezifische Inhalte
+        //Rollenspezifische Inhalte
         if ("INSTRUCTOR".equals(user.getRoleAsString())) {
             add(new H3("Verwaltung"));
             add(new Button("Aufgaben", e -> {
@@ -104,7 +95,6 @@ public class UserInfoView extends VerticalLayout {
                 LocalDateTime submitDate = exam.getEndTime();
                 return submitDate != null ? formatter.format(submitDate.atZone(ZoneId.systemDefault())) : "N/A";
             }).setHeader("Prüfungstermin");
-            //examGrid.addColumn(exam -> exam.getSubmission().getTotalPoints()).setHeader("Punktzahl");
             examGrid.addColumn(exam -> {
                 Submission submission = exam.getSubmission();
                 if (submission == null) {
@@ -130,6 +120,7 @@ public class UserInfoView extends VerticalLayout {
         }
     }
 
+    //Pop-Up zur Änderung des Passworts mit Validierung und Fehleranzeige
     private void showChangePasswordDialog(User user) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle("Passwort ändern");
@@ -172,6 +163,7 @@ public class UserInfoView extends VerticalLayout {
         dialog.open();
     }
 
+    //Berechnung der erreichten Note
     private String berechneNote(StudentExam exam) {
         Submission submission = exam.getSubmission();
         if (submission == null || submission.getAnswers() == null) return "N/A";
@@ -183,6 +175,7 @@ public class UserInfoView extends VerticalLayout {
         return formatiereNote(prozent);
     }
 
+    //Notenschlüssel
     private String formatiereNote(double prozent) {
         if (prozent >= 95.0) return "1,0";
         if (prozent >= 90.0) return "1,3";

@@ -15,7 +15,8 @@ import java.util.Optional;
 
 public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpecificationExecutor<Student> {
 
-    // If you don't need a total row count, Slice is better than Page.
     Slice<Student> findAllBy(Pageable pageable);
+
     Optional<Student> findByEmail(String email);
+
 }

@@ -14,9 +14,9 @@ import java.io.Serializable;
 @DiscriminatorValue("INSTRUCTOR")
 public class Instructor extends User implements UserDetails, Serializable {
 
-
     @Override
     public String getUsername() {
         return getEmail();
     }
+
 }
