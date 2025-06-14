@@ -30,7 +30,6 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -108,7 +107,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
         Optional<StudentExam> optionalExam = studentExamRepository.findByStudent_IdAndExam_Id(student.getId(), examId);
         if (optionalExam.isEmpty()) {
-            //Prüfung wurde noch nicht gestartet. Neuer StudentExam-Eintrag wird anlegt.
+            //Prüfung wurde noch nicht gestartet. Neue nutzerspezifische Prüfung wird erzeugt.
             Optional<Exam> examOpt = examRepository.findById(examId);
             if (examOpt.isEmpty()) {
                 showError("Prüfung nicht vorhanden.");
@@ -138,7 +137,8 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
         exercises = exerciseService.getAllByExamId(examId);
 
-        timer = new Timer(30 * 60 * 1000L, this::onTimeUp); //30 Minuten
+        //30 Minuten-Timer
+        timer = new Timer(30 * 60 * 1000L, this::onTimeUp);
         add(timer);
 
         showExercise(currentIndex);
@@ -164,6 +164,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         add(navButtons);
     }
 
+    //Erzeugung der Navigationselemente (Buttons und Dropdown)
     private HorizontalLayout getHorizontalLayout(int index) {
         HorizontalLayout navButtons = new HorizontalLayout();
 
@@ -196,6 +197,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         return navButtons;
     }
 
+    //Erzeugung der Aufgabenansicht (je nach Aufgabentyp)
     private Component createInputComponent(Exercise exercise) {
         Answer saved = userAnswers.get(exercise.getId());
 
@@ -362,6 +364,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         submitExam();
     }
 
+    //Abgabe der Prüfung (als Submission) und Evaluierung der Antworten
     private void submitExam() {
         studentExam.setEndTime(LocalDateTime.now());
 
