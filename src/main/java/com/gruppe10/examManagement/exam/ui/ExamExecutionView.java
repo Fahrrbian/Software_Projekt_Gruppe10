@@ -105,7 +105,10 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 //        System.out.println("Student-ID: " + student.getId());
 //        System.out.println("Exam-ID: " + examId);
 
-        Optional<StudentExam> optionalExam = studentExamRepository.findByStudent_IdAndExam_Id(student.getId(), examId);
+        int studentNumber = student.getStudentNumber();
+        String studentNrString = String.valueOf(studentNumber);
+
+        Optional<StudentExam> optionalExam = studentExamRepository.findByMatrikelnummerAndExam_IdAndGesperrtFalse(studentNrString, examId);
         if (optionalExam.isEmpty()) {
             //Prüfung wurde noch nicht gestartet. Neue nutzerspezifische Prüfung wird erzeugt.
             Optional<Exam> examOpt = examRepository.findById(examId);
@@ -129,10 +132,10 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         } else {
             studentExam = optionalExam.get();
 
-            if (studentExam.isGesperrt()) {
-                showError("Diese Prüfung ist gesperrt und kann nicht mehr bearbeitet werden.");
-                return;
-            }
+//            if (studentExam.isGesperrt()) {
+//                showError("Diese Prüfung ist gesperrt und kann nicht mehr bearbeitet werden.");
+//                return;
+//            }
         }
 
         exercises = exerciseService.getAllByExamId(examId);
@@ -452,7 +455,10 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 //        Map<String, Double> perQuestionPoints = result.getPerQuestionPoints();
 //        System.out.println("Punkte vor Bewertung speichern: " + perQuestionPoints);
 
-        Submission submission = submissionService.bewerten(studentExam.getExam(), studentExam.getStudent(), result.getPerQuestionPoints(), answers);
+        Optional<User> currentUser = getCurrentUser();
+        Student student = (Student) currentUser.get();
+
+        Submission submission = submissionService.bewerten(studentExam.getExam(), student, result.getPerQuestionPoints(), answers);
         //Logging
 //        System.out.println("--- Bewertung starten ---");
 //        System.out.println("Exam: " + studentExam.getId());
@@ -465,7 +471,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         studentExam.getExam().setOpenToCorrect(true);
 
         studentExamRepository.save(studentExam);
-        examRepository.save(studentExam.getExam());
+//        examRepository.save(studentExam.getExam());
 
         Notification.show("Prüfung abgegeben.");
         UI.getCurrent().navigate("/");

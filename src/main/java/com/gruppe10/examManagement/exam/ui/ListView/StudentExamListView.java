@@ -7,6 +7,7 @@ package com.gruppe10.examManagement.exam.ui.ListView;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.examManagement.exam.domain.ExamRepository;
 import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
@@ -42,12 +43,14 @@ public class StudentExamListView extends VerticalLayout {
 
     private final ExamService examService;
     private final StudentExamRepository studentExamRepository;
+    private final ExamRepository examRepository;
     private final StudentService studentService;
     private final Grid<StudentExam> examGrid;
 
-    public StudentExamListView(ExamService examService, Clock clock, StudentExamRepository studentExamRepository, StudentService studentService) {
+    public StudentExamListView(ExamService examService, Clock clock, StudentExamRepository studentExamRepository, ExamRepository examRepository, StudentService studentService) {
         this.examService = examService;
         this.studentExamRepository = studentExamRepository;
+        this.examRepository = examRepository;
         this.studentService = studentService;
 
         setSizeFull();
@@ -71,33 +74,50 @@ public class StudentExamListView extends VerticalLayout {
 
         //Zuweisung von nicht gesperrten Prüfungen an Prüfling und Erzeugung sowie Anzeige von nutzerspezifischen Prüfungen
         examGrid.setItems(query -> {
-            int page = query.getOffset() / query.getLimit();
 
             Optional<User> currentUser = getCurrentUser();
+
             if (currentUser.isPresent() && currentUser.get() instanceof Student student) {
 
-                List<Exam> openExams = examService.findByGesperrtFalsePaged(page, query.getLimit()).getContent();
+                int studentNumber = student.getStudentNumber();
+                String studentNrString = String.valueOf(studentNumber);
 
-                for (Exam exam : openExams) {
-                    Optional<StudentExam> existing = studentExamRepository.findByStudent_IdAndExam_Id(student.getId(), exam.getId());
-                    if (existing.isEmpty()) {
-                        StudentExam se = new StudentExam();
-                        se.setExam(exam);
-                        se.setStudent(student);
-                        se.setVorname(student.getForename());
-                        se.setNachname(student.getSurname());
-                        se.setMatrikelnummer(String.valueOf(student.getStudentNumber()));
-                        se.setGesperrt(false);
-                        studentExamRepository.save(se);
-                    }
-                }
+                List<StudentExam> exams = studentExamRepository.findByMatrikelnummerAndGesperrtFalse(studentNrString);
 
-                Pageable pageable = PageRequest.of(page, query.getLimit());
-                return studentExamRepository.findByStudentAndGesperrtFalse(currentUser, pageable).stream();
+                return exams.stream()
+                        .skip(query.getOffset())
+                        .limit(query.getLimit());
             }
-
             return Stream.empty();
         });
+
+//            int page = query.getOffset() / query.getLimit();
+//
+//            Optional<User> currentUser = getCurrentUser();
+//            if (currentUser.isPresent() && currentUser.get() instanceof Student student) {
+//
+//                List<Exam> openExams = examService.findByGesperrtFalsePaged(page, query.getLimit()).getContent();
+//
+//                for (Exam exam : openExams) {
+//                    Optional<StudentExam> existing = studentExamRepository.findByStudent_IdAndExam_Id(student.getId(), exam.getId());
+//                    if (existing.isEmpty()) {
+//                        StudentExam se = new StudentExam();
+//                        se.setExam(exam);
+//                        se.setStudent(student);
+//                        se.setVorname(student.getForename());
+//                        se.setNachname(student.getSurname());
+//                        se.setMatrikelnummer(String.valueOf(student.getStudentNumber()));
+//                        se.setGesperrt(false);
+//                        studentExamRepository.save(se);
+//                    }
+//                }
+//
+//                Pageable pageable = PageRequest.of(page, query.getLimit());
+//                return studentExamRepository.findByStudentAndGesperrtFalse(currentUser, pageable).stream();
+//            }
+//
+//            return Stream.empty();
+//        });
 
         examGrid.addItemDoubleClickListener(event -> {
             if (event.getItem() != null) {

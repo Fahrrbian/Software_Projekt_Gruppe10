@@ -15,7 +15,6 @@ public class Student extends User implements UserDetails {
 
     @Column(name = "student_number", nullable = false, unique = true)
     //@Size(max = MAX_LENGTH)
-    @NotNull
     @Min(1)
     @Max(999999999)
     private int studentNumber;

@@ -9,6 +9,7 @@ import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.submission.domain.Submission;
+import com.gruppe10.usermanagement.domain.Student;
 import com.gruppe10.usermanagement.domain.User;
 import com.gruppe10.usermanagement.service.UserService;
 import com.vaadin.flow.component.UI;
@@ -107,7 +108,11 @@ public class UserInfoView extends VerticalLayout {
             }).setHeader("Bestanden");
             examGrid.addColumn(exam -> berechneNote(exam)).setHeader("Note");
 
-            List<StudentExam> examHistory = studentExamRepository.findCompletedExamsByStudent(user)
+            Student student = (Student) user;
+            int studentNumber = student.getStudentNumber();
+            String studentNrString = String.valueOf(studentNumber);
+
+            List<StudentExam> examHistory = studentExamRepository.findCompletedExamsByMatrikelnummer(studentNrString)
                     .stream()
                     .sorted(Comparator.comparing(studentExam -> studentExam.getEndTime(), Comparator.nullsLast(Comparator.reverseOrder())))
                     .toList();
