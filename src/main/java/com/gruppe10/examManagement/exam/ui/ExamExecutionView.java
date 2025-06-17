@@ -8,7 +8,6 @@ package com.gruppe10.examManagement.exam.ui;
 import com.gruppe10.base.ui.Layout.MainLayout;
 import com.gruppe10.examManagement.exam.domain.Exam;
 import com.gruppe10.examManagement.exam.domain.ExamRepository;
-import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.exercisemanagement.domain.*;
@@ -51,7 +50,6 @@ import static com.gruppe10.base.ui.security.SecurityUtils.getCurrentUser;
 public class ExamExecutionView extends VerticalLayout implements BeforeEnterObserver {
 
     private final ExerciseService exerciseService;
-    private final ExamService examService;
     private final SubmissionService submissionService;
     private final ExamRepository examRepository;
     private final StudentExamRepository studentExamRepository;
@@ -67,9 +65,8 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
     private Timer timer;
 
     @Autowired
-    public ExamExecutionView(ExerciseService exerciseService, ExamService examService, SubmissionService submissionService, ExamRepository examRepository, StudentExamRepository studentExamRepository, EvaluationService evaluationService) {
+    public ExamExecutionView(ExerciseService exerciseService, SubmissionService submissionService, ExamRepository examRepository, StudentExamRepository studentExamRepository, EvaluationService evaluationService) {
         this.exerciseService = exerciseService;
-        this.examService = examService;
         this.submissionService = submissionService;
         this.examRepository = examRepository;
         this.studentExamRepository = studentExamRepository;
@@ -100,27 +97,24 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
         }
 
         Student student = (Student) currentUser.get();
-
-        //Logging
-//        System.out.println("Student-ID: " + student.getId());
-//        System.out.println("Exam-ID: " + examId);
-
         int studentNumber = student.getStudentNumber();
         String studentNrString = String.valueOf(studentNumber);
 
-        Optional<StudentExam> optionalExam = studentExamRepository.findByMatrikelnummerAndExam_IdAndGesperrtFalse(studentNrString, examId);
-        if (optionalExam.isEmpty()) {
+        Optional<StudentExam> exam = studentExamRepository.findByMatrikelnummerAndExam_IdAndGesperrtFalse(studentNrString, examId);
+
+        if (exam.isEmpty()) {
             //Prüfung wurde noch nicht gestartet. Neue nutzerspezifische Prüfung wird erzeugt.
             Optional<Exam> examOpt = examRepository.findById(examId);
+
             if (examOpt.isEmpty()) {
                 showError("Prüfung nicht vorhanden.");
                 return;
             }
 
-            Exam exam = examOpt.get();
+            Exam globalExam = examOpt.get();
 
             StudentExam newStudentExam = new StudentExam();
-            newStudentExam.setExam(exam);
+            newStudentExam.setExam(globalExam);
             newStudentExam.setStudent(student);
             newStudentExam.setVorname(student.getForename());
             newStudentExam.setNachname(student.getSurname());
@@ -130,12 +124,7 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
 
             studentExam = studentExamRepository.save(newStudentExam);
         } else {
-            studentExam = optionalExam.get();
-
-//            if (studentExam.isGesperrt()) {
-//                showError("Diese Prüfung ist gesperrt und kann nicht mehr bearbeitet werden.");
-//                return;
-//            }
+            studentExam = exam.get();
         }
 
         exercises = exerciseService.getAllByExamId(examId);
@@ -288,9 +277,6 @@ public class ExamExecutionView extends VerticalLayout implements BeforeEnterObse
                 answer.setAssignmentMappings(mappings);
             }
         }
-
-        //Logging
-//        System.out.println("Speichere Antwort für Exercise " + exercise.getId() + ": " + answer.getSelectedOptions());
 
         userAnswers.put(exercise.getId(), answer);
     }
