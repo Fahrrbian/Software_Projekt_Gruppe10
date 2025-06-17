@@ -6,14 +6,10 @@
 package com.gruppe10.examManagement.exam.ui.ListView;
 
 import com.gruppe10.base.ui.Layout.MainLayout;
-import com.gruppe10.examManagement.exam.domain.Exam;
-import com.gruppe10.examManagement.exam.domain.ExamRepository;
-import com.gruppe10.examManagement.exam.service.ExamService;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExam;
 import com.gruppe10.examManagement.examAppointment.domain.StudentExamRepository;
 import com.gruppe10.usermanagement.domain.Student;
 import com.gruppe10.usermanagement.domain.User;
-import com.gruppe10.usermanagement.service.StudentService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -23,8 +19,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.time.Clock;
 import java.time.format.DateTimeFormatter;
@@ -41,17 +35,9 @@ import static com.gruppe10.base.ui.security.SecurityUtils.getCurrentUser;
 @RolesAllowed("STUDENT")
 public class StudentExamListView extends VerticalLayout {
 
-    private final ExamService examService;
-    private final StudentExamRepository studentExamRepository;
-    private final ExamRepository examRepository;
-    private final StudentService studentService;
     private final Grid<StudentExam> examGrid;
 
-    public StudentExamListView(ExamService examService, Clock clock, StudentExamRepository studentExamRepository, ExamRepository examRepository, StudentService studentService) {
-        this.examService = examService;
-        this.studentExamRepository = studentExamRepository;
-        this.examRepository = examRepository;
-        this.studentService = studentService;
+    public StudentExamListView(Clock clock, StudentExamRepository studentExamRepository) {
 
         setSizeFull();
         addClassNames(LumoUtility.BoxSizing.BORDER, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN,
@@ -70,9 +56,9 @@ public class StudentExamListView extends VerticalLayout {
         examGrid.addColumn(studentExam -> studentExam.getExam().getTitle()).setHeader("Titel").setAutoWidth(true);
         examGrid.addColumn(studentExam ->
                 dateTimeFormatter.format(studentExam.getExam().getCreationDate())
-        ).setHeader("Erstellt am").setAutoWidth(true);
+        ).setHeader("Erstellungsdatum").setAutoWidth(true);
 
-        //Zuweisung von nicht gesperrten Prüfungen an Prüfling und Erzeugung sowie Anzeige von nutzerspezifischen Prüfungen
+        // Anzeige von nutzerspezifischen und nicht gesperrten Prüfungen anhand der Matrikelnummer
         examGrid.setItems(query -> {
 
             Optional<User> currentUser = getCurrentUser();
@@ -85,9 +71,11 @@ public class StudentExamListView extends VerticalLayout {
                 List<StudentExam> exams = studentExamRepository.findByMatrikelnummerAndGesperrtFalse(studentNrString);
 
                 return exams.stream()
-                        .skip(query.getOffset())
-                        .limit(query.getLimit());
+                        // manuelle Umsetzung von Paging bzw. Nachladen (Lazy Loading)
+                        .skip(query.getOffset()) //0 (Daten ab Index 0)
+                        .limit(query.getLimit()); //50 (automatisch)
             }
+
             return Stream.empty();
         });
 
