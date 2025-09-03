@@ -13,7 +13,7 @@ public class Student extends User implements UserDetails {
         super();
     }
 
-    @Column(name = "student_number", nullable = false, unique = true)
+    @Column(name = "student_number", unique = true)
     //@Size(max = MAX_LENGTH)
     @Min(1)
     @Max(999999999)
