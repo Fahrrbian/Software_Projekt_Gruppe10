@@ -1,10 +1,13 @@
 package com.gruppe10.exercisemanagement.domain;
 
+import com.gruppe10.submission.domain.Answer;
+import com.gruppe10.submission.domain.MultipleChoiceAnswer;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @DiscriminatorValue("MultipleChoice")
@@ -28,4 +31,37 @@ public class MultipleChoice extends Exercise{
     public void removeChoiceOption(ChoiceOption option) {
         choiceOptions.remove(option);
     }
+
+    @Override
+    public double evaluate(Answer answer) {
+        if (!(answer instanceof MultipleChoiceAnswer)) {
+            throw new IllegalArgumentException("Answer ist nicht vom Typ MultipleChoiceAnswer");
+        }
+        MultipleChoiceAnswer mcAnswer = (MultipleChoiceAnswer) answer;
+
+        Set<String> correctAnswers = choiceOptions.stream()
+                .filter(ChoiceOption::isCorrect)
+                .map(ChoiceOption::getText)
+                .collect(Collectors.toSet());
+
+        Set<String> selectedAnswers = new HashSet<>(mcAnswer.getSelectedOptionIds());
+
+        double maxPoints = this.getScore();
+        int correctCount = correctAnswers.size();
+
+        double pointsPerCorrect = maxPoints / correctCount;
+
+        long right = selectedAnswers.stream()
+                .filter(correctAnswers::contains)
+                .count();
+
+        long wrong = selectedAnswers.stream()
+                .filter(rightAnswer -> !correctAnswers.contains(rightAnswer))
+                .count();
+
+        double score = pointsPerCorrect * (right - wrong);
+
+        return Math.max(0.0, score);
+    }
+
 }

@@ -12,11 +12,11 @@ public class ChoiceOption extends AbstractEntity<Long> {
     @Column(name = "choice_option_id")
     private Long id;
 
-    @Column(name = "text", nullable = false)
+    @Column(name = "text", nullable = false, length = 1000)
     private String text;
 
     @Column(name = "correct", nullable = false)
-    private boolean isCorrect;
+    private Boolean isCorrect;
 
     @ManyToOne
     @JoinColumn(name = "exercise_id")
@@ -36,6 +36,10 @@ public class ChoiceOption extends AbstractEntity<Long> {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getText() {
         return text;
     }
@@ -45,7 +49,11 @@ public class ChoiceOption extends AbstractEntity<Long> {
     }
 
     public boolean isCorrect() {
-        return isCorrect;
+        return Boolean.TRUE.equals(isCorrect);
+    }
+
+    public Boolean getIsCorrect() {
+        return isCorrect != null && isCorrect;
     }
 
     public void setCorrect(boolean correct) {

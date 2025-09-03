@@ -1,11 +1,15 @@
 package com.gruppe10.exercisemanagement.domain;
 
 import com.gruppe10.base.domain.AbstractEntity;
+import com.gruppe10.examManagement.exam.domain.Exam;
+import com.gruppe10.submission.domain.Answer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,7 +26,7 @@ public abstract class Exercise extends AbstractEntity<Long> {
     private Long id;
 
     @Column(name = "score", nullable = false)
-    private int score;
+    private Long score;
 
     @Column(name = "exercise_text", length = TEXT_MAX_LENGTH)
     @Size(max = TEXT_MAX_LENGTH)
@@ -36,9 +40,18 @@ public abstract class Exercise extends AbstractEntity<Long> {
     )
     private Set<Tag> tags = new HashSet<>();
 
+    @ManyToMany(
+            mappedBy = "exercises",
+            fetch = FetchType.LAZY
+    )
+    private List<Exam> exams = new ArrayList<>();
+
+
+
+    public abstract double evaluate(Answer answer);
 
     @Override
-    public @Nullable Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -46,11 +59,11 @@ public abstract class Exercise extends AbstractEntity<Long> {
         this.id = id;
     }
 
-    public int getScore() {
+    public Long getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(Long score) {
         this.score = score;
     }
 
@@ -69,4 +82,13 @@ public abstract class Exercise extends AbstractEntity<Long> {
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
+
+    public List<Exam> getExam() {
+        return exams;
+    }
+
+    public void addExam(Exam exam) {
+        exam.addExercise(this);
+    }
+    
 }

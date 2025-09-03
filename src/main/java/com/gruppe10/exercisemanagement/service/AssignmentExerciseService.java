@@ -39,6 +39,13 @@ public class AssignmentExerciseService {
                 .orElseThrow(() -> new IllegalArgumentException("AssignmentExercise not found"));
     }
 
+    public AssignmentExercise update(AssignmentExercise assignmentExercise) {
+        if (assignmentExercise.getId() == null) {
+            throw new IllegalArgumentException("Cannot update AssignmentExercise: ID is null.");
+        }
+        return repository.save(assignmentExercise);
+    }
+
     public void delete(Long id) {
         repository.deleteById(id);
     }

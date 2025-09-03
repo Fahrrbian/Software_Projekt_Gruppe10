@@ -24,7 +24,6 @@ public class TagService {
         return repository.findById(id);
     }
 
-    // vielleicht später löschen
     public Tag create(Tag tag) {
         return repository.save(tag);
     }
@@ -35,6 +34,10 @@ public class TagService {
             newTag.setName(name);
             return repository.save(newTag);
         });
+    }
+
+    public Optional<Tag> findByName(String name) {
+        return repository.findByName(name);
     }
 
     public Tag update(Long id, Tag updated) {

@@ -8,12 +8,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "users")
-public abstract class User extends AbstractEntity<Long> {
+public abstract class User extends AbstractEntity<Long> implements UserDetails {
 
     public static final int MAX_LENGTH = 255;
 
@@ -48,6 +54,8 @@ public abstract class User extends AbstractEntity<Long> {
     //@Size(max = MAX_LENGTH)
     @NotNull
     private Role role;
+
+
 
     @Override
     public @Nullable Long getId() {
@@ -91,7 +99,17 @@ public abstract class User extends AbstractEntity<Long> {
         return String.valueOf(role);
     }
 
+    public String getRoleAsString() {
+        return role.name(); // oder role.toString()
+    }
+
     public void setRole(Role role) {
         this.role = role;
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + getRole()));
+    }
+
 }

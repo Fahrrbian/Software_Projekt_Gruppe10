@@ -1,0 +1,177 @@
+:host {
+    --app-layout-width-drawer: 250px;
+    --app-layout-background: var(--lumo-base-color);
+}
+:host([theme~="light"]) [part="content"] {
+    padding: var(--lumo-space-l);
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+/* 2) Header */
+.app-header {
+    background-color: var(--lumo-shade-5pct);
+    box-shadow: var(--lumo-box-shadow-s);
+    padding: var(--lumo-space-m) var(--lumo-space-l);
+    align-items: center;
+    display: flex;
+    gap: var(--lumo-space-m);
+}
+
+/* Logo-Titel */
+.app-header h1 {
+    font-size: var(--lumo-font-size-xl);
+    font-weight: 700;
+    margin: 0;
+}
+
+/* DrawerToggle-Icon */
+.app-header vaadin-drawer-toggle {
+    margin-right: var(--lumo-space-m);
+}
+
+#idle-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    padding: var(--lumo-space-xs) var(--lumo-space-s);
+    font-size: var(--lumo-font-size-m);
+    font-weight: 600;
+    color: var(--lumo-primary-text-color);
+    background-color: var(--lumo-primary-color-10pct);
+    border-radius: var(--lumo-border-radius-m);
+    transition: background-color 150ms ease;
+}
+
+
+#idle-indicator::before {
+    content: "⌛";
+    margin-right: var(--lumo-space-xs);
+}
+
+
+#idle-indicator.warning {
+    background-color: var(--lumo-error-color-10pct);
+    color: var(--lumo-error-text-color);
+}
+#idle-indicator:hover {
+    background-color: var(--lumo-primary-color-20pct);
+
+
+}
+.vaadin-app-layout vaadin-drawer {
+        background-color: var(--lumo-base-color);
+        border-right: 1px solid var(--lumo-shade-10pct);
+    }
+
+    /* Inhalt im Drawer */
+
+.drawer-content {
+    padding: var(--lumo-space-m);
+    width: 16rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    }
+
+    /* 5) User-Bereich im Drawer */
+
+    .User-Name {
+        display: flex;
+        align-items: center;
+        gap: var(--lumo-space-xs);
+        font-weight: 500;
+    }
+
+    /* Logout-Button */
+
+    .logout-Button {
+        background-color: var(--lumo-contrast-10pct);
+        color: var(--lumo-error-text-color);
+        border: none;
+        border-radius: var(--lumo-border-radius);
+        padding: var(--lumo-space-xs) var(--lumo-space-s);
+        cursor: pointer;
+        transition: background-color 150ms;
+    }
+
+    .logout-Button:hover {
+        background-color: var(--lumo-error-color-10pct);
+        color: var(--lumo-base-color);
+    }
+
+    /* 6) Navigationslinks */
+
+    .router-link {
+        display: block;
+        padding: var(--lumo-space-s) 0;
+        color: var(--lumo-primary-text-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .router-link:hover {
+        color: var(--lumo-primary-color);
+    }
+
+    /* 7) Responsive Anpassungen */
+    @media (max-width: 600px) {
+        .app-header {
+            padding: var(--lumo-space-s);
+        }
+
+        #idle-indicator {
+            display: none; /* auf sehr kleinen Geräten ausblenden, falls nötig */
+        }
+    }
+.drawer-links {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--lumo-space-m) 0;
+    gap: var(--lumo-space-xs);
+}
+
+.drawer-logo {
+    align-items: center;
+    padding: var(--lumo-space-m);
+    gap: var(--lumo-space-s);
+    border-bottom: 1px solid var(--lumo-shade-10pct);
+}
+.drawer-logo-img {
+    width: 2rem;
+    height: 2.5rem;
+}
+.drawer-logo span {
+    font-size: var(--lumo-font-size-s);
+    font-weight: 500;
+    color: var(--lumo-secondary-text-color);
+}
+.drawer-link-item {
+    display: flex;
+    align-items: center;
+    gap: var(--lumo-space-s);
+    padding: var(--lumo-space-xs) var(--lumo-space-s);
+    border-radius: var(--lumo-border-radius);
+    color: var(--lumo-primary-text-color);
+    border-left: 3px solid transparent;
+    transition: background-color 150ms, border-left-color 150ms;
+}
+.drawer-link-item:hover {
+    background-color: var(--lumo-shade-10pct);
+    border-left-color: var(--lumo-primary-color);
+}
+.drawer-link-item.selected {
+    background-color: var(--lumo-primary-color-10pct);
+    border-left-color: var(--lumo-primary-color);
+    color: var(--lumo-primary-text-color);
+}
+.drawer-logout {
+    margin-top: auto;
+    margin-bottom: var(--lumo-space-m);
+    align-self: stretch;
+    text-align: center;
+}

@@ -21,6 +21,12 @@ public class Tag extends AbstractEntity<Long>{
     @ManyToMany(mappedBy = "tags")
     private Set<Exercise> exercises = new HashSet<>();
 
+    public Tag (){}
+
+    public Tag(String name){
+        this.name=name;
+    }
+
     public Long getId() {
         return id;
     }

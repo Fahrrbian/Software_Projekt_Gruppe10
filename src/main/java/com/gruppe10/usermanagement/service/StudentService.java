@@ -1,4 +1,8 @@
-//ChristianMarkow
+/**
+ * Author: Christian Markow
+ * Date: 29/04/2025
+ */
+
 package com.gruppe10.usermanagement.service;
 
 import com.gruppe10.usermanagement.domain.Role;
@@ -25,7 +29,7 @@ public class StudentService {
 
     public void createStudent(String email, String forename, String surname, String password, int studentNumber) {
         if ("test".equals(email)) {
-            throw new RuntimeException("This is for testing the error handler");
+            throw new RuntimeException("Fehler");
         }
         var student = new Student();
         student.setEmail(email);
